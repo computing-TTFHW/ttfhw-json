@@ -2,7 +2,7 @@
   "metadata": {
     "repo_path": "/mnt/d/wsl_wkp/ttfhw_test/msdebug_repo",
     "start_time": "2026-06-25T00:00:00",
-    "end_time": "2026-06-25T06:10:00",
+    "end_time": "2026-06-25T11:03:27Z",
     "duration_seconds": 22200,
     "total_steps": 28
   },
@@ -288,49 +288,93 @@
       "step": "document_reading",
       "action": "读取 README.md 了解项目简介、功能、安装说明",
       "result": "成功",
-      "details": {"file": "README.md", "sections_read": ["简介", "功能介绍", "快速入门", "安装指南"]}
+      "details": {
+        "file": "README.md",
+        "sections_read": [
+          "简介",
+          "功能介绍",
+          "快速入门",
+          "安装指南"
+        ]
+      }
     },
     {
       "timestamp": "2026-06-25T00:08:00",
       "step": "document_reading",
       "action": "读取 docs/zh/install_guide/msdebug_install_guide.md 确认构建依赖和步骤",
       "result": "成功",
-      "details": {"file": "docs/zh/install_guide/msdebug_install_guide.md", "sections_read": ["环境准备", "执行编译打包"]}
+      "details": {
+        "file": "docs/zh/install_guide/msdebug_install_guide.md",
+        "sections_read": [
+          "环境准备",
+          "执行编译打包"
+        ]
+      }
     },
     {
       "timestamp": "2026-06-25T00:10:00",
       "step": "document_reading",
       "action": "读取 CMakeLists.txt 确认依赖版本和构建模块",
       "result": "成功",
-      "details": {"file": "CMakeLists.txt", "min_cmake_version": "3.20.2", "max_cmake_version": "3.31.10", "modules": ["Ncurses", "Libedit", "LLVM", "Msdebug_mi", "PreparePackage"]}
+      "details": {
+        "file": "CMakeLists.txt",
+        "min_cmake_version": "3.20.2",
+        "max_cmake_version": "3.31.10",
+        "modules": [
+          "Ncurses",
+          "Libedit",
+          "LLVM",
+          "Msdebug_mi",
+          "PreparePackage"
+        ]
+      }
     },
     {
       "timestamp": "2026-06-25T00:12:00",
       "step": "document_reading",
       "action": "读取 build.py 了解构建流程",
       "result": "成功",
-      "details": {"file": "build.py", "build_modes": ["完整构建", "local 本地构建", "test 单元测试"]}
+      "details": {
+        "file": "build.py",
+        "build_modes": [
+          "完整构建",
+          "local 本地构建",
+          "test 单元测试"
+        ]
+      }
     },
     {
       "timestamp": "2026-06-25T00:13:00",
       "step": "dockerfile_analysis",
       "action": "检查仓库是否提供 Dockerfile",
       "result": "未提供",
-      "details": {"dockerfile": "无", "note": "仓库未提供 Dockerfile 和 .devcontainer 目录"}
+      "details": {
+        "dockerfile": "无",
+        "note": "仓库未提供 Dockerfile 和 .devcontainer 目录"
+      }
     },
     {
       "timestamp": "2026-06-25T00:14:00",
       "step": "static_analysis_scan",
       "action": "检查仓库 pre-commit 配置",
       "result": "已配置",
-      "details": {"config_file": ".pre-commit-config.yaml", "hooks_count": 10}
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks_count": 10
+      }
     },
     {
       "timestamp": "2026-06-25T00:15:00",
       "step": "static_analysis_scan",
       "action": "检查仓库 lint-runner 配置",
       "result": "未配置",
-      "details": {"searched_patterns": [".lint-runner.yaml", ".lint-runner.json", "lint-runner.config.*"]}
+      "details": {
+        "searched_patterns": [
+          ".lint-runner.yaml",
+          ".lint-runner.json",
+          "lint-runner.config.*"
+        ]
+      }
     },
     {
       "timestamp": "2026-06-25T00:15:00",
@@ -358,28 +402,56 @@
       "step": "container_setup",
       "action": "启动 openEuler 容器并挂载源码",
       "result": "成功",
-      "details": {"image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts", "container_name": "ttfhw-msdebug-openeuler-env"}
+      "details": {
+        "image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+        "container_name": "ttfhw-msdebug-openeuler-env"
+      }
     },
     {
       "timestamp": "2026-06-25T00:17:00",
       "step": "dependency_installation_layer1",
       "action": "安装系统工具链（gcc gcc-c++ make cmake ninja-build git python3 python3-pip curl wget）",
       "result": "成功",
-      "details": {"source": "openEuler 官方仓库 (dnf)", "packages": ["gcc", "gcc-c++", "make", "cmake", "ninja-build", "git", "python3", "python3-pip", "curl", "wget"]}
+      "details": {
+        "source": "openEuler 官方仓库 (dnf)",
+        "packages": [
+          "gcc",
+          "gcc-c++",
+          "make",
+          "cmake",
+          "ninja-build",
+          "git",
+          "python3",
+          "python3-pip",
+          "curl",
+          "wget"
+        ]
+      }
     },
     {
       "timestamp": "2026-06-25T00:18:00",
       "step": "dependency_installation_layer2",
       "action": "安装打包工具 pigz",
       "result": "成功",
-      "details": {"source": "openEuler 官方仓库 (dnf)", "packages": ["pigz"]}
+      "details": {
+        "source": "openEuler 官方仓库 (dnf)",
+        "packages": [
+          "pigz"
+        ]
+      }
     },
     {
       "timestamp": "2026-06-25T00:25:00",
       "step": "submodule_init",
       "action": "初始化 Git 子模块（makeself, libedit, ncurses）",
       "result": "成功",
-      "details": {"submodules": ["makeself", "libedit", "ncurses"]}
+      "details": {
+        "submodules": [
+          "makeself",
+          "libedit",
+          "ncurses"
+        ]
+      }
     },
     {
       "timestamp": "2026-06-25T00:30:00",
@@ -406,7 +478,9 @@
       "step": "build_attempt",
       "action": "首次构建尝试",
       "result": "失败",
-      "details": {"error": "LLVM 子模块中 utils/lit, test, unittests, docs 等目录缺失"}
+      "details": {
+        "error": "LLVM 子模块中 utils/lit, test, unittests, docs 等目录缺失"
+      }
     },
     {
       "timestamp": "2026-06-25T00:50:00",
@@ -423,7 +497,9 @@
       "step": "build_retry",
       "action": "第二次构建尝试（清理构建缓存后重新构建）",
       "result": "失败",
-      "details": {"error": "pigz: command not found（打包阶段失败，LLVM/LLDB 编译成功）"}
+      "details": {
+        "error": "pigz: command not found（打包阶段失败，LLVM/LLDB 编译成功）"
+      }
     },
     {
       "timestamp": "2026-06-25T03:00:00",
@@ -440,35 +516,48 @@
       "step": "build_retry",
       "action": "第三次构建（仅执行打包步骤，复用已有编译产物）",
       "result": "成功",
-      "details": {"concurrency": 8, "artifact": "mindstudio-debugger_26.0.0_x86_64.run (66MB)"}
+      "details": {
+        "concurrency": 8,
+        "artifact": "mindstudio-debugger_26.0.0_x86_64.run (66MB)"
+      }
     },
     {
       "timestamp": "2026-06-25T03:10:00",
       "step": "ut_execution",
       "action": "执行单元测试构建",
       "result": "超时失败",
-      "details": {"error": "LLVM 全量单元测试编译量过大（42个 UT 目录 + 28个 LLDB UT 目录），编译超时"}
+      "details": {
+        "error": "LLVM 全量单元测试编译量过大（42个 UT 目录 + 28个 LLDB UT 目录），编译超时"
+      }
     },
     {
       "timestamp": "2026-06-25T06:05:00",
       "step": "sample_execution",
       "action": "执行 msdebug.bin --help 样例",
       "result": "成功",
-      "details": {"examples_run": 1, "command": "LD_LIBRARY_PATH=output/lib output/bin/msdebug.bin --help"}
+      "details": {
+        "examples_run": 1,
+        "command": "LD_LIBRARY_PATH=output/lib output/bin/msdebug.bin --help"
+      }
     },
     {
       "timestamp": "2026-06-25T06:06:00",
       "step": "sample_execution",
       "action": "执行 msdebug-mi.bin --help 样例",
       "result": "成功",
-      "details": {"examples_run": 1, "command": "LD_LIBRARY_PATH=output/lib output/bin/msdebug-mi.bin --help"}
+      "details": {
+        "examples_run": 1,
+        "command": "LD_LIBRARY_PATH=output/lib output/bin/msdebug-mi.bin --help"
+      }
     },
     {
       "timestamp": "2026-06-25T06:10:00",
       "step": "report_generation",
       "action": "生成验证报告",
       "result": "成功",
-      "details": {"output_file": "verification_report_WSL_msdebug_20260625.json"}
+      "details": {
+        "output_file": "verification_report_WSL_msdebug_20260625.json"
+      }
     }
   ],
   "final_results": {

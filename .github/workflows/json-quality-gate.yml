@@ -1,0 +1,246 @@
+name: JSON Quality Gate
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+    paths:
+      - 'reports/**/*.json'
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  quality-gate:
+    name: Validate JSON Reports
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # Step 1: Checkout base branch (main) to get TRUSTED validation scripts.
+      # Scripts from base are safe — we never execute code from the PR.
+      - name: Checkout base (trusted scripts)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      # Step 2: Checkout PR head to get JSON files for validation.
+      # Only JSON data is read from here; no scripts from PR are executed.
+      - name: Checkout PR (JSON data)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          path: pr
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install openai
+
+      # Use changed-files on the PR checkout to identify which JSONs were modified
+      - name: Get changed JSON files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: reports/**/*.json
+          files_separator: ' '
+          path: pr
+
+      - name: Skip if no JSON changes
+        if: steps.changed-files.outputs.any_changed != 'true'
+        run: |
+          echo "No JSON files changed. Skipping quality checks."
+
+      # Run TRUSTED scripts from base/ on PR's JSON files
+      - name: Run deterministic validation
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: validate
+        working-directory: pr
+        run: |
+          python3 ../base/scripts/validate_json.py ${{ steps.changed-files.outputs.all_changed_files }} > /tmp/deterministic_results.json
+          cat /tmp/deterministic_results.json
+
+      - name: Run AI semantic analysis
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: ai-check
+        continue-on-error: true
+        working-directory: pr
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python3 ../base/scripts/ai_quality_check.py ${{ steps.changed-files.outputs.all_changed_files }} > /tmp/ai_results.json
+          cat /tmp/ai_results.json
+
+      - name: Post results as Check Run and PR comment
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let detResults = { pass: true, files: {} };
+            try {
+              detResults = JSON.parse(fs.readFileSync('/tmp/deterministic_results.json', 'utf8'));
+            } catch (e) {
+              console.log('Failed to read deterministic results:', e.message);
+            }
+
+            let aiResults = { pass: true, files: {} };
+            try {
+              aiResults = JSON.parse(fs.readFileSync('/tmp/ai_results.json', 'utf8'));
+            } catch (e) {
+              console.log('AI results not available:', e.message);
+            }
+
+            const allFiles = new Set();
+            for (const f of Object.keys(detResults.files)) allFiles.add(f);
+            for (const f of Object.keys(aiResults.files)) allFiles.add(f);
+
+            const findings = {};
+            let totalErrors = 0, totalWarnings = 0, totalNotices = 0;
+            const annotations = [];
+
+            for (const file of allFiles) {
+              findings[file] = [];
+              const df = detResults.files[file] || { issues: [] };
+              const af = aiResults.files[file] || { issues: [] };
+
+              for (const issue of [...df.issues, ...af.issues]) {
+                findings[file].push(issue);
+                if (issue.severity === 'error') totalErrors++;
+                else if (issue.severity === 'warning') totalWarnings++;
+                else totalNotices++;
+
+                annotations.push({
+                  path: file,
+                  start_line: 1,
+                  end_line: 1,
+                  annotation_level: issue.severity === 'error' ? 'failure' :
+                                    issue.severity === 'warning' ? 'warning' : 'notice',
+                  title: issue.path || '$',
+                  message: issue.message,
+                  raw_details: issue.suggestion || '',
+                });
+              }
+            }
+
+            // Create Check Run — pull_request_target has full checks:write permission
+            const conclusion = totalErrors > 0 ? 'failure' :
+                              totalWarnings > 0 ? 'neutral' : 'success';
+
+            const checkTitle = totalErrors + totalWarnings + totalNotices > 0
+              ? `${totalErrors} 个错误, ${totalWarnings} 个警告, ${totalNotices} 个提示`
+              : '所有检查通过';
+
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'JSON Quality Gate',
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'completed',
+              conclusion: conclusion,
+              completed_at: new Date().toISOString(),
+              output: {
+                title: checkTitle,
+                summary: `已检查 ${allFiles.size} 个文件的 JSON 质量问题。\n\n` +
+                         `- **确定性检查**：${Object.keys(detResults.files).length} 个文件\n` +
+                         `- **AI 语义分析**：${Object.keys(aiResults.files).length} 个文件${aiResults.error ? ' (部分可用)' : ''}\n\n` +
+                         `此为**建议性**门禁 — 发现的问题不会阻止代码合入。`,
+                annotations: annotations.slice(0, 50),
+              },
+            });
+
+            console.log('Check Run created successfully');
+
+            // Build Chinese PR comment
+            let commentBody = '## 🔍 JSON 质量门禁检查结果\n\n';
+            commentBody += `**已检查 ${allFiles.size} 个文件** | `;
+
+            const parts = [];
+            if (totalErrors > 0) parts.push(`🚫 ${totalErrors} 个错误`);
+            if (totalWarnings > 0) parts.push(`⚠️ ${totalWarnings} 个警告`);
+            if (totalNotices > 0) parts.push(`ℹ️ ${totalNotices} 个提示`);
+
+            if (parts.length === 0) {
+              commentBody += '✅ 所有检查通过';
+            } else {
+              commentBody += parts.join(' | ');
+            }
+            commentBody += '\n\n';
+
+            for (const [file, fileIssues] of Object.entries(findings)) {
+              if (fileIssues.length === 0) continue;
+
+              const fileName = file.replace(/^reports\//, '');
+              commentBody += `### 📄 ${fileName}\n\n`;
+
+              const errors = fileIssues.filter(i => i.severity === 'error');
+              const warnings = fileIssues.filter(i => i.severity === 'warning');
+              const notices = fileIssues.filter(i => i.severity === 'notice');
+
+              if (errors.length > 0) {
+                commentBody += `**🚫 错误（共 ${errors.length} 项）**\n`;
+                for (const e of errors.slice(0, 10)) {
+                  commentBody += `- **${e.path}**：${e.message}\n`;
+                  if (e.suggestion) commentBody += `  > 💡 ${e.suggestion}\n`;
+                }
+                if (errors.length > 10) commentBody += `  > ... 还有 ${errors.length - 10} 项\n`;
+                commentBody += '\n';
+              }
+
+              if (warnings.length > 0) {
+                commentBody += `**⚠️ 警告（共 ${warnings.length} 项）**\n`;
+                for (const w of warnings.slice(0, 10)) {
+                  commentBody += `- **${w.path}**：${w.message}\n`;
+                  if (w.suggestion) commentBody += `  > 💡 ${w.suggestion}\n`;
+                }
+                if (warnings.length > 10) commentBody += `  > ... 还有 ${warnings.length - 10} 项\n`;
+                commentBody += '\n';
+              }
+
+              if (notices.length > 0 && notices.length <= 5) {
+                commentBody += `**ℹ️ 提示（共 ${notices.length} 项）**\n`;
+                for (const n of notices) {
+                  commentBody += `- **${n.path}**：${n.message}\n`;
+                }
+                commentBody += '\n';
+              }
+            }
+
+            commentBody += '---\n';
+            commentBody += '🤖 由 [JSON 质量门禁]' +
+              `(https://github.com/${context.repo.owner}/${context.repo.repo}/actions) 自动生成\n`;
+            commentBody += 'ℹ️ 此为**建议性**检查 — 发现的问题不会阻止代码合入。';
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.body.includes('JSON 质量门禁检查结果') &&
+              c.user.type === 'Bot'
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: commentBody,
+              });
+            }
