@@ -128,12 +128,13 @@ TEMPLATE_STRUCTURE = {
     "problems_encountered": list,
 }
 
-# Required top-level keys (in order from the template)
-REQUIRED_TOP_KEYS = [
-    "metadata", "machine_spec", "document_reading_summary",
-    "execution_log", "process_timeline", "final_results",
-    "documentation_gaps", "problems_encountered",
-]
+# Top-level key severity classification (based on renderer consumption analysis)
+# P0 ERROR: Renderer cannot function without these
+TOP_KEYS_ERROR = ["metadata", "final_results"]
+# P1 WARNING: Significant visual impact if missing
+TOP_KEYS_WARNING = ["execution_log", "process_timeline", "problems_encountered"]
+# P2 NOTICE: Renderer handles gracefully (dynamic iteration, empty defaults)
+TOP_KEYS_NOTICE = ["machine_spec", "document_reading_summary", "documentation_gaps"]
 
 # ---------------------------------------------------------------------------
 # Security: Fields where shell/command syntax is EXPECTED (not flagged)
@@ -341,7 +342,9 @@ def is_command_field(path: str) -> bool:
 def _compare_keys(data: dict, template: dict, base_path: str,
                   issues: IssueCollector, unknown_as: str = "notice"):
     """Recursively compare keys of `data` against `template`.
-    Reports missing keys as errors, extra keys at the specified severity.
+    Severity depends on which section:
+    - final_results sub-keys missing → WARNING (affects badge rendering)
+    - machine_spec / document_reading_summary sub-keys missing → NOTICE (renderer handles)
     """
     if not isinstance(data, dict):
         return
@@ -349,11 +352,17 @@ def _compare_keys(data: dict, template: dict, base_path: str,
     t_keys = set(template.keys())
     d_keys = set(data.keys())
 
+    # Determine severity based on context
+    if base_path == "final_results" or base_path.startswith("final_results."):
+        missing_sev = "warning"
+    else:
+        missing_sev = "notice"
+
     missing = t_keys - d_keys
     for k in sorted(missing):
         if k in ("failure_reason", "note"):
             continue
-        issues.add("warning", "template_structure",
+        issues.add(missing_sev, "template_structure",
                    fmt_path(base_path, k) if base_path else f"$.{k}",
                    f"缺少字段 '{k}'（标准模板中存在）")
 
@@ -361,7 +370,7 @@ def _compare_keys(data: dict, template: dict, base_path: str,
     for k in sorted(extra):
         issues.add(unknown_as, "template_structure",
                    fmt_path(base_path, k) if base_path else f"$.{k}",
-                   f"未知字段 '{k}'（不在标准模板中）")
+                   f"未知字段 '{k}'（不在标准模板中，渲染代码忽略）")
 
     # Recurse into common nested dicts
     for k in t_keys & d_keys:
@@ -392,17 +401,30 @@ def check_valid_json(filepath: str, issues: IssueCollector) -> Optional[dict]:
 
 
 def check_top_level_keys(data: dict, issues: IssueCollector):
-    """Verify all 8 required top-level keys are present."""
+    """Verify top-level keys with severity based on renderer impact."""
+    all_known = set(TOP_KEYS_ERROR + TOP_KEYS_WARNING + TOP_KEYS_NOTICE)
     data_keys = list(data.keys())
-    missing = [k for k in REQUIRED_TOP_KEYS if k not in data_keys]
-    extra = [k for k in data_keys if k not in REQUIRED_TOP_KEYS]
 
-    for k in missing:
-        issues.add("error", "top_level_keys", "$",
-                   f"缺少必需的顶级字段: '{k}'")
-    for k in extra:
-        issues.add("notice", "top_level_keys", f"$.{k}",
-                   f"未知顶级字段: '{k}'（不在标准模板中）")
+    # P0 ERROR: metadata, final_results — renderer cannot function
+    for k in TOP_KEYS_ERROR:
+        if k not in data_keys:
+            issues.add("error", "top_level_keys", "$",
+                       f"缺少必需顶级字段 '{k}'（仪表盘核心数据源，缺失将导致无法展示）")
+    # P1 WARNING: execution_log, process_timeline, problems_encountered
+    for k in TOP_KEYS_WARNING:
+        if k not in data_keys:
+            issues.add("warning", "top_level_keys", "$",
+                       f"缺少重要顶级字段 '{k}'（对应详情区域将为空）")
+    # P2 NOTICE: machine_spec, document_reading_summary, documentation_gaps
+    for k in TOP_KEYS_NOTICE:
+        if k not in data_keys:
+            issues.add("notice", "top_level_keys", "$",
+                       f"缺少可选顶级字段 '{k}'（渲染代码可处理，对应信息区留空）")
+
+    for k in data_keys:
+        if k not in all_known:
+            issues.add("notice", "top_level_keys", f"$.{k}",
+                       f"未知顶级字段 '{k}'（渲染代码忽略，不影响展示）")
 
 
 def check_metadata(data: dict, issues: IssueCollector):
@@ -467,15 +489,19 @@ def check_iso8601_timestamps(data: dict, issues: IssueCollector):
     for path, ts in timestamps_to_check:
         if ts is None:
             continue
+        # P0 ERROR for metadata timestamps (used for date display .split('T')[0])
+        is_meta = path.startswith("metadata.")
+        sev = "error" if is_meta else "warning"
+
         if not isinstance(ts, str) or not ISO8601_PATTERN.match(str(ts)):
-            issues.add("error", "timestamp_format", f"$.{path}",
-                       f"Invalid timestamp '{ts}' — expected ISO 8601 format (YYYY-MM-DDTHH:MM:SS)")
+            issues.add(sev, "timestamp_format", f"$.{path}",
+                       f"时间戳格式无效 '{ts}' — 期望 ISO 8601 格式 (YYYY-MM-DDTHH:MM:SS)")
         else:
             try:
                 datetime.fromisoformat(str(ts))
             except ValueError:
-                issues.add("error", "timestamp_format", f"$.{path}",
-                           f"Invalid timestamp '{ts}' — cannot parse as datetime")
+                issues.add(sev, "timestamp_format", f"$.{path}",
+                           f"时间戳无法解析 '{ts}' — 不是合法的日期时间")
 
 
 def check_type_correctness(data: dict, issues: IssueCollector):
@@ -574,25 +600,29 @@ def check_type_correctness(data: dict, issues: IssueCollector):
                                        f"$.final_results.ut.{field}",
                                        f"{field} is boolean, expected integer")
 
-    # machine_spec container cpu_cores — should be integer, not "N/A" string
+    # machine_spec container cpu_cores — renderer displays as-is, string "N/A" is fine
     cpu_cores = get_nested(data, "machine_spec.container.cpu_cores")
-    if cpu_cores is not None and isinstance(cpu_cores, str):
-        issues.add("warning", "type_check",
+    if cpu_cores is not None and isinstance(cpu_cores, str) and cpu_cores != "N/A":
+        issues.add("notice", "type_check",
                    "$.machine_spec.container.cpu_cores",
-                   f"cpu_cores is string '{cpu_cores}', expected integer (use null if unavailable)")
+                   f"cpu_cores 为字符串 '{cpu_cores}'，建议使用整数或 null（\"N/A\" 除外，渲染可直接展示）")
+    elif cpu_cores is not None and isinstance(cpu_cores, bool):
+        issues.add("error", "type_check",
+                   "$.machine_spec.container.cpu_cores",
+                   "cpu_cores 为布尔值，应为整数或 null")
 
-    # container.memory should be present
+    # container.memory — renderer handles absent key gracefully (dynamic grid)
     container = get_nested(data, "machine_spec.container")
     if isinstance(container, dict) and "memory" not in container:
-        issues.add("warning", "type_check",
+        issues.add("notice", "type_check",
                    "$.machine_spec.container",
-                   "缺少 container.memory 字段 — 即使值为 'N/A' 也应存在")
+                   "缺少 container.memory 字段（渲染代码可处理，对应网格项留空）")
     elif isinstance(container, dict) and "memory" in container:
         mem = container["memory"]
         if mem is None:
-            issues.add("warning", "type_check",
+            issues.add("notice", "type_check",
                        "$.machine_spec.container.memory",
-                       "container.memory 为 null — 不可用时建议使用 'N/A' 字符串")
+                       "container.memory 为 null（渲染代码可处理）")
 
 
 def check_precommit_consistency(data: dict, issues: IssueCollector):
@@ -625,22 +655,36 @@ def check_duration_consistency(data: dict, issues: IssueCollector):
 
     if isinstance(start, str) and isinstance(end, str) and isinstance(declared, (int, float)):
         try:
-            s = datetime.fromisoformat(start)
-            e = datetime.fromisoformat(end)
-            actual = (e - s).total_seconds()
+            # Parse and normalize to naive UTC for comparison
+            def _parse_ts(ts: str):
+                dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                # Convert to UTC then strip tzinfo for consistent comparison
+                if dt.tzinfo is not None:
+                    from datetime import timezone
+                    dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
+                return dt
+
+            s = _parse_ts(start)
+            e = _parse_ts(end)
+            actual = abs((e - s).total_seconds())
             if actual > 0 and declared > 0:
                 ratio = abs(actual - declared) / max(actual, declared)
-                if ratio > 0.15:  # >15% off
-                    issues.add("warning", "duration_consistency",
+                if ratio > 0.15:
+                    issues.add("notice", "duration_consistency",
                                "$.metadata",
                                f"声明的 duration_seconds={declared} 与实际时间差 "
-                               f"({actual:.0f}s) 偏差 {ratio:.0%}")
-        except (ValueError, OverflowError):
+                               f"({actual:.0f}s) 偏差 {ratio:.0%}（渲染代码使用声明值，不影响展示）")
+        except (ValueError, OverflowError, TypeError):
             pass
 
 
 def check_conditional_fields(data: dict, issues: IssueCollector):
     """Check that failure_reason exists when status indicates failure."""
+    # Status values that the renderer treats as success (no failure_reason needed)
+    SUCCESS_STATUSES = {"成功", "success", "passed", "ok"}
+    # Status values that clearly indicate failure (failure_reason expected)
+    FAILURE_STATUSES = {"不成功", "超时失败", "failed", "failure", "error", "blocked"}
+
     for section in ["build", "ut", "sample"]:
         sec = get_nested(data, f"final_results.{section}")
         if not isinstance(sec, dict):
@@ -648,12 +692,13 @@ def check_conditional_fields(data: dict, issues: IssueCollector):
         status = sec.get("status", "")
         has_reason = "failure_reason" in sec and sec.get("failure_reason")
 
-        # Non-success statuses (Chinese values from the template)
-        if isinstance(status, str) and status not in ("成功", ""):
+        if isinstance(status, str) and status not in SUCCESS_STATUSES and status != "":
             if not has_reason:
-                issues.add("warning", "conditional_field",
+                sev = "warning" if status in FAILURE_STATUSES or "失败" in status or "fail" in status.lower() else "notice"
+                issues.add(sev, "conditional_field",
                            f"$.final_results.{section}",
-                           f"状态为 '{status}' 但缺少 failure_reason 字段")
+                           f"状态为 '{status}' 但缺少 failure_reason 字段"
+                           + ("（非成功状态缺少失败原因将影响详情页展示）" if sev == "warning" else ""))
 
 
 def check_timestamp_monotonicity(data: dict, issues: IssueCollector):
@@ -671,9 +716,9 @@ def check_timestamp_monotonicity(data: dict, issues: IssueCollector):
             if isinstance(entry, dict) and "timestamp" in entry:
                 cur = parse_ts(entry["timestamp"])
                 if cur and prev and cur < prev:
-                    issues.add("warning", "timestamp_order",
+                    issues.add("notice", "timestamp_order",
                                f"$.execution_log.{i}.timestamp",
-                               f"Timestamp goes backwards: {entry['timestamp']} < previous")
+                               f"时间戳回退: {entry['timestamp']} < 前一条（渲染排序可能异常）")
                 if cur:
                     prev = cur
 
@@ -684,9 +729,9 @@ def check_timestamp_monotonicity(data: dict, issues: IssueCollector):
             if isinstance(entry, dict) and "timestamp" in entry:
                 cur = parse_ts(entry["timestamp"])
                 if cur and prev and cur < prev:
-                    issues.add("warning", "timestamp_order",
+                    issues.add("notice", "timestamp_order",
                                f"$.process_timeline.{i}.timestamp",
-                               f"Timestamp goes backwards: {entry['timestamp']} < previous")
+                               f"时间戳回退: {entry['timestamp']} < 前一条（渲染排序可能异常）")
                 if cur:
                     prev = cur
 
@@ -804,10 +849,10 @@ def check_docker_consistency(data: dict, issues: IssueCollector):
         for section in ["build", "ut", "sample"]:
             status = get_nested(data, f"final_results.{section}.status")
             if isinstance(status, str) and status == "成功":
-                issues.add("warning", "docker_consistency",
+                issues.add("notice", "docker_consistency",
                            f"$.final_results.{section}",
-                           f"Docker daemon is unavailable but {section}.status is '成功' — "
-                           f"this is contradictory")
+                           f"Docker 守护进程不可用但 {section}.status 为 '成功' — "
+                           f"数据存在矛盾，建议核实")
 
 
 def check_empty_arrays(data: dict, issues: IssueCollector):
@@ -816,7 +861,7 @@ def check_empty_arrays(data: dict, issues: IssueCollector):
     if isinstance(gaps, list) and len(gaps) == 0:
         issues.add("notice", "empty_array",
                    "$.documentation_gaps",
-                   "documentation_gaps is empty — every repo should have at least some gaps documented")
+                   "documentation_gaps 为空（渲染代码支持，详情页文档缺口卡片留空）")
 
     # dockerfile mappings empty may be valid (no Dockerfile) but worth noting
     mappings = get_nested(data, "machine_spec.image_source.dependency_mapping.mappings")
