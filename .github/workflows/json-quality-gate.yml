@@ -120,7 +120,7 @@ jobs:
               }
             }
 
-            // Create Check Run
+            // Create Check Run (may fail on fork PRs where checks:write is denied)
             const conclusion = totalErrors > 0 ? 'failure' :
                               totalWarnings > 0 ? 'neutral' : 'success';
 
@@ -128,23 +128,30 @@ jobs:
               ? `${totalErrors} 个错误, ${totalWarnings} 个警告, ${totalNotices} 个提示`
               : '所有检查通过';
 
-            await github.rest.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'JSON Quality Gate',
-              head_sha: context.payload.pull_request.head.sha,
-              status: 'completed',
-              conclusion: conclusion,
-              completed_at: new Date().toISOString(),
-              output: {
-                title: checkTitle,
-                summary: `已检查 ${allFiles.size} 个文件的 JSON 质量问题。\n\n` +
-                         `- **确定性检查**：${Object.keys(detResults.files).length} 个文件\n` +
-                         `- **AI 语义分析**：${Object.keys(aiResults.files).length} 个文件${aiResults.error ? ' (部分可用)' : ''}\n\n` +
-                         `此为**建议性**门禁 — 发现的问题不会阻止代码合入。`,
-                annotations: annotations.slice(0, 50),  // GitHub limits to 50 per check run
-              },
-            });
+            let checkRunCreated = false;
+            try {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'JSON Quality Gate',
+                head_sha: context.payload.pull_request.head.sha,
+                status: 'completed',
+                conclusion: conclusion,
+                completed_at: new Date().toISOString(),
+                output: {
+                  title: checkTitle,
+                  summary: `已检查 ${allFiles.size} 个文件的 JSON 质量问题。\n\n` +
+                           `- **确定性检查**：${Object.keys(detResults.files).length} 个文件\n` +
+                           `- **AI 语义分析**：${Object.keys(aiResults.files).length} 个文件${aiResults.error ? ' (部分可用)' : ''}\n\n` +
+                           `此为**建议性**门禁 — 发现的问题不会阻止代码合入。`,
+                  annotations: annotations.slice(0, 50),
+                },
+              });
+              checkRunCreated = true;
+            } catch (checkErr) {
+              console.log('Check Run 创建失败（fork PR 不支持 checks:write 权限）: ' + checkErr.message);
+              console.log('验证结果将通过 PR 评论展示');
+            }
 
             // Build Chinese PR comment
             let commentBody = '## 🔍 JSON 质量门禁检查结果\n\n';
