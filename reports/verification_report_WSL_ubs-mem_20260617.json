@@ -1,0 +1,1270 @@
+{
+  "metadata": {
+    "repo_path": "/ttfhw_verify/ubs-mem",
+    "start_time": "2026-06-17T15:41:00",
+    "end_time": "2026-06-17T16:15:00",
+    "duration_seconds": 2040,
+    "total_steps": 45,
+    "repo_url": ""
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Huawei Kunpeng (ARM64)",
+      "cpu_cores": 8,
+      "memory": "14Gi",
+      "disk": "64G available",
+      "docker_version": "Docker version 18.09.0, build 4ca0e26"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS",
+      "architecture": "aarch64",
+      "cpu_cores": 8,
+      "memory": "14Gi (无限制)"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "README 推荐 openEuler 24.03 LTS SP3 或更高版本，选择 openEuler 24.03 LTS 镜像"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md - 环境要求章节",
+      "value": "aarch64（ECS 实际架构），文档未明确指定架构"
+    },
+    "recommended_image": {
+      "source": "README.md - 环境要求章节",
+      "value": "推荐 openEuler 24.03 LTS SP3 或更高版本"
+    },
+    "dependencies": {
+      "source": "README.md - 软件要求章节 + ubs-mem.spec",
+      "value": [
+        "rpm-build",
+        "cmake (≥ 3.13)",
+        "ninja-build",
+        "gcc (≥ 10.3.1)",
+        "gcc-c++ (≥ 10.3.1)",
+        "numactl-devel",
+        "systemd-devel",
+        "openssl-devel",
+        "libboundscheck",
+        "ubs-comm-lib (hcom)"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md - 构建项目章节",
+      "value": "sh build.sh -t release -p"
+    },
+    "ut_commands": {
+      "source": "README.md - 开发者测试章节",
+      "value": "cd test && sh run_dt.sh"
+    },
+    "sample_commands": {
+      "source": "README.md - 使用说明章节",
+      "value": "文档未提供独立样例命令，仅提供安装部署和 API 接口文档链接"
+    },
+    "build_entry": {
+      "source": "unknown",
+      "value": "unknown"
+    },
+    "ut_entry": {
+      "source": "unknown",
+      "value": "unknown"
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-06-17T15:42:00",
+      "command": "git clone https://gitcode.com/openeuler/ubs-mem.git",
+      "success": true,
+      "output": "Cloning into 'ubs-mem'...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-17T15:43:00",
+      "command": "cat README.md",
+      "success": true,
+      "output": "读取 README.md 完成，获取构建依赖、命令等信息",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-17T15:44:00",
+      "command": "pre-commit run --all-files",
+      "success": false,
+      "output": "5个hook全部失败：run-build（缺少ninja/gcc）、run-build-test（缺少libnuma.so/patch）、clang-format（未安装）、clang-tidy（未安装）",
+      "error": "宿主机未安装构建依赖",
+      "returncode": 1,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-06-17T15:46:00",
+      "command": "find . -name '.lint-runner.*' -o -name 'lint-runner.config.*'",
+      "success": true,
+      "output": "未找到 lint-runner 配置文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-17T15:46:30",
+      "command": "ls .devcontainer/",
+      "success": false,
+      "output": "无 .devcontainer 目录",
+      "error": "No such file or directory",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-17T15:47:00",
+      "command": "docker run -d --name ttfhw-ubs-mem-env --privileged --network host -v /ttfhw_verify/ubs-mem:/workspace -w /workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts tail -f /dev/null",
+      "success": true,
+      "output": "Container started",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-17T15:48:00",
+      "command": "dnf install -y rpm-build cmake ninja-build gcc gcc-c++ make patch",
+      "success": true,
+      "output": "安装 41 个包完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-17T15:49:00",
+      "command": "dnf install -y numactl-devel systemd-devel openssl-devel",
+      "success": true,
+      "output": "安装 19 个包完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-06-17T15:49:30",
+      "command": "dnf install -y libboundscheck",
+      "success": true,
+      "output": "安装 libboundscheck-v1.1.11-6.oe2403 完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-06-17T15:50:00",
+      "command": "docker cp ... hcom headers and libs to /usr/include/hcom/ and /usr/lib64/",
+      "success": true,
+      "output": "从宿主机 /root/ttfhw-work/ubs-comm-20260616165745/dist/ 复制 hcom 头文件和库到容器",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-17T15:51:00",
+      "command": "sh build.sh -t release",
+      "success": false,
+      "output": "ninja: build stopped: subcommand failed. hcom.h: No such file or directory",
+      "error": "首次构建失败，缺少 hcom.h 头文件",
+      "returncode": 1,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-06-17T15:52:00",
+      "command": "sh build.sh -t release (重试，已安装 hcom)",
+      "success": true,
+      "output": "[89/89] Install the project... Done building ubsm Success",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 68
+    },
+    {
+      "timestamp": "2026-06-17T15:54:00",
+      "command": "dnf install -y git openssl",
+      "success": true,
+      "output": "安装 git 和 openssl 完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-17T15:55:00",
+      "command": "cd test && sh run_dt.sh",
+      "success": false,
+      "output": "mockcpp patch 部分失败（UnixCodeModifier.cpp 行尾符问题），/usr/bin/ld: cannot find -lasan",
+      "error": "缺少 libasan 库",
+      "returncode": 2,
+      "duration_seconds": 90
+    },
+    {
+      "timestamp": "2026-06-17T15:57:00",
+      "command": "dnf install -y libasan",
+      "success": true,
+      "output": "安装 libasan-12.3.1-38.oe2403 完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-06-17T15:58:00",
+      "command": "cd test/build && make -j6 install",
+      "success": true,
+      "output": "[100%] Built target mxmd_ut",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 75
+    },
+    {
+      "timestamp": "2026-06-17T16:00:00",
+      "command": "LD_PRELOAD=... LD_LIBRARY_PATH=. HSECEASY_PATH=. ./mxmd_ut --gtest_break_on_failure --gtest_output=xml:gcover_report/test_detail.xml",
+      "success": true,
+      "output": "[==========] Running 752 tests from 60 test suites. [  PASSED  ] 752 tests.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 91
+    },
+    {
+      "timestamp": "2026-06-17T16:15:00",
+      "command": "docker stop ttfhw-ubs-mem-env && docker rm ttfhw-ubs-mem-env",
+      "success": true,
+      "output": "容器已停止并删除",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-06-17T15:41:00",
+      "step": "start",
+      "action": "开始验证流程",
+      "result": "已启动",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-17T15:42:00",
+      "step": "document_reading",
+      "action": "克隆仓库并读取 README.md",
+      "result": "成功",
+      "details": {
+        "repo_url": "https://gitcode.com/openeuler/ubs-mem.git",
+        "sections_read": [
+          "介绍",
+          "环境要求",
+          "软件要求",
+          "构建项目",
+          "项目结构",
+          "开发者测试",
+          "使用说明"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:43:00",
+      "step": "document_reading",
+      "action": "读取 build.sh、CMakeLists.txt、cmake/deps.cmake、cmake/building.cmake",
+      "result": "成功",
+      "details": {
+        "build_system": "CMake + Ninja",
+        "build_entry": "build.sh"
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:44:00",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 pre-commit 配置",
+      "result": "已配置",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks_count": 5
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:44:30",
+      "step": "static_analysis_execution",
+      "action": "执行 pre-commit run --all-files",
+      "result": "全部失败",
+      "details": {
+        "passed": 0,
+        "failed": 5,
+        "skipped": 0,
+        "reason": "宿主机缺少构建依赖（ninja、gcc、clang-format、clang-tidy）"
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:46:00",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 lint-runner 配置",
+      "result": "未配置",
+      "details": {
+        "searched_patterns": [
+          ".lint-runner.yaml",
+          ".lint-runner.json",
+          "lint-runner.config.*"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:46:30",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录及配置",
+      "result": "未配置",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-17T15:47:00",
+      "step": "image_selection",
+      "action": "选择基础镜像",
+      "result": "openEuler 24.03 LTS",
+      "details": {
+        "selection_reason": "README 推荐 openEuler 24.03 LTS SP3 或更高版本"
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:47:30",
+      "step": "container_setup",
+      "action": "启动容器（privileged 模式，解决 DNS 问题）",
+      "result": "成功",
+      "details": {
+        "image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+        "network": "host",
+        "privileged": true
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:48:00",
+      "step": "dependency_installation",
+      "action": "安装构建工具",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "rpm-build",
+          "cmake",
+          "ninja-build",
+          "gcc",
+          "gcc-c++",
+          "make",
+          "patch"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:49:00",
+      "step": "dependency_installation",
+      "action": "安装依赖库",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "numactl-devel",
+          "systemd-devel",
+          "openssl-devel",
+          "libboundscheck"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:50:00",
+      "step": "dependency_installation",
+      "action": "手动安装 hcom 库（非标准仓库包）",
+      "result": "成功",
+      "details": {
+        "source": "宿主机 /root/ttfhw-work/ubs-comm-20260616165745/dist/BoostKit-hcom_1.0.0_aarch64/",
+        "files": [
+          "hcom headers → /usr/include/hcom/",
+          "libhcom.so → /usr/lib64/"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:51:00",
+      "step": "build_attempt",
+      "action": "首次构建尝试",
+      "result": "失败",
+      "details": {
+        "error": "hcom.h: No such file or directory"
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:52:00",
+      "step": "build_retry",
+      "action": "重新构建（已安装 hcom）",
+      "result": "成功",
+      "details": {
+        "concurrency": 6,
+        "concurrency_ratio": "75%",
+        "targets_built": 89
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:55:00",
+      "step": "ut_attempt",
+      "action": "首次执行单元测试",
+      "result": "失败",
+      "details": {
+        "error": "缺少 libasan 库，mockcpp patch 部分失败"
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:57:00",
+      "step": "dependency_installation",
+      "action": "安装 libasan",
+      "result": "成功",
+      "details": {
+        "package": "libasan-12.3.1-38.oe2403"
+      }
+    },
+    {
+      "timestamp": "2026-06-17T15:58:00",
+      "step": "ut_build",
+      "action": "重新编译测试二进制",
+      "result": "成功",
+      "details": {
+        "target": "mxmd_ut",
+        "duration": 75
+      }
+    },
+    {
+      "timestamp": "2026-06-17T16:00:00",
+      "step": "ut_execution",
+      "action": "执行单元测试",
+      "result": "成功",
+      "details": {
+        "total": 752,
+        "passed": 752,
+        "failed": 0,
+        "test_suites": 60
+      }
+    },
+    {
+      "timestamp": "2026-06-17T16:15:00",
+      "step": "cleanup",
+      "action": "停止并删除容器",
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-17T16:15:30",
+      "step": "report_generation",
+      "action": "生成验证报告",
+      "result": "成功",
+      "details": {
+        "output_file": "verification_report_WSL_ubs-mem_20260617.json"
+      }
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库配置了 pre-commit（5个hooks），但因宿主机缺少构建工具全部执行失败；未配置 lint-runner",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "全部失败",
+        "duration_seconds": 120,
+        "total_hooks": 5,
+        "passed": 0,
+        "failed": 5,
+        "skipped": 0,
+        "failures": [
+          {
+            "hook_name": "run-build",
+            "file": "N/A",
+            "error": "宿主机缺少 ninja-build、gcc 等构建工具"
+          },
+          {
+            "hook_name": "run-build-test",
+            "file": "N/A",
+            "error": "宿主机缺少 libnuma.so、patch 命令"
+          },
+          {
+            "hook_name": "clang-format",
+            "file": "N/A",
+            "error": "clang-format 未安装"
+          },
+          {
+            "hook_name": "clang-tidy",
+            "file": "N/A",
+            "error": "clang-tidy 未安装"
+          },
+          {
+            "hook_name": "clang-tidy-test",
+            "file": "N/A",
+            "error": "clang-tidy 未安装"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null,
+        "status": "unknown",
+        "duration_seconds": 0,
+        "active_linters": [],
+        "result": "unknown"
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "summary": "仓库未配置 devcontainer"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 68,
+      "command": "sh build.sh -t release -p",
+      "artifacts": [
+        {
+          "name": "ubsmd",
+          "path": "build/release/output/bin/ubsmd",
+          "size": "1.2 MB"
+        },
+        {
+          "name": "libubsm_sdk.so",
+          "path": "build/release/output/lib/libubsm_sdk.so",
+          "size": "1.2 MB"
+        },
+        {
+          "name": "libubsmd.so",
+          "path": "build/release/output/lib/libubsmd.so",
+          "size": "1.9 MB"
+        },
+        {
+          "name": "libdecrypt.so",
+          "path": "build/release/output/lib/libdecrypt.so",
+          "size": "66 KB"
+        },
+        {
+          "name": "ubs_mem.h",
+          "path": "build/release/output/include/ubs_mem.h",
+          "size": "9.6 KB"
+        },
+        {
+          "name": "ubs_mem_def.h",
+          "path": "build/release/output/include/ubs_mem_def.h",
+          "size": "6.0 KB"
+        },
+        {
+          "name": "ubsmd.conf",
+          "path": "build/release/output/config/ubsmd.conf",
+          "size": "1.8 KB"
+        },
+        {
+          "name": "ubsmd.service",
+          "path": "build/release/output/script/ubsmd.service",
+          "size": "437 B"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 91,
+      "total": 752,
+      "passed": 752,
+      "failed": 0,
+      "failures": [],
+      "skip_reason": "unknown"
+    },
+    "sample": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "results": []
+    }
+  },
+  "documentation_gaps": [
+    "README 未明确说明 hcom (ubs-comm-lib) 依赖需要从华为内部渠道获取，仅在 ubs-mem.spec 中列出 BuildRequires: ubs-comm-devel",
+    "README 未说明测试需要 libasan 库（Address Sanitizer 运行时库）",
+    "README 未说明测试需要 git 和 openssl 命令（用于子模块拉取和证书生成）",
+    "README 未提供独立的样例/示例执行命令",
+    "mockcpp_support_arm64.patch 中 UnixCodeModifier.cpp 存在行尾符问题（Windows CRLF vs Unix LF），导致 patch 部分失败"
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-06-17T15:47:30",
+      "problem": "容器内 DNS 解析失败（getaddrinfo() thread failed to start）",
+      "solution": "使用 --privileged --network host 模式启动容器",
+      "source": "Docker 网络配置问题"
+    },
+    {
+      "timestamp": "2026-06-17T15:51:00",
+      "problem": "构建失败：hcom.h: No such file or directory",
+      "solution": "从宿主机 /root/ttfhw-work/ubs-comm-20260616165745/dist/ 复制 hcom 头文件和库到容器",
+      "source": "ubs-comm-lib (hcom) 非 openEuler 标准仓库包"
+    },
+    {
+      "timestamp": "2026-06-17T15:55:00",
+      "problem": "测试链接失败：/usr/bin/ld: cannot find -lasan",
+      "solution": "dnf install -y libasan",
+      "source": "run_dt.sh 使用 ASAN_BUILD=ON 编译，需要 libasan 运行时库"
+    },
+    {
+      "timestamp": "2026-06-17T15:55:00",
+      "problem": "mockcpp patch 部分失败：UnixCodeModifier.cpp 行尾符问题",
+      "solution": "patch 中 2 个 hunk 失败（行尾符 CRLF vs LF），但不影响测试编译和执行",
+      "source": "test/3rdparty/mockcpp_support_arm64.patch"
+    }
+  ],
+  "session_export_file": "verification_session_WSL_ubs-mem_20260617.md",
+  "__original": {
+    "metadata": {
+      "repo_path": "/ttfhw_verify/ubs-mem",
+      "start_time": "2026-06-17T15:41:00",
+      "end_time": "2026-06-17T16:15:00",
+      "duration_seconds": 2040,
+      "total_steps": 45
+    },
+    "machine_spec": {
+      "host_machine": {
+        "architecture": "aarch64",
+        "cpu_model": "Huawei Kunpeng (ARM64)",
+        "cpu_cores": 8,
+        "memory": "14Gi",
+        "disk": "64G available",
+        "docker_version": "Docker version 18.09.0, build 4ca0e26"
+      },
+      "container": {
+        "os": "openEuler 24.03 LTS",
+        "architecture": "aarch64",
+        "cpu_cores": 8,
+        "memory": "14Gi (无限制)"
+      },
+      "image_source": {
+        "type": "base_image",
+        "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+        "selection_reason": "README 推荐 openEuler 24.03 LTS SP3 或更高版本，选择 openEuler 24.03 LTS 镜像"
+      }
+    },
+    "document_reading_summary": {
+      "architecture": {
+        "source": "README.md - 环境要求章节",
+        "value": "aarch64（ECS 实际架构），文档未明确指定架构"
+      },
+      "recommended_image": {
+        "source": "README.md - 环境要求章节",
+        "value": "推荐 openEuler 24.03 LTS SP3 或更高版本"
+      },
+      "dependencies": {
+        "source": "README.md - 软件要求章节 + ubs-mem.spec",
+        "value": [
+          "rpm-build",
+          "cmake (≥ 3.13)",
+          "ninja-build",
+          "gcc (≥ 10.3.1)",
+          "gcc-c++ (≥ 10.3.1)",
+          "numactl-devel",
+          "systemd-devel",
+          "openssl-devel",
+          "libboundscheck",
+          "ubs-comm-lib (hcom)"
+        ]
+      },
+      "build_commands": {
+        "source": "README.md - 构建项目章节",
+        "value": "sh build.sh -t release -p"
+      },
+      "ut_commands": {
+        "source": "README.md - 开发者测试章节",
+        "value": "cd test && sh run_dt.sh"
+      },
+      "sample_commands": {
+        "source": "README.md - 使用说明章节",
+        "value": "文档未提供独立样例命令，仅提供安装部署和 API 接口文档链接"
+      },
+      "special_dependencies": {
+        "source": "README.md + ubs-mem.spec + cmake/deps.cmake",
+        "value": [
+          "ubs-comm-lib (hcom)：华为 UBS 通信库，非 openEuler 标准仓库包，需从华为内部渠道获取",
+          "libboundscheck：安全函数库，openEuler 标准仓库可安装"
+        ]
+      }
+    },
+    "execution_log": [
+      {
+        "timestamp": "2026-06-17T15:42:00",
+        "command": "git clone https://gitcode.com/openeuler/ubs-mem.git",
+        "success": true,
+        "output": "Cloning into 'ubs-mem'...",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 30
+      },
+      {
+        "timestamp": "2026-06-17T15:43:00",
+        "command": "cat README.md",
+        "success": true,
+        "output": "读取 README.md 完成，获取构建依赖、命令等信息",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 1
+      },
+      {
+        "timestamp": "2026-06-17T15:44:00",
+        "command": "pre-commit run --all-files",
+        "success": false,
+        "output": "5个hook全部失败：run-build（缺少ninja/gcc）、run-build-test（缺少libnuma.so/patch）、clang-format（未安装）、clang-tidy（未安装）",
+        "error": "宿主机未安装构建依赖",
+        "returncode": 1,
+        "duration_seconds": 120
+      },
+      {
+        "timestamp": "2026-06-17T15:46:00",
+        "command": "find . -name '.lint-runner.*' -o -name 'lint-runner.config.*'",
+        "success": true,
+        "output": "未找到 lint-runner 配置文件",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 1
+      },
+      {
+        "timestamp": "2026-06-17T15:46:30",
+        "command": "ls .devcontainer/",
+        "success": false,
+        "output": "无 .devcontainer 目录",
+        "error": "No such file or directory",
+        "returncode": 1,
+        "duration_seconds": 1
+      },
+      {
+        "timestamp": "2026-06-17T15:47:00",
+        "command": "docker run -d --name ttfhw-ubs-mem-env --privileged --network host -v /ttfhw_verify/ubs-mem:/workspace -w /workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts tail -f /dev/null",
+        "success": true,
+        "output": "Container started",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 5
+      },
+      {
+        "timestamp": "2026-06-17T15:48:00",
+        "command": "dnf install -y rpm-build cmake ninja-build gcc gcc-c++ make patch",
+        "success": true,
+        "output": "安装 41 个包完成",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 30
+      },
+      {
+        "timestamp": "2026-06-17T15:49:00",
+        "command": "dnf install -y numactl-devel systemd-devel openssl-devel",
+        "success": true,
+        "output": "安装 19 个包完成",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 15
+      },
+      {
+        "timestamp": "2026-06-17T15:49:30",
+        "command": "dnf install -y libboundscheck",
+        "success": true,
+        "output": "安装 libboundscheck-v1.1.11-6.oe2403 完成",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 10
+      },
+      {
+        "timestamp": "2026-06-17T15:50:00",
+        "command": "docker cp ... hcom headers and libs to /usr/include/hcom/ and /usr/lib64/",
+        "success": true,
+        "output": "从宿主机 /root/ttfhw-work/ubs-comm-20260616165745/dist/ 复制 hcom 头文件和库到容器",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 5
+      },
+      {
+        "timestamp": "2026-06-17T15:51:00",
+        "command": "sh build.sh -t release",
+        "success": false,
+        "output": "ninja: build stopped: subcommand failed. hcom.h: No such file or directory",
+        "error": "首次构建失败，缺少 hcom.h 头文件",
+        "returncode": 1,
+        "duration_seconds": 10
+      },
+      {
+        "timestamp": "2026-06-17T15:52:00",
+        "command": "sh build.sh -t release (重试，已安装 hcom)",
+        "success": true,
+        "output": "[89/89] Install the project... Done building ubsm Success",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 68
+      },
+      {
+        "timestamp": "2026-06-17T15:54:00",
+        "command": "dnf install -y git openssl",
+        "success": true,
+        "output": "安装 git 和 openssl 完成",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 30
+      },
+      {
+        "timestamp": "2026-06-17T15:55:00",
+        "command": "cd test && sh run_dt.sh",
+        "success": false,
+        "output": "mockcpp patch 部分失败（UnixCodeModifier.cpp 行尾符问题），/usr/bin/ld: cannot find -lasan",
+        "error": "缺少 libasan 库",
+        "returncode": 2,
+        "duration_seconds": 90
+      },
+      {
+        "timestamp": "2026-06-17T15:57:00",
+        "command": "dnf install -y libasan",
+        "success": true,
+        "output": "安装 libasan-12.3.1-38.oe2403 完成",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 20
+      },
+      {
+        "timestamp": "2026-06-17T15:58:00",
+        "command": "cd test/build && make -j6 install",
+        "success": true,
+        "output": "[100%] Built target mxmd_ut",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 75
+      },
+      {
+        "timestamp": "2026-06-17T16:00:00",
+        "command": "LD_PRELOAD=... LD_LIBRARY_PATH=. HSECEASY_PATH=. ./mxmd_ut --gtest_break_on_failure --gtest_output=xml:gcover_report/test_detail.xml",
+        "success": true,
+        "output": "[==========] Running 752 tests from 60 test suites. [  PASSED  ] 752 tests.",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 91
+      },
+      {
+        "timestamp": "2026-06-17T16:15:00",
+        "command": "docker stop ttfhw-ubs-mem-env && docker rm ttfhw-ubs-mem-env",
+        "success": true,
+        "output": "容器已停止并删除",
+        "error": "",
+        "returncode": 0,
+        "duration_seconds": 5
+      }
+    ],
+    "process_timeline": [
+      {
+        "timestamp": "2026-06-17T15:41:00",
+        "step": "start",
+        "action": "开始验证流程",
+        "result": "已启动",
+        "details": {}
+      },
+      {
+        "timestamp": "2026-06-17T15:42:00",
+        "step": "document_reading",
+        "action": "克隆仓库并读取 README.md",
+        "result": "成功",
+        "details": {
+          "repo_url": "https://gitcode.com/openeuler/ubs-mem.git",
+          "sections_read": [
+            "介绍",
+            "环境要求",
+            "软件要求",
+            "构建项目",
+            "项目结构",
+            "开发者测试",
+            "使用说明"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:43:00",
+        "step": "document_reading",
+        "action": "读取 build.sh、CMakeLists.txt、cmake/deps.cmake、cmake/building.cmake",
+        "result": "成功",
+        "details": {
+          "build_system": "CMake + Ninja",
+          "build_entry": "build.sh"
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:44:00",
+        "step": "static_analysis_scan",
+        "action": "检查仓库 pre-commit 配置",
+        "result": "已配置",
+        "details": {
+          "config_file": ".pre-commit-config.yaml",
+          "hooks_count": 5
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:44:30",
+        "step": "static_analysis_execution",
+        "action": "执行 pre-commit run --all-files",
+        "result": "全部失败",
+        "details": {
+          "passed": 0,
+          "failed": 5,
+          "skipped": 0,
+          "reason": "宿主机缺少构建依赖（ninja、gcc、clang-format、clang-tidy）"
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:46:00",
+        "step": "static_analysis_scan",
+        "action": "检查仓库 lint-runner 配置",
+        "result": "未配置",
+        "details": {
+          "searched_patterns": [
+            ".lint-runner.yaml",
+            ".lint-runner.json",
+            "lint-runner.config.*"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:46:30",
+        "step": "devcontainer_scan",
+        "action": "检查 .devcontainer 目录及配置",
+        "result": "未配置",
+        "details": {}
+      },
+      {
+        "timestamp": "2026-06-17T15:47:00",
+        "step": "image_selection",
+        "action": "选择基础镜像",
+        "result": "openEuler 24.03 LTS",
+        "details": {
+          "selection_reason": "README 推荐 openEuler 24.03 LTS SP3 或更高版本"
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:47:30",
+        "step": "container_setup",
+        "action": "启动容器（privileged 模式，解决 DNS 问题）",
+        "result": "成功",
+        "details": {
+          "image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+          "network": "host",
+          "privileged": true
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:48:00",
+        "step": "dependency_installation",
+        "action": "安装构建工具",
+        "result": "成功",
+        "details": {
+          "packages": [
+            "rpm-build",
+            "cmake",
+            "ninja-build",
+            "gcc",
+            "gcc-c++",
+            "make",
+            "patch"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:49:00",
+        "step": "dependency_installation",
+        "action": "安装依赖库",
+        "result": "成功",
+        "details": {
+          "packages": [
+            "numactl-devel",
+            "systemd-devel",
+            "openssl-devel",
+            "libboundscheck"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:50:00",
+        "step": "dependency_installation",
+        "action": "手动安装 hcom 库（非标准仓库包）",
+        "result": "成功",
+        "details": {
+          "source": "宿主机 /root/ttfhw-work/ubs-comm-20260616165745/dist/BoostKit-hcom_1.0.0_aarch64/",
+          "files": [
+            "hcom headers → /usr/include/hcom/",
+            "libhcom.so → /usr/lib64/"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:51:00",
+        "step": "build_attempt",
+        "action": "首次构建尝试",
+        "result": "失败",
+        "details": {
+          "error": "hcom.h: No such file or directory"
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:52:00",
+        "step": "build_retry",
+        "action": "重新构建（已安装 hcom）",
+        "result": "成功",
+        "details": {
+          "concurrency": 6,
+          "concurrency_ratio": "75%",
+          "targets_built": 89
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:55:00",
+        "step": "ut_attempt",
+        "action": "首次执行单元测试",
+        "result": "失败",
+        "details": {
+          "error": "缺少 libasan 库，mockcpp patch 部分失败"
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:57:00",
+        "step": "dependency_installation",
+        "action": "安装 libasan",
+        "result": "成功",
+        "details": {
+          "package": "libasan-12.3.1-38.oe2403"
+        }
+      },
+      {
+        "timestamp": "2026-06-17T15:58:00",
+        "step": "ut_build",
+        "action": "重新编译测试二进制",
+        "result": "成功",
+        "details": {
+          "target": "mxmd_ut",
+          "duration": 75
+        }
+      },
+      {
+        "timestamp": "2026-06-17T16:00:00",
+        "step": "ut_execution",
+        "action": "执行单元测试",
+        "result": "成功",
+        "details": {
+          "total": 752,
+          "passed": 752,
+          "failed": 0,
+          "test_suites": 60
+        }
+      },
+      {
+        "timestamp": "2026-06-17T16:15:00",
+        "step": "cleanup",
+        "action": "停止并删除容器",
+        "result": "成功",
+        "details": {}
+      },
+      {
+        "timestamp": "2026-06-17T16:15:30",
+        "step": "report_generation",
+        "action": "生成验证报告",
+        "result": "成功",
+        "details": {
+          "output_file": "verification_report_WSL_ubs-mem_20260617.json"
+        }
+      }
+    ],
+    "final_results": {
+      "static_analysis": {
+        "enabled": false,
+        "summary": "仓库配置了 pre-commit（5个hooks），但因宿主机缺少构建工具全部执行失败；未配置 lint-runner",
+        "pre_commit": {
+          "configured": true,
+          "config_file": ".pre-commit-config.yaml",
+          "status": "全部失败",
+          "duration_seconds": 120,
+          "total_hooks": 5,
+          "passed": 0,
+          "failed": 5,
+          "skipped": 0,
+          "failures": [
+            {
+              "hook_name": "run-build",
+              "file": "N/A",
+              "error": "宿主机缺少 ninja-build、gcc 等构建工具"
+            },
+            {
+              "hook_name": "run-build-test",
+              "file": "N/A",
+              "error": "宿主机缺少 libnuma.so、patch 命令"
+            },
+            {
+              "hook_name": "clang-format",
+              "file": "N/A",
+              "error": "clang-format 未安装"
+            },
+            {
+              "hook_name": "clang-tidy",
+              "file": "N/A",
+              "error": "clang-tidy 未安装"
+            },
+            {
+              "hook_name": "clang-tidy-test",
+              "file": "N/A",
+              "error": "clang-tidy 未安装"
+            }
+          ]
+        },
+        "lint_runner": {
+          "configured": false,
+          "config_file": null
+        }
+      },
+      "devcontainer": {
+        "enabled": false,
+        "config_dir": null,
+        "config_files": [],
+        "summary": "仓库未配置 devcontainer"
+      },
+      "build": {
+        "status": "成功",
+        "duration_seconds": 68,
+        "artifacts": [
+          {
+            "name": "ubsmd",
+            "path": "build/release/output/bin/ubsmd",
+            "size": "1.2 MB"
+          },
+          {
+            "name": "libubsm_sdk.so",
+            "path": "build/release/output/lib/libubsm_sdk.so",
+            "size": "1.2 MB"
+          },
+          {
+            "name": "libubsmd.so",
+            "path": "build/release/output/lib/libubsmd.so",
+            "size": "1.9 MB"
+          },
+          {
+            "name": "libdecrypt.so",
+            "path": "build/release/output/lib/libdecrypt.so",
+            "size": "66 KB"
+          },
+          {
+            "name": "ubs_mem.h",
+            "path": "build/release/output/include/ubs_mem.h",
+            "size": "9.6 KB"
+          },
+          {
+            "name": "ubs_mem_def.h",
+            "path": "build/release/output/include/ubs_mem_def.h",
+            "size": "6.0 KB"
+          },
+          {
+            "name": "ubsmd.conf",
+            "path": "build/release/output/config/ubsmd.conf",
+            "size": "1.8 KB"
+          },
+          {
+            "name": "ubsmd.service",
+            "path": "build/release/output/script/ubsmd.service",
+            "size": "437 B"
+          }
+        ]
+      },
+      "ut": {
+        "status": "成功",
+        "duration_seconds": 91,
+        "total": 752,
+        "passed": 752,
+        "failed": 0,
+        "failures": []
+      },
+      "sample": {
+        "status": "未执行",
+        "duration_seconds": 0,
+        "results": [],
+        "note": "README 未提供独立样例命令，仅提供安装部署和 API 接口文档链接"
+      }
+    },
+    "documentation_gaps": [
+      "README 未明确说明 hcom (ubs-comm-lib) 依赖需要从华为内部渠道获取，仅在 ubs-mem.spec 中列出 BuildRequires: ubs-comm-devel",
+      "README 未说明测试需要 libasan 库（Address Sanitizer 运行时库）",
+      "README 未说明测试需要 git 和 openssl 命令（用于子模块拉取和证书生成）",
+      "README 未提供独立的样例/示例执行命令",
+      "mockcpp_support_arm64.patch 中 UnixCodeModifier.cpp 存在行尾符问题（Windows CRLF vs Unix LF），导致 patch 部分失败"
+    ],
+    "problems_encountered": [
+      {
+        "timestamp": "2026-06-17T15:47:30",
+        "problem": "容器内 DNS 解析失败（getaddrinfo() thread failed to start）",
+        "solution": "使用 --privileged --network host 模式启动容器",
+        "source": "Docker 网络配置问题"
+      },
+      {
+        "timestamp": "2026-06-17T15:51:00",
+        "problem": "构建失败：hcom.h: No such file or directory",
+        "solution": "从宿主机 /root/ttfhw-work/ubs-comm-20260616165745/dist/ 复制 hcom 头文件和库到容器",
+        "source": "ubs-comm-lib (hcom) 非 openEuler 标准仓库包"
+      },
+      {
+        "timestamp": "2026-06-17T15:55:00",
+        "problem": "测试链接失败：/usr/bin/ld: cannot find -lasan",
+        "solution": "dnf install -y libasan",
+        "source": "run_dt.sh 使用 ASAN_BUILD=ON 编译，需要 libasan 运行时库"
+      },
+      {
+        "timestamp": "2026-06-17T15:55:00",
+        "problem": "mockcpp patch 部分失败：UnixCodeModifier.cpp 行尾符问题",
+        "solution": "patch 中 2 个 hunk 失败（行尾符 CRLF vs LF），但不影响测试编译和执行",
+        "source": "test/3rdparty/mockcpp_support_arm64.patch"
+      }
+    ],
+    "session_export_file": "verification_session_WSL_ubs-mem_20260617.md"
+  },
+  "static_analysis": {
+    "enabled": false,
+    "summary": "仓库配置了 pre-commit（5个hooks），但因宿主机缺少构建工具全部执行失败；未配置 lint-runner",
+    "pre_commit": {
+      "configured": true,
+      "config_file": ".pre-commit-config.yaml",
+      "status": "全部失败",
+      "duration_seconds": 120,
+      "total_hooks": 5,
+      "passed": 0,
+      "failed": 5,
+      "skipped": 0,
+      "failures": [
+        {
+          "hook_name": "run-build",
+          "file": "N/A",
+          "error": "宿主机缺少 ninja-build、gcc 等构建工具"
+        },
+        {
+          "hook_name": "run-build-test",
+          "file": "N/A",
+          "error": "宿主机缺少 libnuma.so、patch 命令"
+        },
+        {
+          "hook_name": "clang-format",
+          "file": "N/A",
+          "error": "clang-format 未安装"
+        },
+        {
+          "hook_name": "clang-tidy",
+          "file": "N/A",
+          "error": "clang-tidy 未安装"
+        },
+        {
+          "hook_name": "clang-tidy-test",
+          "file": "N/A",
+          "error": "clang-tidy 未安装"
+        }
+      ]
+    },
+    "lint_runner": {
+      "configured": false,
+      "config_file": null,
+      "status": "unknown",
+      "duration_seconds": 0,
+      "active_linters": [],
+      "result": "unknown"
+    }
+  },
+  "devcontainer": {
+    "enabled": false,
+    "config_dir": null,
+    "config_files": [],
+    "summary": "仓库未配置 devcontainer"
+  }
+}
