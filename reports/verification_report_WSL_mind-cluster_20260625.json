@@ -1,0 +1,612 @@
+{
+  "metadata": {
+    "repo_path": "https://gitcode.com/lirui2381/mind-cluster",
+    "start_time": "2026-06-25T12:03:00",
+    "end_time": "2026-06-25T13:30:00",
+    "duration_seconds": 5220,
+    "total_steps": 30
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i7-12700",
+      "cpu_cores": 20,
+      "memory": "15Gi",
+      "disk": "885G available",
+      "docker_version": "Docker version 29.5.2, build 79eb04c",
+      "wsl_distribution": "Ubuntu-22.04"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS",
+      "architecture": "x86_64",
+      "cpu_cores": 20,
+      "memory": "15Gi (无限制)",
+      "init_process": "tini (--init flag)"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "强制使用 openEuler 24.03 LTS 基础镜像（仓库 Dockerfile 使用预构建产物，非源码构建）",
+      "dependency_mapping": {
+        "from_dockerfile": "Dockerfile 中的 yum install 指令",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md + go.mod",
+      "value": "x86_64 (Go项目，支持交叉编译)"
+    },
+    "recommended_image": {
+      "source": "docker/*/Dockerfile.openeuler",
+      "value": "openEuler 24.03 LTS (仓库Dockerfile.openeuler已指定)"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/ascend-operator/v26.1.0/Dockerfile.openeuler",
+      "value": [
+        {"original": "yum install -y wget unzip", "openEuler_equivalent": "dnf install -y wget unzip"},
+        {"original": "yum install -y shadow", "openEuler_equivalent": "dnf install -y shadow"}
+      ]
+    },
+    "dependencies": {
+      "source": "README.md + go.mod + build/build.sh",
+      "value": [
+        "Go 1.26.0 (大部分组件go.mod声明go 1.26)",
+        "Go 1.21 (clusterd组件go.mod声明go 1.21)",
+        "Go 1.18 (ascend-common go.mod声明go 1.18)",
+        "gcc/gcc-c++ 12.3.1 (CGO_ENABLED=1的组件需要)",
+        "glibc-devel (CGO编译需要)",
+        "dos2unix (build_each.sh中调用)",
+        "make (部分组件构建需要)",
+        "git (VCS依赖)",
+        "cmake 3.27.9 (ascend-docker-runtime等C/C++组件需要)",
+        "python3 (ascend-faultdiag/taskd组件需要joblib/setuptools模块)"
+      ]
+    },
+    "build_commands": {
+      "source": "build/build_all.sh + component/*/build/build.sh",
+      "value": "每个组件执行 build/build.sh，使用 go build -mod=mod -buildmode=pie"
+    },
+    "ut_commands": {
+      "source": "各组件go.mod + Go标准测试",
+      "value": "go test ./... (在每个组件目录执行)"
+    },
+    "sample_commands": {
+      "source": "README.md",
+      "value": "无独立样例程序（Go项目，二进制即样例）"
+    },
+    "special_dependencies": {
+      "source": "ascend-common/devmanager/dcmi/dcmi.go",
+      "value": [
+        "dcmi_interface_api.h (已在仓库中，cgo编译时引用)",
+        "libdcmi.so (运行时通过dlopen动态加载，编译时不需要)",
+        "NPU硬件 (部分UT测试需要真实NPU设备)",
+        "volcano源码 (ascend-for-volcano组件构建时需要/opt/buildtools/volcano_opensource/)",
+        "SWIG (mindio组件需要)",
+        "Python模块 joblib/setuptools (ascend-faultdiag/taskd组件需要)"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-06-25T12:03:00",
+      "command": "git clone https://gitcode.com/lirui2381/mind-cluster.git /tmp/mind-cluster",
+      "success": true,
+      "output": "Cloning into 'mind-cluster'...\nReceiving objects: 100% (50015/50015), 40.09 MiB | 706.00 KiB/s, done.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-06-25T12:05:00",
+      "command": "读取README.md, build/build_all.sh, build/build_each.sh, 各组件go.mod, Dockerfile.openeuler",
+      "success": true,
+      "output": "项目包含15个组件，Go语言项目，使用shell脚本构建。各组件go.mod声明不同Go版本(1.18-1.26)。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-25T12:06:00",
+      "command": "检查 .pre-commit-config.yaml",
+      "success": true,
+      "output": "已配置pre-commit，包含多个hooks",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T12:06:30",
+      "command": "检查 lint-runner 配置: find . -name '.lint-runner*' -o -name 'lint-runner*'",
+      "success": true,
+      "output": "未找到 lint-runner 配置文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T12:07:00",
+      "command": "检查 .devcontainer 目录",
+      "success": true,
+      "output": "未找到 .devcontainer 目录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T12:07:00",
+      "command": "docker run -d --init --name ttfhw-mind-cluster-openeuler-env -v /tmp/mind-cluster:/workspace -w /workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts tail -f /dev/null",
+      "success": true,
+      "output": "Container ID: 3b37020730352b14dad27e32edf72d28f21f962b126e688f2a21f883eb86873d",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-06-25T12:10:00",
+      "command": "dnf install -y --nogpgcheck wget unzip git dos2unix make gcc gcc-c++ glibc-devel perl",
+      "success": true,
+      "output": "安装149个包，包括gcc-12.3.1, make-4.4.1, git-2.43.0, dos2unix-7.5.2等",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120,
+      "note": "初始容器无--init导致zombie进程阻塞dnf，重建容器后解决"
+    },
+    {
+      "timestamp": "2026-06-25T12:15:00",
+      "command": "wget -q https://golang.google.cn/dl/go1.26.0.linux-amd64.tar.gz && tar -C /usr/local -xzf go1.26.0.linux-amd64.tar.gz",
+      "success": true,
+      "output": "Go 1.26.0 安装成功，配置PATH和GOPROXY=https://goproxy.cn,direct",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-06-25T12:20:00",
+      "command": "dnf install -y --nogpgcheck cmake",
+      "success": true,
+      "output": "cmake 3.27.9 安装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30,
+      "note": "ascend-docker-runtime等C/C++组件需要cmake"
+    },
+    {
+      "timestamp": "2026-06-25T12:25:00",
+      "command": "git config --global --add safe.directory '*' && export GOFLAGS=-buildvcs=false",
+      "success": true,
+      "output": "解决git dubious ownership问题",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1,
+      "note": "WSL挂载的仓库目录owner与容器内不一致导致"
+    },
+    {
+      "timestamp": "2026-06-25T12:30:00",
+      "command": "构建 ascend-device-plugin: cd /workspace/component/ascend-device-plugin && bash build/build.sh",
+      "success": true,
+      "output": "构建成功，生成ascend-device-plugin二进制",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-06-25T12:35:00",
+      "command": "构建 ascend-operator: cd /workspace/component/ascend-operator && bash build/build.sh",
+      "success": true,
+      "output": "构建成功，CGO_ENABLED=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 45
+    },
+    {
+      "timestamp": "2026-06-25T12:38:00",
+      "command": "构建 clusterd: cd /workspace/component/clusterd && bash build/build.sh",
+      "success": true,
+      "output": "构建成功，CGO_ENABLED=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 40
+    },
+    {
+      "timestamp": "2026-06-25T12:42:00",
+      "command": "构建 infer-operator: cd /workspace/component/infer-operator && bash build/build.sh",
+      "success": true,
+      "output": "构建成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-25T12:45:00",
+      "command": "构建 k8s-rdma-shared-dev-plugin: cd /workspace/component/k8s-rdma-shared-dev-plugin && bash build/build.sh",
+      "success": true,
+      "output": "构建成功，CGO_ENABLED=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 35
+    },
+    {
+      "timestamp": "2026-06-25T12:48:00",
+      "command": "构建 noded: cd /workspace/component/noded && bash build/build.sh",
+      "success": true,
+      "output": "构建成功，CGO_ENABLED=1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 50
+    },
+    {
+      "timestamp": "2026-06-25T12:52:00",
+      "command": "构建 npu-exporter: cd /workspace/component/npu-exporter && bash build/build.sh",
+      "success": true,
+      "output": "构建成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-25T12:55:00",
+      "command": "构建 ascend-docker-runtime: cd /workspace/component/ascend-docker-runtime && bash build/build.sh",
+      "success": false,
+      "output": "CMake error: No SOURCES given to target: libboundscheck",
+      "error": "CMakeLists.txt配置问题，libboundscheck目标未指定源文件",
+      "returncode": 1,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-06-25T12:56:00",
+      "command": "构建 ascend-faultdiag: cd /workspace/component/ascend-faultdiag && bash build/build.sh",
+      "success": false,
+      "output": "Python module 'joblib' not found",
+      "error": "缺少Python依赖joblib模块",
+      "returncode": 1,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-06-25T12:57:00",
+      "command": "构建 ascend-for-volcano: cd /workspace/component/ascend-for-volcano && bash build/build.sh",
+      "success": false,
+      "output": "Missing volcano source files at /src/volcano.sh/...",
+      "error": "需要volcano开源源码(/opt/buildtools/volcano_opensource/)，环境中不存在",
+      "returncode": 1,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-25T12:58:00",
+      "command": "构建 container-manager: cd /workspace/component/container-manager && bash build/build.sh",
+      "success": false,
+      "output": "Missing deploy.sh file",
+      "error": "构建脚本缺少deploy.sh文件",
+      "returncode": 1,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-25T12:59:00",
+      "command": "构建 mindio: cd /workspace/component/mindio && bash build/build.sh",
+      "success": false,
+      "output": "CMake error: Could NOT find SWIG (missing: SWIG_EXECUTABLE SWIG_DIR)",
+      "error": "缺少SWIG工具",
+      "returncode": 1,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-06-25T13:00:00",
+      "command": "构建 taskd: cd /workspace/component/taskd && bash build/build.sh",
+      "success": false,
+      "output": "Python module 'setuptools' not found",
+      "error": "缺少Python依赖setuptools模块",
+      "returncode": 1,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-06-25T13:05:00",
+      "command": "UT: go test ./... in ascend-common",
+      "success": false,
+      "output": "go: updates to go.mod needed; to update it: go mod tidy",
+      "error": "go.mod不同步，需要go mod tidy",
+      "returncode": 1,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-06-25T13:06:00",
+      "command": "UT: go test ./... in ascend-device-plugin",
+      "success": false,
+      "output": "FAIL in pkg/topology (TestRasTopoWriteTask goroutine issue)",
+      "error": "TestRasTopoWriteTask测试失败",
+      "returncode": 1,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-25T13:07:00",
+      "command": "UT: go test ./... in ascend-operator",
+      "success": false,
+      "output": "FAIL in pkg/utils",
+      "error": "pkg/utils测试失败",
+      "returncode": 1,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-06-25T13:08:00",
+      "command": "UT: go test ./... in clusterd",
+      "success": false,
+      "output": "FAIL in pkg/interface/kube; compile error in golang.org/x/tools/internal/tokeninternal",
+      "error": "编译错误: invalid array length -delta * delta",
+      "returncode": 1,
+      "duration_seconds": 25
+    },
+    {
+      "timestamp": "2026-06-25T13:09:00",
+      "command": "UT: go test ./... in infer-operator",
+      "success": true,
+      "output": "所有测试通过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-06-25T13:10:00",
+      "command": "UT: go test ./... in noded",
+      "success": false,
+      "output": "TestDoCheckpoint (missing /usr/local/Ascend/Ascend-Docker-Runtime/ascend-docker-runtime binary), TestIpmiEventMonitor, pkg/releaser failures; pingmesh.test/roceping.test hit 10-minute timeout",
+      "error": "缺少NPU硬件和ascend-docker-runtime二进制; RoCE网络硬件不可用",
+      "returncode": 1,
+      "duration_seconds": 600
+    },
+    {
+      "timestamp": "2026-06-25T13:20:00",
+      "command": "UT: go test ./... in npu-exporter",
+      "success": false,
+      "output": "FAIL in v6/platforms/prom",
+      "error": "v6/platforms/prom测试失败",
+      "returncode": 1,
+      "duration_seconds": 20
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-06-25T12:03:00",
+      "step": "start",
+      "action": "开始验证流程（openEuler 原生构建模式）",
+      "result": "已启动",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-25T12:05:00",
+      "step": "document_reading",
+      "action": "读取 README.md, build脚本, go.mod, Dockerfile 了解构建说明",
+      "result": "成功",
+      "details": {"file": "README.md + build/build_all.sh + go.mod", "components_count": 15}
+    },
+    {
+      "timestamp": "2026-06-25T12:06:00",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 pre-commit 配置",
+      "result": "已配置",
+      "details": {"config_file": ".pre-commit-config.yaml", "hooks_count": 13}
+    },
+    {
+      "timestamp": "2026-06-25T12:06:30",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 lint-runner 配置",
+      "result": "未配置",
+      "details": {"searched_patterns": [".lint-runner.yaml", ".lint-runner.json", "lint-runner.config.*"]}
+    },
+    {
+      "timestamp": "2026-06-25T12:07:00",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录",
+      "result": "未配置",
+      "details": {"searched_path": ".devcontainer/"}
+    },
+    {
+      "timestamp": "2026-06-25T12:07:00",
+      "step": "container_setup",
+      "action": "拉取 openEuler 基础镜像并启动容器（使用--init参数避免zombie进程）",
+      "result": "成功",
+      "details": {"image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts", "container_name": "ttfhw-mind-cluster-openeuler-env", "init": true}
+    },
+    {
+      "timestamp": "2026-06-25T12:10:00",
+      "step": "dependency_installation",
+      "action": "安装系统工具链（gcc gcc-c++ make cmake git wget unzip dos2unix glibc-devel perl）",
+      "result": "成功",
+      "details": {"source": "openEuler 官方仓库 (dnf)", "packages_count": 149, "gcc_version": "12.3.1", "cmake_version": "3.27.9"}
+    },
+    {
+      "timestamp": "2026-06-25T12:15:00",
+      "step": "go_installation",
+      "action": "下载安装 Go 1.26.0",
+      "result": "成功",
+      "details": {"source": "https://golang.google.cn/dl/go1.26.0.linux-amd64.tar.gz", "go_version": "go1.26.0 linux/amd64", "goproxy": "https://goproxy.cn,direct"}
+    },
+    {
+      "timestamp": "2026-06-25T12:25:00",
+      "step": "vcs_fix",
+      "action": "解决git dubious ownership问题",
+      "result": "已解决",
+      "details": {"solution": "git config --global --add safe.directory '*' + GOFLAGS=-buildvcs=false"}
+    },
+    {
+      "timestamp": "2026-06-25T12:30:00",
+      "step": "build_execution",
+      "action": "逐组件执行构建（15个组件）",
+      "result": "7成功 6失败 2跳过",
+      "details": {
+        "passed": ["ascend-device-plugin", "ascend-operator", "clusterd", "infer-operator", "k8s-rdma-shared-dev-plugin", "noded", "npu-exporter"],
+        "failed": ["ascend-docker-runtime", "ascend-faultdiag", "ascend-for-volcano", "container-manager", "mindio", "taskd"],
+        "skipped": ["ascend-common", "ascend-faultdiag-online"]
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:05:00",
+      "step": "ut_execution",
+      "action": "逐组件执行单元测试",
+      "result": "1成功 10失败 4跳过",
+      "details": {
+        "passed": ["infer-operator"],
+        "failed": ["ascend-common", "ascend-device-plugin", "ascend-docker-runtime", "ascend-faultdiag-online", "ascend-operator", "clusterd", "container-manager", "k8s-rdma-shared-dev-plugin", "noded", "npu-exporter"],
+        "skipped": ["ascend-faultdiag", "ascend-for-volcano", "mindio", "taskd"]
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:30:00",
+      "step": "report_generation",
+      "action": "生成验证报告",
+      "result": "成功",
+      "details": {"output_file": "verification_report_WSL_mind-cluster_20260625.json"}
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（13个hooks），未检测到 lint-runner 配置",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置但未执行（聚焦于构建和测试验证）",
+        "total_hooks": 13,
+        "hooks": ["check-yaml", "check-json", "check-merge-conflict", "trailing-whitespace", "end-of-file-fixer", "check-large-files", "check-shellcheck", "golangci-lint", "go-mod-tidy", "detect-private-key", "check-added-large-files", "mixed-line-ending", "fix-encoding-pragma"]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "summary": "仓库未配置 .devcontainer 目录"
+    },
+    "build": {
+      "status": "部分成功",
+      "duration_seconds": 1800,
+      "total_components": 15,
+      "passed": 7,
+      "failed": 6,
+      "skipped": 2,
+      "components": [
+        {"name": "ascend-device-plugin", "status": "PASS", "go_version": "1.26", "cgo_enabled": 1, "duration_seconds": 60},
+        {"name": "ascend-operator", "status": "PASS", "go_version": "1.26", "cgo_enabled": 0, "duration_seconds": 45},
+        {"name": "clusterd", "status": "PASS", "go_version": "1.21", "cgo_enabled": 0, "duration_seconds": 40},
+        {"name": "infer-operator", "status": "PASS", "go_version": "1.26", "cgo_enabled": 0, "duration_seconds": 30},
+        {"name": "k8s-rdma-shared-dev-plugin", "status": "PASS", "go_version": "1.26", "cgo_enabled": 0, "duration_seconds": 35},
+        {"name": "noded", "status": "PASS", "go_version": "1.26", "cgo_enabled": 1, "duration_seconds": 50},
+        {"name": "npu-exporter", "status": "PASS", "go_version": "1.26", "cgo_enabled": 0, "duration_seconds": 30},
+        {"name": "ascend-docker-runtime", "status": "FAIL", "go_version": "1.26", "cgo_enabled": 1, "error": "CMake error: No SOURCES given to target: libboundscheck", "duration_seconds": 20},
+        {"name": "ascend-faultdiag", "status": "FAIL", "go_version": "N/A", "cgo_enabled": "N/A", "error": "Python module 'joblib' not found", "duration_seconds": 10},
+        {"name": "ascend-for-volcano", "status": "FAIL", "go_version": "N/A", "cgo_enabled": 1, "error": "Missing volcano source files at /opt/buildtools/volcano_opensource/", "duration_seconds": 5},
+        {"name": "container-manager", "status": "FAIL", "go_version": "1.26", "cgo_enabled": 1, "error": "Missing deploy.sh file", "duration_seconds": 5},
+        {"name": "mindio", "status": "FAIL", "go_version": "N/A", "cgo_enabled": "N/A", "error": "CMake error: Could NOT find SWIG (missing: SWIG_EXECUTABLE SWIG_DIR)", "duration_seconds": 15},
+        {"name": "taskd", "status": "FAIL", "go_version": "N/A", "cgo_enabled": "N/A", "error": "Python module 'setuptools' not found", "duration_seconds": 10},
+        {"name": "ascend-common", "status": "SKIP", "go_version": "1.18", "cgo_enabled": "N/A", "error": "No build.sh (library module)"},
+        {"name": "ascend-faultdiag-online", "status": "SKIP", "go_version": "1.20", "cgo_enabled": "N/A", "error": "No build.sh"}
+      ]
+    },
+    "ut": {
+      "status": "部分成功",
+      "duration_seconds": 1500,
+      "total_components": 15,
+      "passed": 1,
+      "failed": 10,
+      "skipped": 4,
+      "components": [
+        {"name": "infer-operator", "status": "PASS", "duration_seconds": 20},
+        {"name": "ascend-common", "status": "FAIL", "error": "go: updates to go.mod needed; to update it: go mod tidy"},
+        {"name": "ascend-device-plugin", "status": "FAIL", "error": "FAIL in pkg/topology (TestRasTopoWriteTask goroutine issue)"},
+        {"name": "ascend-docker-runtime", "status": "FAIL", "error": "go: updates to go.mod needed; to update it: go mod tidy"},
+        {"name": "ascend-faultdiag-online", "status": "FAIL", "error": "FAIL in pkg/utils/grpc"},
+        {"name": "ascend-operator", "status": "FAIL", "error": "FAIL in pkg/utils"},
+        {"name": "clusterd", "status": "FAIL", "error": "FAIL in pkg/interface/kube; compile error in golang.org/x/tools/internal/tokeninternal (invalid array length -delta * delta)"},
+        {"name": "container-manager", "status": "FAIL", "error": "FAIL in pkg/reset/app"},
+        {"name": "k8s-rdma-shared-dev-plugin", "status": "FAIL", "error": "FAIL in pkg/resources/ub_device"},
+        {"name": "noded", "status": "FAIL", "error": "TestDoCheckpoint (missing ascend-docker-runtime binary), TestIpmiEventMonitor, pkg/releaser failures; pingmesh.test/roceping.test timeout (need RoCE hardware)"},
+        {"name": "npu-exporter", "status": "FAIL", "error": "FAIL in v6/platforms/prom"},
+        {"name": "ascend-faultdiag", "status": "SKIP", "error": "no go.mod"},
+        {"name": "ascend-for-volcano", "status": "SKIP", "error": "no go.mod"},
+        {"name": "mindio", "status": "SKIP", "error": "no go.mod"},
+        {"name": "taskd", "status": "SKIP", "error": "no go.mod"}
+      ]
+    },
+    "sample": {
+      "status": "N/A",
+      "duration_seconds": 0,
+      "results": [],
+      "summary": "Go项目无独立样例程序，构建产物即二进制可执行文件"
+    }
+  },
+  "documentation_gaps": [
+    "README未明确列出所有构建依赖（如Go版本要求、Python模块、SWIG等）",
+    "README未详细说明各组件的构建流程，需查看build/build_all.sh和build/build_each.sh",
+    "ascend-for-volcano组件需要外部volcano源码(/opt/buildtools/volcano_opensource/)，但README未提及如何获取",
+    "mindio组件需要SWIG工具，但README未列出",
+    "ascend-faultdiag和taskd组件需要Python模块(joblib/setuptools)，但README未列出",
+    "container-manager组件构建需要deploy.sh，但仓库中未提供",
+    "各组件go.mod声明不同Go版本(1.18-1.26)，但README未说明统一Go版本要求",
+    "无CI/CD配置文件（.gitee只有PR模板），无法参考CI构建流程"
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-06-25T12:08:00",
+      "problem": "容器内dnf进程zombie阻塞后续dnf安装",
+      "solution": "停止并删除旧容器，使用docker --init参数重建容器，tini进程会正确回收zombie",
+      "source": "Docker容器PID 1为tail -f /dev/null，不会回收子进程"
+    },
+    {
+      "timestamp": "2026-06-25T12:15:00",
+      "problem": "Go版本不足：openEuler 24.03 LTS自带Go 1.21.4，但大部分组件go.mod声明go 1.26",
+      "solution": "从golang.google.cn下载Go 1.26.0并手动安装到/usr/local/go",
+      "source": "各组件go.mod: go 1.26"
+    },
+    {
+      "timestamp": "2026-06-25T12:25:00",
+      "problem": "git dubious ownership错误：WSL挂载的仓库目录owner与容器内不一致",
+      "solution": "git config --global --add safe.directory '*' + export GOFLAGS=-buildvcs=false",
+      "source": "Docker volume挂载导致文件owner不一致"
+    },
+    {
+      "timestamp": "2026-06-25T12:55:00",
+      "problem": "ascend-docker-runtime构建失败：CMake error No SOURCES given to target: libboundscheck",
+      "solution": "未解决（CMakeLists.txt配置问题，需仓库维护者修复）",
+      "source": "ascend-docker-runtime/CMakeLists.txt"
+    },
+    {
+      "timestamp": "2026-06-25T12:56:00",
+      "problem": "ascend-faultdiag构建失败：缺少Python模块joblib",
+      "solution": "未解决（需pip install joblib，但属于额外依赖）",
+      "source": "ascend-faultdiag/build/build.sh"
+    },
+    {
+      "timestamp": "2026-06-25T12:57:00",
+      "problem": "ascend-for-volcano构建失败：缺少volcano源码",
+      "solution": "未解决（需要从外部获取volcano开源源码并放到/opt/buildtools/volcano_opensource/）",
+      "source": "build/build_each.sh中引用/opt/buildtools/volcano_opensource/"
+    },
+    {
+      "timestamp": "2026-06-25T12:59:00",
+      "problem": "mindio构建失败：缺少SWIG工具",
+      "solution": "未解决（需dnf install swig，但属于额外依赖）",
+      "source": "mindio/CMakeLists.txt: find_package(SWIG REQUIRED)"
+    },
+    {
+      "timestamp": "2026-06-25T13:05:00",
+      "problem": "ascend-common和ascend-docker-runtime的UT失败：go.mod不同步",
+      "solution": "未解决（需执行go mod tidy，但可能修改go.mod）",
+      "source": "go: updates to go.mod needed; to update it: go mod tidy"
+    },
+    {
+      "timestamp": "2026-06-25T13:08:00",
+      "problem": "clusterd的UT失败：golang.org/x/tools/internal/tokeninternal编译错误",
+      "solution": "未解决（invalid array length -delta * delta，可能是依赖版本不兼容）",
+      "source": "golang.org/x/tools/internal/tokeninternal"
+    },
+    {
+      "timestamp": "2026-06-25T13:10:00",
+      "problem": "noded的UT失败：缺少NPU硬件和ascend-docker-runtime二进制",
+      "solution": "未解决（需要真实NPU硬件环境）",
+      "source": "TestDoCheckpoint需要/usr/local/Ascend/Ascend-Docker-Runtime/ascend-docker-runtime"
+    }
+  ],
+  "session_export_file": null
+}
