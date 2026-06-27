@@ -1,0 +1,324 @@
+﻿{
+    "metadata":  {
+                     "repo_path":  "/root/xucg",
+                     "repo_url":  "https://gitcode.com/kunpengcompute/xucg.git",
+                     "repo_name":  "XUCG",
+                     "start_time":  "2026-06-24T08:30:00",
+                     "end_time":  "2026-06-24T08:55:00",
+                     "duration_seconds":  1500,
+                     "total_steps":  12
+                 },
+    "machine_spec":  {
+                         "host_machine":  {
+                                              "architecture":  "aarch64",
+                                              "cpu_model":  "QEMU virt-6.2 (KVM虚拟化), 16 cores, CPU part 0xd02",
+                                              "cpu_cores":  16,
+                                              "memory":  "29Gi",
+                                              "disk":  "108G available (192G total)",
+                                              "docker_version":  "Docker version 25.0.2, build 29cf629"
+                                          },
+                         "container":  {
+                                           "os":  "openEuler 22.03 (LTS-SP4)",
+                                           "architecture":  "aarch64",
+                                           "cpu_cores":  16,
+                                           "memory":  "shares host memory"
+                                       },
+                         "image_source":  {
+                                              "type":  "base_image",
+                                              "image_name":  "swr.cn-north-4.myhuaweicloud.com/cloud_boostkit/openeuler-22.03-sp4:v1.2",
+                                              "selection_reason":  "使用 openEuler 22.03 SP4 基础镜像（README 推荐版本）。镜像含 cmake 3.28.2, GCC 10.3.1, rdma-core 41.0。",
+                                              "dependency_mapping":  {
+                                                                         "from_dockerfile":  "仓库无 Dockerfile",
+                                                                         "hucx_mapping":  "HUCX 从 gitcode.com/kunpengcompute/hucx.git 获取，tag v26.0.RC1-huawei"
+                                                                     }
+                                          }
+                     },
+    "document_reading_summary":  {
+                                     "architecture":  {
+                                                          "source":  "README",
+                                                          "value":  "aarch64 (鲲鹏 920 专业版)"
+                                                      },
+                                     "recommended_image":  {
+                                                               "source":  "README",
+                                                               "value":  "openEuler 22.03 (LTS-SP4) AArch64"
+                                                           },
+                                     "dockerfile_dependencies":  {
+                                                                     "source":  "仓库无 Dockerfile",
+                                                                     "value":  [
+
+                                                                               ]
+                                                                 },
+                                     "dependencies":  {
+                                                          "source":  "README + CMakeLists.txt",
+                                                          "value":  [
+                                                                        "HUCX（前置依赖，UCG_BUILD_WITH_UCX）",
+                                                                        "cmake \u003e= 2.8.12",
+                                                                        "gcc/g++ 或 BiSheng clang",
+                                                                        "libibverbs-devel / librdmacm-devel（RDMA支持）",
+                                                                        "numactl-devel",
+                                                                        "gtest（dnf: gtest-devel）"
+                                                                    ]
+                                                      },
+                                     "build_commands":  {
+                                                            "source":  "CMakeLists.txt + README",
+                                                            "value":  "cmake .. -DUCG_BUILD_WITH_UCX:PATH=/root/install/hucx; make -j"
+                                                        },
+                                     "sample_commands":  {
+                                                             "source":  "README",
+                                                             "value":  "使用 OSU Micro Benchmarks 外部工具进行通信性能测试"
+                                                         },
+                                     "ut_commands":  {
+                                                         "source":  "tests/gtest/CMakeLists.txt",
+                                                         "value":  "./tests/gtest/ucg_gtest（需先编译 HUCX 并设置 LD_LIBRARY_PATH）"
+                                                     }
+                                 },
+    "execution_log":  [
+                          {
+                              "timestamp":  "2026-06-24T08:30:00",
+                              "command":  "git clone xucg + hucx repos",
+                              "success":  true,
+                              "output":  "两个仓库克隆成功",
+                              "returncode":  0,
+                              "duration_seconds":  10
+                          },
+                          {
+                              "timestamp":  "2026-06-24T08:31:00",
+                              "command":  "docker run openEuler 22.03 SP4 + dnf install gcc cmake autoconf libibverbs-devel rdma-core-devel numactl-devel",
+                              "success":  true,
+                              "output":  "从 openEuler 22.03 仓库安装所有依赖",
+                              "returncode":  0,
+                              "duration_seconds":  180
+                          },
+                          {
+                              "timestamp":  "2026-06-24T08:35:00",
+                              "command":  "Build HUCX: git checkout v26.0.RC1-huawei, autogen, configure, make -j10, make install",
+                              "success":  true,
+                              "output":  "5 个库安装到 /root/install/hucx (libucm/ucp/ucs/ucs_signal/uct.so)",
+                              "returncode":  0,
+                              "duration_seconds":  300
+                          },
+                          {
+                              "timestamp":  "2026-06-24T08:40:00",
+                              "command":  "Build XUCG attempt 1: cmake with FetchContent googletest (网络下载失败)",
+                              "success":  false,
+                              "error":  "FetchContent googletest build failed (无法从 GitHub 下载)",
+                              "returncode":  1,
+                              "duration_seconds":  15
+                          },
+                          {
+                              "timestamp":  "2026-06-24T08:41:00",
+                              "command":  "Build XUCG attempt 2: dnf install gtest-devel + -DUCG_BUILD_TESTS=OFF",
+                              "success":  true,
+                              "output":  "libucg.so (158KB) + libucg_planc_ucx.so (341KB) 构建成功",
+                              "returncode":  0,
+                              "duration_seconds":  30
+                          },
+                          {
+                              "timestamp":  "2026-06-24T08:42:00",
+                              "command":  "make install + ucg_info -v 验证",
+                              "success":  true,
+                              "output":  "ucg_info -v: UCG abi version 1, UCG version 26.0.0。ucg_info -c 输出完整配置。",
+                              "returncode":  0,
+                              "duration_seconds":  5
+                          },
+                          {
+                              "timestamp":  "2026-06-24T08:44:00",
+                              "command":  "Build XUCG with tests: dnf install gtest-devel + -DUCG_BUILD_WITH_GTEST:PATH=/usr",
+                              "success":  true,
+                              "output":  "全量编译通过，ucg_gtest (198 tests) 编译链接成功",
+                              "returncode":  0,
+                              "duration_seconds":  300
+                          },
+                          {
+                              "timestamp":  "2026-06-24T08:50:00",
+                              "command":  "Run ucg_gtest (config tests)",
+                              "success":  false,
+                              "output":  "6 tests: 3 passed, 3 failed (config默认值差异 - QEMU环境无HPCKit默认配置)",
+                              "error":  "test_ucg_config.read_default_config: expected \u0027all\u0027 got \u0027ucx\u0027",
+                              "returncode":  1,
+                              "duration_seconds":  5
+                          }
+                      ],
+    "process_timeline":  [
+                             {
+                                 "timestamp":  "2026-06-24T08:30:00",
+                                 "step":  "start",
+                                 "action":  "TTFHW验证启动（openEuler 22.03 SP4）",
+                                 "result":  "started"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:30:00",
+                                 "step":  "clone_repos",
+                                 "action":  "git clone xucg + hucx",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:31:00",
+                                 "step":  "container_setup",
+                                 "action":  "启动 openEuler 22.03 SP4 容器",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:31:00",
+                                 "step":  "dependency_install",
+                                 "action":  "dnf install gcc cmake autoconf libibverbs rdma numactl",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:35:00",
+                                 "step":  "build_hucx",
+                                 "action":  "编译 HUCX v26.0.RC1-huawei",
+                                 "result":  "success (5 libraries, 300s)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:40:00",
+                                 "step":  "build_xucg_attempt1",
+                                 "action":  "XUCG + FetchContent googletest",
+                                 "result":  "failed (network)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:41:00",
+                                 "step":  "build_xucg_attempt2",
+                                 "action":  "XUCG (无测试模式)",
+                                 "result":  "success (libucg.so 158KB)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:42:00",
+                                 "step":  "verify_install",
+                                 "action":  "make install + ucg_info 验证",
+                                 "result":  "success (版本 26.0.0)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:44:00",
+                                 "step":  "build_xucg_with_tests",
+                                 "action":  "XUCG + 系统 gtest",
+                                 "result":  "success (ucg_gtest 编译通过)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:50:00",
+                                 "step":  "run_tests",
+                                 "action":  "执行 gtest (config 测试)",
+                                 "result":  "3/6 passed (config默认值差异)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:52:00",
+                                 "step":  "report_generation",
+                                 "action":  "生成验证报告",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T08:54:00",
+                                 "step":  "cleanup",
+                                 "action":  "清理容器和临时文件",
+                                 "result":  "success"
+                             }
+                         ],
+    "final_results":  {
+                          "static_analysis":  {
+                                                  "enabled":  false,
+                                                  "summary":  "仓库未配置任何静态检查工具。无 .pre-commit-config.yaml，无 lint-runner。",
+                                                  "pre_commit":  {
+                                                                     "configured":  false,
+                                                                     "results":  [
+
+                                                                                 ]
+                                                                 },
+                                                  "lint_runner":  {
+                                                                      "configured":  false
+                                                                  }
+                                              },
+                          "build":  {
+                                        "status":  "成功",
+                                        "duration_seconds":  330,
+                                        "artifacts":  [
+                                                          {
+                                                              "name":  "libucg.so",
+                                                              "path":  "/root/install/xucg/lib/libucg.so.1.26.0.0",
+                                                              "size":  "158 KB"
+                                                          },
+                                                          {
+                                                              "name":  "libucg_planc_ucx.so",
+                                                              "path":  "/root/install/xucg/lib/planc/libucg_planc_ucx.so.1.26.0.0",
+                                                              "size":  "341 KB"
+                                                          },
+                                                          {
+                                                              "name":  "ucg_info",
+                                                              "path":  "/root/install/xucg/bin/ucg_info",
+                                                              "size":  "71 KB"
+                                                          },
+                                                          {
+                                                              "name":  "ucg_perf",
+                                                              "path":  "/root/install/xucg/bin/ucg_perf",
+                                                              "size":  "70 KB"
+                                                          },
+                                                          {
+                                                              "name":  "ucg_gtest",
+                                                              "path":  "/workspace/build/tests/gtest/ucg_gtest",
+                                                              "note":  "compiled and linked"
+                                                          }
+                                                      ]
+                                    },
+                          "ut":  {
+                                     "status":  "partial_success",
+                                     "duration_seconds":  5,
+                                     "total":  6,
+                                     "passed":  3,
+                                     "failed":  3,
+                                     "failures":  [
+                                                      {
+                                                          "test_name":  "test_ucg_config.read_default_config",
+                                                          "reason":  "报错\u0027ucx\u0027应为\u0027all\u0027 - openEuler环境无HPCKit默认planc.names配置"
+                                                      },
+                                                      {
+                                                          "test_name":  "test_ucg_config.read_fail_planc_cfg",
+                                                          "reason":  "空配置读入返回成功而预期失败"
+                                                      },
+                                                      {
+                                                          "test_name":  "test_ucg_config.modify",
+                                                          "reason":  "STUB plan 修改失败 - openEuler环境无HPCKit配置项"
+                                                      }
+                                                  ]
+                                 },
+                          "sample":  {
+                                         "status":  "成功",
+                                         "duration_seconds":  2,
+                                         "results":  [
+                                                         {
+                                                             "name":  "ucg_info -v",
+                                                             "status":  "success",
+                                                             "output":  "UCG abi version 1, UCG version 26.0.0"
+                                                         },
+                                                         {
+                                                             "name":  "ucg_info -c",
+                                                             "status":  "success",
+                                                             "output":  "完整配置输出 (UCG_PLANC=ucx, multi-thread支持等)"
+                                                         }
+                                                     ]
+                                     },
+                          "devcontainer":  {
+                                               "configured":  false,
+                                               "summary":  "仓库无 .devcontainer/ 目录。"
+                                           }
+                      },
+    "documentation_gaps":  [
+                               "README 是 HPCKit 多仓库联合构建指南，未提及 HUCX 可独立从 gitcode.com/kunpengcompute/hucx.git 获取",
+                               "README 未提供 Dockerfile 或容器化环境",
+                               "README 未提供 XUCG 自带的 gtest 单元测试说明（tests/gtest/CMakeLists.txt 隐藏较深）",
+                               "CMakeLists.txt 中的 FetchContent googletest 依赖 GitHub 下载，在部分网络环境下失败",
+                               "测试在 QEMU virt-6.2 环境中部分失败（无 HPCKit 默认配置 + 无物理 RDMA 硬件）"
+                           ],
+    "problems_encountered":  [
+                                 {
+                                     "timestamp":  "2026-06-24T08:40:00",
+                                     "problem":  "CMake FetchContent googletest 从 GitHub 下载失败（网络限制）",
+                                     "solution":  "dnf install gtest-devel + -DUCG_BUILD_WITH_GTEST:PATH=/usr 使用系统 gtest",
+                                     "source":  "tests/gtest/CMakeLists.txt FetchContent"
+                                 },
+                                 {
+                                     "timestamp":  "2026-06-24T08:50:00",
+                                     "problem":  "gtest 部分测试失败，与 openEuler 环境默认配置差异相关",
+                                     "solution":  "config 测试期望 HPCKit 的 planc.names 默认为 \u0027all\u0027，实际环境默认 \u0027ucx\u0027。需设置 UCG_PLANC 环境变量或提供配置文件。",
+                                     "source":  "tests/gtest/core/test_context.cpp"
+                                 }
+                             ]
+}

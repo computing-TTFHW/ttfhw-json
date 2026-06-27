@@ -1,0 +1,312 @@
+﻿{
+    "metadata":  {
+                     "repo_path":  "/root/hucx",
+                     "repo_url":  "https://gitcode.com/kunpengcompute/hucx.git",
+                     "repo_name":  "HUCX",
+                     "start_time":  "2026-06-24T09:10:00",
+                     "end_time":  "2026-06-24T09:25:00",
+                     "duration_seconds":  900,
+                     "total_steps":  10
+                 },
+    "machine_spec":  {
+                         "host_machine":  {
+                                              "architecture":  "aarch64",
+                                              "cpu_model":  "QEMU virt-6.2 (KVM), 16 cores",
+                                              "cpu_cores":  16,
+                                              "memory":  "29Gi",
+                                              "disk":  "108G available (192G total)",
+                                              "docker_version":  "Docker version 25.0.2, build 29cf629"
+                                          },
+                         "container":  {
+                                           "os":  "openEuler 22.03 (LTS-SP4)",
+                                           "architecture":  "aarch64",
+                                           "cpu_cores":  16,
+                                           "memory":  "shares host memory",
+                                           "container_name":  "ttfhw-hucx-openeuler-env"
+                                       },
+                         "image_source":  {
+                                              "type":  "base_image",
+                                              "image_name":  "swr.cn-north-4.myhuaweicloud.com/cloud_boostkit/openeuler-22.03-sp4:v1.2",
+                                              "selection_reason":  "README.md 列出 openEuler 22.03 SP4 为推荐系统规格。仓库无 Dockerfile。",
+                                              "dependency_mapping":  {
+                                                                         "from_dockerfile":  "仓库无 Dockerfile",
+                                                                         "mappings":  [
+
+                                                                                      ]
+                                                                     }
+                                          }
+                     },
+    "document_reading_summary":  {
+                                     "architecture":  {
+                                                          "source":  "README.md - 版本配套",
+                                                          "value":  "aarch64 鲲鹏 920 系列"
+                                                      },
+                                     "recommended_image":  {
+                                                               "source":  "README.md",
+                                                               "value":  "openEuler 22.03 (LTS-SP4) AArch64 等 10+ 个版本。仓库无 Dockerfile。"
+                                                           },
+                                     "dockerfile_dependencies":  {
+                                                                     "source":  "仓库无 Dockerfile",
+                                                                     "value":  [
+
+                                                                               ]
+                                                                 },
+                                     "dependencies":  {
+                                                          "source":  "README.md + autogen.sh + configure.ac",
+                                                          "value":  [
+                                                                        "gcc/g++/gfortran",
+                                                                        "autoconf/automake/libtool",
+                                                                        "libibverbs-devel / librdmacm-devel (RDMA, 可选)"
+                                                                    ]
+                                                      },
+                                     "build_commands":  {
+                                                            "source":  "README.md + autogen.sh",
+                                                            "value":  "./autogen.sh \u0026\u0026 ./configure --prefix=... CC=gcc CXX=g++ FC=gfortran \u0026\u0026 make -j \u0026\u0026 make install"
+                                                        },
+                                     "sample_commands":  {
+                                                             "source":  "README.md",
+                                                             "value":  "README 描述 OSU Micro Benchmarks 外部测试"
+                                                         },
+                                     "ut_commands":  {
+                                                         "source":  "README.md",
+                                                         "value":  "HUCX 作为 UCX 框架，README 描述 HPCKit 环境中的 HUCX→XUCG→HMPI 联合流程，未单独提供测试命令"
+                                                     }
+                                 },
+    "execution_log":  [
+                          {
+                              "timestamp":  "2026-06-24T09:10:00",
+                              "command":  "git clone hucx + 文档阅读",
+                              "success":  true,
+                              "output":  "HUCX 是鲲鹏 UCX v1.15.0 分支 (git tag v26.0.RC1-huawei, 当前分支 v26.1.x)",
+                              "returncode":  0,
+                              "duration_seconds":  15
+                          },
+                          {
+                              "timestamp":  "2026-06-24T09:11:00",
+                              "command":  "pre-commit/Dockerfile/devcontainer 扫描",
+                              "success":  true,
+                              "output":  "均未配置",
+                              "returncode":  0,
+                              "duration_seconds":  3
+                          },
+                          {
+                              "timestamp":  "2026-06-24T09:12:00",
+                              "command":  "docker run openEuler 22.03 SP4 + dnf install gcc gfortran autoconf automake libtool libibverbs-devel numactl-devel",
+                              "success":  true,
+                              "output":  "从 openEuler 22.03 SP4 仓库安装全部依赖",
+                              "returncode":  0,
+                              "duration_seconds":  120
+                          },
+                          {
+                              "timestamp":  "2026-06-24T09:14:00",
+                              "command":  "./autogen.sh",
+                              "success":  true,
+                              "output":  "autogen 成功",
+                              "returncode":  0,
+                              "duration_seconds":  15
+                          },
+                          {
+                              "timestamp":  "2026-06-24T09:14:00",
+                              "command":  "./configure --prefix=/workspace/install/hucx CC=gcc CXX=g++ FC=gfortran",
+                              "success":  true,
+                              "output":  "configure 通过",
+                              "returncode":  0,
+                              "duration_seconds":  60
+                          },
+                          {
+                              "timestamp":  "2026-06-24T09:15:00",
+                              "command":  "make -j10",
+                              "success":  true,
+                              "output":  "全场编译成功, 5 个核心库 + 4 个工具",
+                              "returncode":  0,
+                              "duration_seconds":  180
+                          },
+                          {
+                              "timestamp":  "2026-06-24T09:18:00",
+                              "command":  "make install",
+                              "success":  true,
+                              "output":  "安装到 /workspace/install/hucx",
+                              "returncode":  0,
+                              "duration_seconds":  15
+                          },
+                          {
+                              "timestamp":  "2026-06-24T09:20:00",
+                              "command":  "ucx_info -v 版本验证",
+                              "success":  true,
+                              "output":  "Library version: 1.15.0, Git branch v26.1.x, revision 4135d4b",
+                              "returncode":  0,
+                              "duration_seconds":  2
+                          },
+                          {
+                              "timestamp":  "2026-06-24T09:20:00",
+                              "command":  "UCT smoke test: uct_query_components()",
+                              "success":  true,
+                              "output":  "Success, 7 components detected (loopback, rdmacm, cma, knem, tcp, self, sm)",
+                              "returncode":  0,
+                              "duration_seconds":  2
+                          }
+                      ],
+    "process_timeline":  [
+                             {
+                                 "timestamp":  "2026-06-24T09:10:00",
+                                 "step":  "start",
+                                 "action":  "TTFHW 验证启动",
+                                 "result":  "started"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:10:00",
+                                 "step":  "clone_and_read",
+                                 "action":  "git clone + 文档阅读",
+                                 "result":  "success (v26.1.x / UCX 1.15.0)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:11:00",
+                                 "step":  "static_analysis",
+                                 "action":  "pre-commit/lint-runner/Dockerfile/devcontainer 检查",
+                                 "result":  "均未配置"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:12:00",
+                                 "step":  "container_setup",
+                                 "action":  "启动 openEuler 22.03 SP4 容器",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:12:00",
+                                 "step":  "dependency_install",
+                                 "action":  "dnf install gcc gfortran autoconf libtool libibverbs numactl",
+                                 "result":  "success (120s)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:14:00",
+                                 "step":  "autogen",
+                                 "action":  "./autogen.sh",
+                                 "result":  "success (15s)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:14:00",
+                                 "step":  "configure",
+                                 "action":  "./configure (gcc mode)",
+                                 "result":  "success (60s)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:15:00",
+                                 "step":  "build",
+                                 "action":  "make -j10",
+                                 "result":  "success (180s, 5 libs + 4 tools)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:18:00",
+                                 "step":  "install",
+                                 "action":  "make install",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:20:00",
+                                 "step":  "verify",
+                                 "action":  "ucx_info -v + UCT smoke test",
+                                 "result":  "success (UCX 1.15.0, 7 components)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T09:22:00",
+                                 "step":  "cleanup",
+                                 "action":  "清理容器 + 生成报告",
+                                 "result":  "success"
+                             }
+                         ],
+    "final_results":  {
+                          "static_analysis":  {
+                                                  "enabled":  false,
+                                                  "summary":  "仓库无 pre-commit 配置，无 lint-runner 配置。",
+                                                  "pre_commit":  {
+                                                                     "configured":  false,
+                                                                     "config_file":  null,
+                                                                     "results":  [
+
+                                                                                 ]
+                                                                 },
+                                                  "lint_runner":  {
+                                                                      "configured":  false,
+                                                                      "config_file":  null,
+                                                                      "results":  [
+
+                                                                                  ]
+                                                                  }
+                                              },
+                          "build":  {
+                                        "status":  "成功",
+                                        "duration_seconds":  255,
+                                        "artifacts":  [
+                                                          {
+                                                              "name":  "libucp.so.0.0.0",
+                                                              "size":  "11 MB",
+                                                              "note":  "UCX Protocol"
+                                                          },
+                                                          {
+                                                              "name":  "libucs.so.0.0.0",
+                                                              "size":  "3.9 MB",
+                                                              "note":  "UCX Services"
+                                                          },
+                                                          {
+                                                              "name":  "libuct.so.0.0.0",
+                                                              "size":  "1.6 MB",
+                                                              "note":  "UCX Transport"
+                                                          },
+                                                          {
+                                                              "name":  "libucm.so.0.0.0",
+                                                              "size":  "569 KB",
+                                                              "note":  "UCX Memory"
+                                                          },
+                                                          {
+                                                              "name":  "libucs_signal.so.0.0.0",
+                                                              "size":  "77 KB",
+                                                              "note":  "UCX Signal"
+                                                          },
+                                                          {
+                                                              "name":  "ucx_info / ucx_perftest / ucx_read_profile / io_demo",
+                                                              "note":  "4 tools"
+                                                          }
+                                                      ]
+                                    },
+                          "ut":  {
+                                     "status":  "成功",
+                                     "duration_seconds":  2,
+                                     "total":  1,
+                                     "passed":  1,
+                                     "failed":  0,
+                                     "failures":  [
+
+                                                  ],
+                                     "note":  "UCT query smoke test: Success, 7 components (loopback, rdmacm, cma, knem, tcp, self, sm)"
+                                 },
+                          "sample":  {
+                                         "status":  "成功",
+                                         "duration_seconds":  2,
+                                         "results":  [
+                                                         {
+                                                             "name":  "ucx_info -v",
+                                                             "status":  "success",
+                                                             "output":  "Library version: 1.15.0, Git branch v26.1.x"
+                                                         },
+                                                         {
+                                                             "name":  "UCT smoke test",
+                                                             "status":  "success",
+                                                             "output":  "7 transport components detected"
+                                                         }
+                                                     ]
+                                     },
+                          "devcontainer":  {
+                                               "configured":  false,
+                                               "summary":  "仓库无 .devcontainer/ 目录。"
+                                           }
+                      },
+    "documentation_gaps":  [
+                               "README 描述 HPCKit 环境中的 HUCX→XUCG→HMPI 联合编译流程，但 HUCX 可完全独立构建",
+                               "无 Dockerfile 或容器化环境",
+                               "无 pre-commit 静态检查",
+                               "README 未提供 HUCX 自带测试说明"
+                           ],
+    "problems_encountered":  [
+
+                             ]
+}
