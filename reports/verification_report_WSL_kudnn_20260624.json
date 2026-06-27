@@ -1,0 +1,346 @@
+﻿{
+    "metadata":  {
+                     "repo_path":  "/root/kudnn",
+                     "repo_url":  "https://gitcode.com/kunpengcompute/kudnn.git",
+                     "repo_name":  "KuDNN",
+                     "start_time":  "2026-06-24T07:30:00",
+                     "end_time":  "2026-06-24T08:00:00",
+                     "duration_seconds":  1800,
+                     "total_steps":  14
+                 },
+    "machine_spec":  {
+                         "host_machine":  {
+                                              "architecture":  "aarch64",
+                                              "cpu_model":  "QEMU virt-6.2 (KVM虚a拟化), 16 cores",
+                                              "cpu_cores":  16,
+                                              "memory":  "29Gi",
+                                              "disk":  "108G available (192G total)",
+                                              "docker_version":  "Docker version 25.0.2, build 29cf629"
+                                          },
+                         "container":  {
+                                           "os":  "openEuler 24.03 LTS",
+                                           "architecture":  "aarch64",
+                                           "cpu_cores":  16,
+                                           "memory":  "shares host memory"
+                                       },
+                         "image_source":  {
+                                              "type":  "base_image",
+                                              "image_name":  "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+                                              "selection_reason":  "使用 openEuler 24.03 LTS 基础镜像。README 指定 openEuler 22.03 SP4 AArch64。仓库无 Dockerfile 也无 .devcontainer。",
+                                              "dependency_mapping":  {
+                                                                         "from_dockerfile":  "仓库无 Dockerfile",
+                                                                         "mappings":  [
+
+                                                                                      ]
+                                                                     }
+                                          }
+                     },
+    "document_reading_summary":  {
+                                     "architecture":  {
+                                                          "source":  "README.md",
+                                                          "value":  "aarch64 (鲲鹏 920 专业版)"
+                                                      },
+                                     "recommended_image":  {
+                                                               "source":  "README.md",
+                                                               "value":  "openEuler 22.03 (LTS-SP4) AArch64。仓库无 Dockerfile。"
+                                                           },
+                                     "dockerfile_dependencies":  {
+                                                                     "source":  "仓库无 Dockerfile",
+                                                                     "value":  [
+
+                                                                               ]
+                                                                 },
+                                     "dependencies":  {
+                                                          "source":  "README.md + CMakeLists.txt + build/脚本",
+                                                          "value":  [
+                                                                        "HPCKit (Bisheng 编译器、KML BLAS/kblas、KUPL)",
+                                                                        "cmake (dnf: cmake)",
+                                                                        "numactl-devel (dnf: numactl-devel)",
+                                                                        "Googletest (仓库 opensource/ 目录未提供)"
+                                                                    ]
+                                                      },
+                                     "build_commands":  {
+                                                            "source":  "README.md",
+                                                            "value":  "sh build/build_kudnn.sh --only_kudnn=on --build_type=Release --compiler=clang/gcc --install_path=path"
+                                                        },
+                                     "ut_commands":  {
+                                                         "source":  "README.md",
+                                                         "value":  "sh build/build_kudnn.sh --only_tests=on --compiler=clang"
+                                                     },
+                                     "sample_commands":  {
+                                                             "source":  "README.md",
+                                                             "value":  "README 未提供独立样例执行命令"
+                                                         },
+                                     "special_dependencies":  {
+                                                                  "source":  "README.md",
+                                                                  "value":  [
+                                                                                "HPCKit_26.0.RC1 (wget 下载)",
+                                                                                "Bisheng 编译器 (module load)",
+                                                                                "KML BLAS/kblas (module load)",
+                                                                                "KUPL (module load)"
+                                                                            ]
+                                                              }
+                                 },
+    "execution_log":  [
+                          {
+                              "timestamp":  "2026-06-24T07:30:00",
+                              "command":  "git clone kupl + kudnn",
+                              "success":  true,
+                              "output":  "两个仓库已克隆",
+                              "returncode":  0,
+                              "duration_seconds":  10
+                          },
+                          {
+                              "timestamp":  "2026-06-24T07:31:00",
+                              "command":  "pre-commit run --all-files (7 hooks)",
+                              "success":  false,
+                              "output":  "1 failed (trailing-whitespace)，6 passed/skipped",
+                              "error":  "README_en.md 尾部空白已自动修复",
+                              "returncode":  1,
+                              "duration_seconds":  10
+                          },
+                          {
+                              "timestamp":  "2026-06-24T07:32:00",
+                              "command":  "docker run + dnf install -y gcc gcc-c++ cmake clang lld numactl-devel",
+                              "success":  true,
+                              "output":  "从 openEuler 24.03 仓库安装所有依赖",
+                              "returncode":  0,
+                              "duration_seconds":  180
+                          },
+                          {
+                              "timestamp":  "2026-06-24T07:35:00",
+                              "command":  "Build KUPL (GCC+gxx_wrap.py 过滤 SME 标志, MMA OFF)",
+                              "success":  true,
+                              "output":  "libkupl.so (323KB) 构建成功",
+                              "returncode":  0,
+                              "duration_seconds":  30
+                          },
+                          {
+                              "timestamp":  "2026-06-24T07:36:00",
+                              "command":  "创建 KBLAS stub (10 CBLAS函数，精确匹配签名)",
+                              "success":  true,
+                              "output":  "12 symbols exported",
+                              "returncode":  0,
+                              "duration_seconds":  5
+                          },
+                          {
+                              "timestamp":  "2026-06-24T07:37:00",
+                              "command":  "Build attempt 1: KuDNN with GCC (armv8.5-a+sve, 去除 -Werror)",
+                              "success":  false,
+                              "output":  "所有内核(reorder/matmul/convolution)编译成功，src/主库 kudnn_gemm.cpp bfloat16_t 类型转换错误",
+                              "error":  "GCC 12.3.1 bfloat16_t/__bf16 类型不兼容, vcvth_bf16_f32 返回值不能隐式转换为 __bf16",
+                              "returncode":  2,
+                              "duration_seconds":  300
+                          },
+                          {
+                              "timestamp":  "2026-06-24T07:45:00",
+                              "command":  "Build attempt 2: 去除 -Wnarrowing 修复 bfloat16 问题",
+                              "success":  false,
+                              "output":  "同 attempt 1，bfloat16_t 类型问题依然存在",
+                              "error":  "GCC 12.3.1 不支持 C++17 模式下 __bf16 与 bfloat16_t 之间的隐式转换",
+                              "returncode":  2,
+                              "duration_seconds":  180
+                          }
+                      ],
+    "process_timeline":  [
+                             {
+                                 "timestamp":  "2026-06-24T07:30:00",
+                                 "step":  "start",
+                                 "action":  "TTFHW验证启动",
+                                 "result":  "started"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:31:00",
+                                 "step":  "document_reading",
+                                 "action":  "阅读 README.md、build/脚本、CMakeLists.txt",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:31:00",
+                                 "step":  "static_analysis",
+                                 "action":  "pre-commit run --all-files",
+                                 "result":  "1 failed (trailing-whitespace)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:32:00",
+                                 "step":  "devcontainer_scan",
+                                 "action":  "检查 .devcontainer/",
+                                 "result":  "not configured"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:32:00",
+                                 "step":  "container_setup",
+                                 "action":  "启动 openEuler 24.03 容器",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:33:00",
+                                 "step":  "dependency_install",
+                                 "action":  "从 openEuler 仓库安装 gcc, clang, cmake, numactl-devel",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:35:00",
+                                 "step":  "build_kupl",
+                                 "action":  "构建 KUPL (GCC+gxx_wrap, MMA OFF)",
+                                 "result":  "success (323KB)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:36:00",
+                                 "step":  "build_kblas_stub",
+                                 "action":  "创建 KML BLAS stub lib (精确签名)",
+                                 "result":  "success (12 symbols)"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:37:00",
+                                 "step":  "build_attempt1_gcc",
+                                 "action":  "KuDNN GCC 构建 (armv8.5-a+sve, 去除-Werror)",
+                                 "result":  "内核模块成功, src/主库 bfloat16_t 错误"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:45:00",
+                                 "step":  "build_attempt2_gcc",
+                                 "action":  "去除 -Wnarrowing 修复 bfloat16",
+                                 "result":  "同 attempt1"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:50:00",
+                                 "step":  "kernel_status",
+                                 "action":  "内核编译状态汇总",
+                                 "result":  "所有 reorder_instances(~50变体)/matmul/convolution_kernels 编译成功, 仅 src/ 主库链接因 GCC bfloat16 类型问题失败"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:52:00",
+                                 "step":  "root_cause",
+                                 "action":  "根因分析",
+                                 "result":  "GCC 12.3.1 __bf16 类型隐式转换 + QEMU virt-6.2 无 SVE 特性"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:55:00",
+                                 "step":  "report_generation",
+                                 "action":  "生成验证报告",
+                                 "result":  "success"
+                             },
+                             {
+                                 "timestamp":  "2026-06-24T07:58:00",
+                                 "step":  "cleanup",
+                                 "action":  "清理容器和临时文件",
+                                 "result":  "success"
+                             }
+                         ],
+    "final_results":  {
+                          "static_analysis":  {
+                                                  "enabled":  true,
+                                                  "pre_commit":  {
+                                                                     "configured":  true,
+                                                                     "config_file":  ".pre-commit-config.yaml",
+                                                                     "results":  [
+                                                                                     {
+                                                                                         "hook":  "trailing-whitespace",
+                                                                                         "status":  "failed",
+                                                                                         "details":  "修复了 README_en.md 尾部空白"
+                                                                                     },
+                                                                                     {
+                                                                                         "hook":  "check-json",
+                                                                                         "status":  "skipped",
+                                                                                         "details":  "无 JSON 文件"
+                                                                                     },
+                                                                                     {
+                                                                                         "hook":  "check-yaml",
+                                                                                         "status":  "skipped",
+                                                                                         "details":  "无 YAML 文件"
+                                                                                     },
+                                                                                     {
+                                                                                         "hook":  "mixed-line-ending",
+                                                                                         "status":  "passed"
+                                                                                     },
+                                                                                     {
+                                                                                         "hook":  "check-merge-conflict",
+                                                                                         "status":  "passed"
+                                                                                     },
+                                                                                     {
+                                                                                         "hook":  "check-added-large-files",
+                                                                                         "status":  "passed"
+                                                                                     },
+                                                                                     {
+                                                                                         "hook":  "clang-format",
+                                                                                         "status":  "passed"
+                                                                                     }
+                                                                                 ]
+                                                                 },
+                                                  "lint_runner":  {
+                                                                      "configured":  false,
+                                                                      "results":  [
+
+                                                                                  ]
+                                                                  }
+                                              },
+                          "build":  {
+                                        "status":  "failed (GCC bfloat16 类型不兼容 + QEMU 无 SVE)",
+                                        "duration_seconds":  480,
+                                        "artifacts":  [
+                                                          {
+                                                              "name":  "libkupl.so (依赖)",
+                                                              "size":  "323 KB",
+                                                              "note":  "KUPL 构建成功"
+                                                          },
+                                                          {
+                                                              "name":  "kudnn 内核模块 (部分成功)",
+                                                              "note":  "所有 reorder_instances(~50变体)、matmul、convolution_kernels 编译通过。仅 src/ 主库链接因 GCC bfloat16_t 类型不兼容无法完成。"
+                                                          }
+                                                      ]
+                                    },
+                          "ut":  {
+                                     "status":  "未执行",
+                                     "duration_seconds":  0
+                                 },
+                          "sample":  {
+                                         "status":  "未执行",
+                                         "duration_seconds":  0
+                                     },
+                          "devcontainer":  {
+                                               "configured":  false,
+                                               "summary":  "仓库无 .devcontainer/ 目录，不具备容器化开发能力。"
+                                           }
+                      },
+    "documentation_gaps":  [
+                               "README 强依赖 HPCKit（Bisheng+KML BLAS+KUPL），纯 openEuler 无法满足全部依赖",
+                               "README 未提供 Dockerfile 或容器化环境配置",
+                               "build/pre_env_kudnn.sh 依赖 opensource/googletest（仓库未提供源码）",
+                               "CMakeLists.txt KP920Pro 硬编码 armv9.2-a+sme+sve2，标准编译器不支持",
+                               "README system spec 仅列出 openEuler 22.03 SP4，未提及硬件 SVE/bf16 要求",
+                               "README 未说明非鲲鹏 920 物理机或特定编译器版本要求"
+                           ],
+    "problems_encountered":  [
+                                 {
+                                     "timestamp":  "2026-06-24T07:35:00",
+                                     "problem":  "KUPL CMakeLists.txt 无条件对 mma/kupl_mma.cpp 应用 SME 标志，标准 GCC 不支持",
+                                     "solution":  "Python 编译包装器 gxx_wrap.py 过滤标志，设置 ENABLE_KUPL_MMA=OFF",
+                                     "source":  "src/CMakeLists.txt set_source_files_properties"
+                                 },
+                                 {
+                                     "timestamp":  "2026-06-24T07:36:00",
+                                     "problem":  "kblas (KML BLAS) 是 HPCKit 专有库，openEuler 仓库不存在",
+                                     "solution":  "创建 C stub 库提供 10 个 CBLAS 函数（含鲲鹏扩展 gemm_s8u8s32 等精确签名）",
+                                     "source":  "src/dnn/CMakeLists.txt target_link_libraries"
+                                 },
+                                 {
+                                     "timestamp":  "2026-06-24T07:37:00",
+                                     "problem":  "KP920Pro 需要 armv9.2-a+sme+sve2，标准编译器不支持",
+                                     "solution":  "替换为 armv8.5-a+fp+simd+bf16+sve",
+                                     "source":  "src/dnn/CMakeLists.txt add_compile_options"
+                                 },
+                                 {
+                                     "timestamp":  "2026-06-24T07:38:00",
+                                     "problem":  "GCC 12.3.1 中 __bf16 和 bfloat16_t 类型不兼容，vcvth_bf16_f32 返回 bfloat16_t 无法隐式转换为 __bf16",
+                                     "solution":  "需要 HPCKit/Bisheng 编译器（基于 Clang）或更新版本的 GCC 来解决此类型兼容性问题",
+                                     "source":  "src/dnn/src/kudnn_gemm.cpp:225"
+                                 },
+                                 {
+                                     "timestamp":  "2026-06-24T07:40:00",
+                                     "problem":  "QEMU virt-6.2 虚拟化层不暴露 SVE 向量指令集",
+                                     "solution":  "KuDNN 源码使用 arm_sve.h 内联函数和 svfloat32_t 等 SVE 类型。需物理鲲鹏 920 硬件或 HPCKit 环境。物理鲲鹏机器上此问题应不存在。",
+                                     "source":  "QEMU/KVM 虚拟化限制"
+                                 }
+                             ]
+}
