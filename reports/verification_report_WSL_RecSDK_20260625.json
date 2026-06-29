@@ -1,0 +1,522 @@
+{
+  "metadata": {
+    "repo_path": "/home/wyq/recsdk-skill-check/RecSDK",
+    "start_time": "2026-06-25T10:00:00",
+    "end_time": "2026-06-25T11:30:00",
+    "duration_seconds": 5400,
+    "total_steps": 7
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng-920",
+      "cpu_cores": 256,
+      "memory": "1.9Ti",
+      "disk": "3.5T total, 788G available",
+      "docker_version": "Docker version 24.0.7, build afdd53b"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "1.9Ti (无限制)"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "强制使用 openEuler 24.03 LTS 基础镜像（仓库 Dockerfile 原指定 openeuler/openeuler:22.03-lts-sp4，升级至 24.03 LTS）",
+      "dependency_mapping": {
+        "from_dockerfile": "Dockerfile.26.1.0-openEuler22.03-pt-py3.11 和 Dockerfile.26.1.0-openEuler22.03-tf-py3.7 中的 dnf install 指令",
+        "mappings": [
+          {"original": "dnf install -y net-tools make wget unzip zlib-devel bzip2 bzip2-devel openssl-devel ncurses-devel openssh-clients openssh-server sqlite-devel openmpi-devel readline-devel tk-devel gdbm-devel libdb-devel xz-devel libffi-devel hdf5-devel patch pciutils vim findutils util-linux dos2unix gcc-c++ automake autoconf m4 perl git e2fsprogs sudo", "openEuler": "同原命令（已是 openEuler 原生 dnf 包）", "source": "Dockerfile.26.1.0-openEuler22.03-pt-py3.11 第11-19行"},
+          {"original": "GCC 11.2.0 源码编译", "openEuler": "使用 openEuler 24.03 自带 GCC 12.3.0（版本更高，无需编译）", "source": "Dockerfile 第22-36行"},
+          {"original": "CMake 3.22.6 源码编译", "openEuler": "使用 openEuler 24.03 自带 cmake 3.22+（dnf install cmake）", "source": "Dockerfile 第41-46行"},
+          {"original": "Python 3.11.0 源码编译", "openEuler": "使用 openEuler 24.03 自带 python3.11.6（dnf install python3）", "source": "Dockerfile 第48-56行"},
+          {"original": "CANN 9.0.0 安装包（Ascend-cann-toolkit_9.0.0_linux-*.run）", "openEuler": "无法从 openEuler 仓库安装，需从华为官网下载专有软件", "source": "Dockerfile 第71-107行"}
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md - 环境部署章节",
+      "value": "aarch64 / x86_64（支持 Atlas 200T A2 Box16、Atlas 800T A2、Atlas 900 A3）"
+    },
+    "recommended_image": {
+      "source": "Dockerfile FROM 指令",
+      "value": "原推荐 openeuler/openeuler:22.03-lts-sp4，已改用 openEuler 24.03 LTS"
+    },
+    "dockerfile_dependencies": {
+      "source": "Dockerfile RUN 指令",
+      "value": [
+        {"original": "dnf install -y net-tools make wget unzip zlib-devel bzip2 bzip2-devel openssl-devel ncurses-devel openssh-clients openssh-server sqlite-devel openmpi-devel readline-devel tk-devel gdbm-devel libdb-devel xz-devel libffi-devel hdf5-devel patch pciutils vim findutils util-linux dos2unix gcc-c++ automake autoconf m4 perl git e2fsprogs sudo", "openEuler_equivalent": "同原命令（已是 openEuler 原生 dnf 包）"},
+        {"original": "GCC 11.2.0 源码编译安装", "openEuler_equivalent": "dnf install -y gcc gcc-c++（openEuler 24.03 自带 GCC 12.3.0）"},
+        {"original": "CMake 3.22.6 源码编译安装", "openEuler_equivalent": "dnf install -y cmake（openEuler 24.03 自带 cmake 3.22+）"},
+        {"original": "Python 3.11.0 源码编译安装", "openEuler_equivalent": "dnf install -y python3 python3-devel（openEuler 24.03 自带 python3.11.6）"},
+        {"original": "CANN 9.0.0 专有安装包", "openEuler_equivalent": "无法映射，CANN 是华为昇腾专有 SDK，不在 openEuler 仓库中"}
+      ]
+    },
+    "dependencies": {
+      "source": "README.md + 安装指南 + CMakeLists.txt + Dockerfile",
+      "value": [
+        "gcc >= 11.2.0（dnf: gcc gcc-c++，openEuler 24.03 自带 12.3.0）",
+        "cmake >= 3.20（dnf: cmake）",
+        "make（dnf: make）",
+        "python3 >= 3.7.5（dnf: python3 python3-devel python3-pip）",
+        "CANN 9.0.0（华为昇腾专有 SDK，需从华为官网下载）",
+        "PyTorch 2.6.0/2.7.1 + torch_npu（需从 PyTorch 官方源安装）",
+        "fbgemm_gpu 1.1.0/1.2.0+cpu（需从 PyTorch 官方源安装）",
+        "TensorFlow 1.15.0/2.6.5（需从华为 Ascend 仓库下载 NPU 适配版）",
+        "pybind11 v2.10.3（需从 GitHub 下载）",
+        "securec（需从 GitHub 下载）",
+        "openmpi 4.1.5（dnf: openmpi-devel）",
+        "hdf5 1.10.5（dnf: hdf5-devel）",
+        "numpy, pytest, pytest-cov, pytest-html 等 Python 包"
+      ]
+    },
+    "build_commands": {
+      "source": "安装指南 - 源码编译章节",
+      "value": "Python 公共包: cd training/common && python3 setup.py bdist_wheel; TF Rec: python3.7 setup_tf1.py bdist_wheel; Torch Rec: cd training/torch_rec_v1/hybrid_torchrec && bash build_whl.sh"
+    },
+    "ut_commands": {
+      "source": "安装指南 - 测试用例章节",
+      "value": "Python 测试: cd training/common/python/tests && python3 -m pytest; C++ 测试: cd training/tf_rec_v1/src && bash test_ut.sh tf1"
+    },
+    "sample_commands": {
+      "source": "README.md - 快速入门章节",
+      "value": "各组件快速入门文档中提供了模型搭建和训练样例"
+    },
+    "special_dependencies": {
+      "source": "安装指南 - 编译环境依赖章节",
+      "value": [
+        "CANN 9.0.0 专有 SDK（华为昇腾，需从 https://www.hiascend.com/cann/download 下载）",
+        "pybind11 v2.10.3（需放在 RecSDK 同级的 opensource 目录下）",
+        "securec（需放在 RecSDK 同级的 opensource 目录下）",
+        "googletest 1.8.1（C++ 测试依赖）",
+        "emock 0.9.0（C++ 测试依赖）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-06-25T10:05:00",
+      "command": "pip3 install pre-commit ruff codespell typos pylint bandit",
+      "success": true,
+      "output": "所有工具安装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-25T10:06:00",
+      "command": "SKIP=pylint,bandit pre-commit run --all-files",
+      "success": false,
+      "output": "trim trailing whitespace...Passed\nfix end of files...Passed\ncheck yaml...Passed\ncheck for added large files...Passed\ncheck for merge conflicts...Passed\ndetect private key...Passed\ncheck json...Passed\nruff check...Failed\nruff format...Passed\ncodespell...Failed\ntypos...Failed\nclang-format...Passed\npylint...Skipped (Python 3.10+ required)\nbandit...Skipped (Python 3.10+ required)",
+      "error": "ruff-check 发现 40+ 个问题（E402/E712/F401/F811/F841/SIM115 等），codespell 发现 5 个拼写错误，typos 发现 30+ 个拼写错误。pylint 和 bandit 因宿主机 Python 3.9.9 不满足 >=3.10 要求被跳过",
+      "returncode": 1,
+      "duration_seconds": 45
+    },
+    {
+      "timestamp": "2026-06-25T10:07:00",
+      "command": "检查 lint-runner 配置: find . -name '.lint-runner.*' -o -name 'lint-runner.config.*' -o -name '.lintrunner*'",
+      "success": true,
+      "output": "未找到 lint-runner 配置文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T10:08:00",
+      "command": "检查 .devcontainer 目录",
+      "success": true,
+      "output": "仓库未配置 .devcontainer 目录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T10:10:00",
+      "command": "Dockerfile 依赖分析：读取 docker/Dockerfile.26.1.0-openEuler22.03-pt-py3.11 和 Dockerfile.26.1.0-openEuler22.03-tf-py3.7",
+      "success": true,
+      "output": "提取到 dnf 系统依赖列表、GCC/CMake/Python 源码编译步骤、CANN 9.0.0 安装步骤。openEuler 24.03 自带更高版本的 GCC/CMake/Python，无需源码编译",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-06-25T10:15:00",
+      "command": "docker pull hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "success": true,
+      "output": "Digest: sha256:ace677f48c79ae6bc17046cb8c2940b38f7050afc752c8463e1553b9e7b60974\nStatus: Image is up to date",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-25T10:16:00",
+      "command": "docker run -d --name ttfhw-RecSDK-openeuler-env -v /home/wyq/recsdk-skill-check/RecSDK:/workspace -w /workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts tail -f /dev/null",
+      "success": true,
+      "output": "Container ID: 2fb4e4d1331a...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-06-25T10:18:00",
+      "command": "第一层依赖：dnf install -y gcc gcc-c++ make cmake git python3 python3-pip python3-devel",
+      "success": true,
+      "output": "安装完成：gcc-12.3.0, gcc-c++-12.3.0, make-4.4.1, cmake-3.22+, git-2.45+, python3-3.11.6, python3-pip-23.3.1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-06-25T10:20:00",
+      "command": "第二层依赖：dnf install -y net-tools wget unzip zlib-devel bzip2 bzip2-devel openssl-devel ncurses-devel openssh-clients sqlite-devel readline-devel tk-devel gdbm-devel xz-devel libffi-devel hdf5-devel patch pciutils vim findutils dos2unix automake autoconf m4 perl e2fsprogs sudo libtool",
+      "success": true,
+      "output": "所有包安装完成（映射自 Dockerfile 中的 dnf install 指令）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 45
+    },
+    {
+      "timestamp": "2026-06-25T10:25:00",
+      "command": "第三层依赖：pip3 install torch==2.6.0+cpu --index-url https://download.pytorch.org/whl/cpu",
+      "success": true,
+      "output": "PyTorch 2.6.0+cpu 安装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-06-25T10:28:00",
+      "command": "pip3 install fbgemm_gpu==1.1.0+cpu --index-url https://download.pytorch.org/whl/cpu",
+      "success": false,
+      "output": "ERROR: No matching distribution found for fbgemm_gpu==1.1.0+cpu",
+      "error": "fbgemm_gpu 的 CPU 版本在 aarch64 架构上不可用（仅提供 x86_64 版本）",
+      "returncode": 1,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-06-25T10:30:00",
+      "command": "pip3 install torchrec",
+      "success": false,
+      "output": "构建失败，缺少 fbgemm_gpu 依赖",
+      "error": "torchrec 依赖 fbgemm_gpu，而 fbgemm_gpu 在 aarch64 上不可用",
+      "returncode": 1,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-25T10:35:00",
+      "command": "cd /workspace/training/common && python3 setup.py --version 1.0.0 bdist_wheel",
+      "success": true,
+      "output": "构建成功：dist/rec_sdk_common-1.0.0-py3-none-any.whl",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-06-25T10:36:00",
+      "command": "pip3 install dist/rec_sdk_common-1.0.0-py3-none-any.whl",
+      "success": true,
+      "output": "rec-sdk-common-1.0.0 安装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-06-25T10:40:00",
+      "command": "pip3 install numpy psutil pytest pytest-cov pytest-html（使用阿里云镜像）",
+      "success": true,
+      "output": "所有包安装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-06-25T10:42:00",
+      "command": "cd /workspace/training/common/python/tests && python3 -m pytest --tb=short -v",
+      "success": false,
+      "output": "63 passed, 1 failed (test_ok in TestFileSafeCheck 需要 tensorflow 模块)",
+      "error": "1 个测试失败：validator/test_safe_checker.py::TestFileSafeCheck::test_ok - ModuleNotFoundError: No module named 'tensorflow'",
+      "returncode": 1,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-06-25T10:45:00",
+      "command": "C++ 构建尝试：cd /workspace/training/common/src && cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON_PATH=/usr -DASCEND_PATH=/tmp/fake_ascend ...",
+      "success": false,
+      "output": "CMake Error: INVALID FOLDER, opensource/ 目录不存在",
+      "error": "C++ 构建需要：1) ../opensource 目录（含 pybind11、securec），2) Ascend CANN SDK 头文件和库（/usr/local/Ascend/ 路径），3) Python 3.7 特定版本。这些依赖均无法从 openEuler 仓库获取",
+      "returncode": 1,
+      "duration_seconds": 3
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-06-25T10:00:00",
+      "step": "start",
+      "action": "开始验证流程（openEuler 原生构建模式）",
+      "result": "已启动",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-25T10:02:00",
+      "step": "document_reading",
+      "action": "读取 README.md、安装指南、Dockerfile、CMakeLists.txt、setup.py 等文档",
+      "result": "成功",
+      "details": {
+        "files_read": ["README.md", "Dockerfile.26.1.0-openEuler22.03-pt-py3.11", "Dockerfile.26.1.0-openEuler22.03-tf-py3.7", "recsdk_torch_installation_guide.md", "recsdk_tf_installation_guide.md", "setup.py", "CMakeLists.txt", "build.sh"],
+        "key_findings": "仓库是华为昇腾 Rec SDK，依赖 CANN 9.0.0 专有 SDK、PyTorch/TensorFlow NPU 适配版、fbgemm_gpu 等专有组件"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T10:05:00",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 pre-commit 配置",
+      "result": "已配置",
+      "details": {"config_file": ".pre-commit-config.yaml", "hooks_count": 11}
+    },
+    {
+      "timestamp": "2026-06-25T10:06:00",
+      "step": "static_analysis_execution",
+      "action": "执行 pre-commit run --all-files（跳过 pylint/bandit）",
+      "result": "部分通过",
+      "details": {"passed": 6, "failed": 3, "skipped": 2, "failed_hooks": ["ruff-check", "codespell", "typos"], "skipped_hooks": ["pylint (Python 3.10+ required)", "bandit (Python 3.10+ required)"]}
+    },
+    {
+      "timestamp": "2026-06-25T10:07:00",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 lint-runner 配置",
+      "result": "未配置",
+      "details": {"searched_patterns": [".lint-runner.yaml", ".lint-runner.json", "lint-runner.config.*", ".lintrunner.toml"]}
+    },
+    {
+      "timestamp": "2026-06-25T10:08:00",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录",
+      "result": "未配置",
+      "details": {"config_dir": null}
+    },
+    {
+      "timestamp": "2026-06-25T10:10:00",
+      "step": "dockerfile_analysis",
+      "action": "分析 Dockerfile 提取依赖并映射到 openEuler 等效包",
+      "result": "成功",
+      "details": {
+        "dockerfiles_analyzed": ["Dockerfile.26.1.0-openEuler22.03-pt-py3.11", "Dockerfile.26.1.0-openEuler22.03-tf-py3.7"],
+        "key_mappings": "GCC 11.2.0 源码编译 → dnf gcc 12.3.0; CMake 3.22.6 源码编译 → dnf cmake; Python 3.11.0 源码编译 → dnf python3.11.6; CANN 9.0.0 → 无法映射（专有 SDK）"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T10:15:00",
+      "step": "image_selection",
+      "action": "选择 openEuler 基础镜像",
+      "result": "openEuler 24.03 LTS",
+      "details": {
+        "selection_reason": "仓库 Dockerfile 原指定 openeuler/openeuler:22.03-lts-sp4，升级至 openEuler 24.03 LTS 从零构建"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T10:16:00",
+      "step": "container_setup",
+      "action": "拉取 openEuler 基础镜像并启动容器",
+      "result": "成功",
+      "details": {"image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts", "container_name": "ttfhw-RecSDK-openeuler-env"}
+    },
+    {
+      "timestamp": "2026-06-25T10:18:00",
+      "step": "dependency_installation_layer1",
+      "action": "安装系统工具链（gcc gcc-c++ make cmake git python3 python3-pip python3-devel）",
+      "result": "成功",
+      "details": {"source": "openEuler 官方仓库 (dnf)", "packages": ["gcc-12.3.0", "gcc-c++-12.3.0", "make-4.4.1", "cmake-3.22+", "git-2.45+", "python3-3.11.6", "python3-pip-23.3.1"]}
+    },
+    {
+      "timestamp": "2026-06-25T10:20:00",
+      "step": "dependency_installation_layer2",
+      "action": "安装构建依赖（映射自 Dockerfile 中的 dnf install 指令）",
+      "result": "成功",
+      "details": {"source": "openEuler 官方仓库 (dnf)", "packages": ["net-tools", "wget", "unzip", "zlib-devel", "bzip2", "bzip2-devel", "openssl-devel", "ncurses-devel", "openssh-clients", "sqlite-devel", "readline-devel", "tk-devel", "gdbm-devel", "xz-devel", "libffi-devel", "hdf5-devel", "patch", "pciutils", "vim", "findutils", "dos2unix", "automake", "autoconf", "m4", "perl", "e2fsprogs", "sudo", "libtool"]}
+    },
+    {
+      "timestamp": "2026-06-25T10:25:00",
+      "step": "dependency_installation_layer3",
+      "action": "安装 Python 依赖（PyTorch 2.6.0+cpu）",
+      "result": "成功",
+      "details": {"source": "PyTorch 官方 CPU 源", "packages": ["torch-2.6.0+cpu"]}
+    },
+    {
+      "timestamp": "2026-06-25T10:28:00",
+      "step": "dependency_installation_layer3",
+      "action": "安装 fbgemm_gpu 和 torchrec",
+      "result": "失败",
+      "details": {"error": "fbgemm_gpu CPU 版本在 aarch64 架构上不可用，torchrec 依赖 fbgemm_gpu 无法安装"}
+    },
+    {
+      "timestamp": "2026-06-25T10:35:00",
+      "step": "build_attempt",
+      "action": "构建 Python 公共包（training/common）",
+      "result": "成功",
+      "details": {"artifact": "dist/rec_sdk_common-1.0.0-py3-none-any.whl", "size": "~30KB"}
+    },
+    {
+      "timestamp": "2026-06-25T10:40:00",
+      "step": "build_attempt",
+      "action": "尝试 C++ 组件构建（training/common/src）",
+      "result": "失败",
+      "details": {"error": "缺少 opensource 目录（pybind11、securec）、Ascend CANN SDK 头文件、Python 3.7 特定版本"}
+    },
+    {
+      "timestamp": "2026-06-25T10:42:00",
+      "step": "ut_execution",
+      "action": "执行 Python 公共包单元测试",
+      "result": "部分通过",
+      "details": {"total": 64, "passed": 63, "failed": 1, "failure_reason": "test_ok 需要 tensorflow 模块"}
+    },
+    {
+      "timestamp": "2026-06-25T10:45:00",
+      "step": "sample_execution",
+      "action": "执行样例程序",
+      "result": "跳过",
+      "details": {"reason": "样例需要 Ascend NPU 硬件和 CANN SDK，当前环境不具备"}
+    },
+    {
+      "timestamp": "2026-06-25T10:50:00",
+      "step": "cleanup",
+      "action": "停止并删除容器 ttfhw-RecSDK-openeuler-env",
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-25T10:55:00",
+      "step": "report_generation",
+      "action": "生成验证报告",
+      "result": "成功",
+      "details": {"output_file": "verification_report_WSL_RecSDK_20260625.json"}
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（11个hooks，6通过3失败2跳过），未检测到 lint-runner 配置",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "部分通过",
+        "duration_seconds": 45,
+        "total_hooks": 11,
+        "passed": 6,
+        "failed": 3,
+        "skipped": 2,
+        "failures": [
+          {
+            "hook_name": "ruff-check",
+            "error": "发现 40+ 个 Python 代码质量问题（E402/E712/F401/F811/F841/SIM115 等）"
+          },
+          {
+            "hook_name": "codespell",
+            "error": "发现 5 个拼写错误（substract→subtract, lenghts→lengths, outweight→outweigh, shold→should, eles→else 等）"
+          },
+          {
+            "hook_name": "typos",
+            "error": "发现 30+ 个拼写错误（constrans→constrains, nd→and, spliting→splitting, Arry→Array, wiil→will, invaild→invalid 等）"
+          }
+        ],
+        "skipped_hooks": [
+          {
+            "hook_name": "pylint",
+            "reason": "宿主机 Python 3.9.9 不满足 pylint 要求的 Python >=3.10"
+          },
+          {
+            "hook_name": "bandit",
+            "reason": "宿主机 Python 3.9.9 不满足 bandit 要求的 Python >=3.10"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "original_base_image": null,
+      "used_image": "openEuler 24.03 LTS",
+      "summary": "仓库未配置 devcontainer"
+    },
+    "build": {
+      "status": "部分成功",
+      "duration_seconds": 180,
+      "artifacts": [
+        {
+          "name": "rec_sdk_common wheel",
+          "path": "training/common/dist/rec_sdk_common-1.0.0-py3-none-any.whl",
+          "size": "~30KB"
+        }
+      ],
+      "summary": "Python 公共包（rec_sdk_common）构建成功。C++ 组件（training/common/src）和 Torch/TF 组件无法构建，原因：1) 缺少 Ascend CANN SDK（华为专有软件，不在 openEuler 仓库中）；2) 缺少 opensource 目录（pybind11、securec 等外部依赖）；3) fbgemm_gpu 在 aarch64 上无 CPU 版本；4) torchrec 依赖 fbgemm_gpu 无法安装"
+    },
+    "ut": {
+      "status": "部分通过",
+      "duration_seconds": 2,
+      "total": 64,
+      "passed": 63,
+      "failed": 1,
+      "failures": [
+        {
+          "test_name": "validator/test_safe_checker.py::TestFileSafeCheck::test_ok",
+          "error": "ModuleNotFoundError: No module named 'tensorflow'"
+        }
+      ],
+      "summary": "Python 公共包 64 个测试中 63 个通过，1 个失败（需要 tensorflow 模块）。C++ 测试和 Torch/TF 组件测试因缺少 Ascend SDK 无法执行"
+    },
+    "sample": {
+      "status": "跳过",
+      "duration_seconds": 0,
+      "results": [],
+      "summary": "所有样例需要 Ascend NPU 硬件和 CANN SDK，当前环境不具备，无法执行"
+    }
+  },
+  "documentation_gaps": [
+    "README.md 未列出完整的构建依赖列表，需深入阅读各组件安装指南才能获取",
+    "Dockerfile 中 CANN SDK 安装依赖华为云 OBS 存储，外部用户可能无法直接下载",
+    "安装指南中提到的 opensource 目录结构未在 README 中说明，需阅读源码编译章节才能了解",
+    "fbgemm_gpu 的 CPU 版本在 aarch64 架构上不可用，文档未说明此限制",
+    "C++ 构建需要 Python 3.7 特定版本（CMakeLists.txt 中硬编码 python3.7m），与 openEuler 24.03 默认 Python 3.11 不兼容",
+    "pre-commit 配置中的 pylint 和 bandit 要求 Python >=3.10，但 TF 组件要求 Python 3.7.5，存在版本冲突"
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-06-25T10:06:00",
+      "problem": "pylint 和 bandit pre-commit hooks 因宿主机 Python 3.9.9 不满足 >=3.10 要求而无法运行",
+      "solution": "跳过这两个 hooks，在报告中记录",
+      "source": ".pre-commit-config.yaml 中 pylint v4.0.5 和 bandit 1.9.4 要求 Python >=3.10"
+    },
+    {
+      "timestamp": "2026-06-25T10:28:00",
+      "problem": "fbgemm_gpu==1.1.0+cpu 在 aarch64 架构上无可用版本",
+      "solution": "无法解决，这是 PyTorch 官方源的限制。fbgemm_gpu 的 CPU wheel 仅提供 x86_64 架构",
+      "source": "pip install fbgemm_gpu==1.1.0+cpu --index-url https://download.pytorch.org/whl/cpu"
+    },
+    {
+      "timestamp": "2026-06-25T10:30:00",
+      "problem": "torchrec 安装失败，依赖 fbgemm_gpu",
+      "solution": "无法解决，torchrec 强依赖 fbgemm_gpu，而 fbgemm_gpu 在 aarch64 上不可用",
+      "source": "pip install torchrec"
+    },
+    {
+      "timestamp": "2026-06-25T10:42:00",
+      "problem": "Python 测试 test_ok 失败，缺少 tensorflow 模块",
+      "solution": "tensorflow 的 NPU 适配版需从华为 Ascend 仓库下载，不在 PyPI 上。且 TF 组件要求 Python 3.7.5，与容器中的 Python 3.11.6 不兼容",
+      "source": "validator/test_safe_checker.py::TestFileSafeCheck::test_ok"
+    },
+    {
+      "timestamp": "2026-06-25T10:45:00",
+      "problem": "C++ 组件构建失败，缺少 Ascend CANN SDK 和 opensource 目录",
+      "solution": "CANN SDK 是华为昇腾专有软件，需从 https://www.hiascend.com/cann/download 下载安装。opensource 目录需手动创建并放入 pybind11、securec 等依赖",
+      "source": "training/common/src/CMakeLists.txt 和 build.sh"
+    }
+  ]
+}
