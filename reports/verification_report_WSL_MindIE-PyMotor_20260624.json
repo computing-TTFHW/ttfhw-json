@@ -1,0 +1,515 @@
+{
+  "metadata": {
+    "repo_path": "https://gitcode.com/Ascend/MindIE-PyMotor.git",
+    "start_time": "2026-06-24T11:44:00",
+    "end_time": "2026-06-24T12:55:00",
+    "duration_seconds": 4260,
+    "total_steps": 18
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i7-12700",
+      "cpu_cores": 20,
+      "memory": "32Gi",
+      "disk": "504G total / 478G available",
+      "docker_version": "Docker version 29.4.3, build 055a478"
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS)",
+      "architecture": "x86_64",
+      "cpu_cores": 20,
+      "memory": "16Gi"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "强制使用 openEuler 24.03 LTS 基础镜像。仓库官方 openEuler Dockerfile 指定 FROM quay.nju.edu.cn/ascend/vllm-ascend:v0.18.0-openeuler（昇腾 NPU 预构建镜像，含预装 CANN/vLLM 依赖），按技能约束忽略该预构建镜像，改用纯净 openEuler 24.03 LTS 从零构建环境",
+      "dependency_mapping": {
+        "from_dockerfile": "docker/mindie-motor-vllm/3.0.0-800I-A2-py3.11-openEuler24.03-lts-x86_64/Dockerfile",
+        "mappings": [
+          {"original": "git (Dockerfile 条件安装：apt-get/yum/dnf install git)", "openEuler": "dnf install -y git", "source": "Dockerfile 第29-44行"},
+          {"original": "pip install -r requirements.txt", "openEuler": "保持 pip 安装（openEuler 仓库无对应 python3-xxx 全集），pip 源由默认改为 Huawei 云镜像", "source": "Dockerfile 第49行"},
+          {"original": "python（脚本中调用 python 命令）", "openEuler": "openEuler 仅提供 python3，需 ln -sf /usr/bin/python3 /usr/local/bin/python 提供 python 命令", "source": "scripts/generate_proto.sh、build.sh"}
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "docker/OVERVIEW.zh.md - 支持的硬件章节 / Dockerfile 目录命名",
+      "value": "x86_64 与 aarch64 均支持，本次验证使用 x86_64"
+    },
+    "recommended_image": {
+      "source": "docker/mindie-motor-vllm/<tag>/Dockerfile FROM 指令",
+      "value": "原推荐 quay.nju.edu.cn/ascend/vllm-ascend:v0.18.0-openeuler（昇腾 NPU 预构建镜像），已改用 openEuler 24.03 LTS 纯净基础镜像"
+    },
+    "dockerfile_dependencies": {
+      "source": "Dockerfile RUN 指令",
+      "value": [
+        {"original": "git clone 前条件安装 git（apt-get/yum/dnf install git）", "openEuler_equivalent": "dnf install -y git"},
+        {"original": "pip install --no-cache-dir -r requirements.txt", "openEuler_equivalent": "pip3 install --no-cache-dir -r requirements.txt（Huawei 云 pip 源）"},
+        {"original": "bash build.sh（生成 proto + 构建 wheel）", "openEuler_equivalent": "bash build.sh（需 python 命令、grpcio-tools）"},
+        {"original": "pip install dist/motor*.whl", "openEuler_equivalent": "pip install dist/motor-0.1.0-py3-none-any.whl"}
+      ]
+    },
+    "dependencies": {
+      "source": "Dockerfile + requirements.txt + build.sh + tests/run_tests.sh + setup.py",
+      "value": [
+        "python3 >= 3.11 (dnf: python3，实测 3.11.6，满足 setup.py python_requires>=3.11)",
+        "gcc/gcc-c++/make/cmake/git (dnf 系统工具链)",
+        "python3-pip (dnf)",
+        "grpcio-tools >= 1.40.0 (pip，build.sh 生成 protobuf 必需)",
+        "requirements.txt 全部 23 项运行时依赖 (pip：psutil/fastapi/uvicorn/grpcio/pydantic/msgspec/requests/httpx/httpx2/pytest-asyncio/pyOpenSSL/watchdog/kubernetes/opentelemetry-*/pyzmq/uvloop/anyio/setproctitle/confluent_kafka/transformers/Pillow)",
+        "pytest/pytest-cov/pytest-asyncio/pytest-xdist (tests/run_tests.sh 自动检查并安装)"
+      ]
+    },
+    "build_commands": {
+      "source": "build.sh + docker Dockerfile 第48-52行",
+      "value": "bash build.sh （内部执行 scripts/generate_proto.sh 生成 protobuf，再 python -m pip wheel . --no-deps --use-pep517 -w dist 构建 wheel）"
+    },
+    "ut_commands": {
+      "source": "README.md 贡献指南 + tests/run_tests.sh + pytest.ini",
+      "value": "bash tests/run_tests.sh （封装 pytest，默认 6 进程并行，自动检查/安装测试依赖并生成 proto）"
+    },
+    "sample_commands": {
+      "source": "docker/OVERVIEW.zh.md 最小验证命令 + examples/ 目录",
+      "value": "python -c 'import motor; print(\"motor ok\")' 冒烟测试；examples/ 下为 K8s/NPU 部署样例（deployer、features、infer_engines），需昇腾 NPU 与 K8s 环境，本机无法运行"
+    },
+    "special_dependencies": {
+      "source": "docker Dockerfile ARG PIP_INDEX_URL + requirements.txt",
+      "value": [
+        "pip 源：Dockerfile 指定 https://repo.huaweicloud.com/repository/pypi/simple（清华源对部分包返回 403，已切换至 Huawei 云源）",
+        "examples/features/observability 含独立 ccae_reporter 子包（独立 build.sh / requirements.txt），本次未编译"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-06-24T11:44:00",
+      "command": "git clone --depth 1 https://gitcode.com/Ascend/MindIE-PyMotor.git tmp_src",
+      "success": true,
+      "output": "Cloning into 'tmp_src'... 完成，仓库根含 README.md/build.sh/setup.py/requirements.txt/tests/motor/docker 等",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-06-24T11:46:00",
+      "command": "阅读 README.md / build.sh / setup.py / requirements.txt / pytest.ini / tests/run_tests.sh / scripts/generate_proto.sh / docker/OVERVIEW.zh.md / Dockerfile",
+      "success": true,
+      "output": "确认为 Python 包 motor（version 0.1.0，python>=3.11），构建产物为 wheel；UT 入口 tests/run_tests.sh；官方 openEuler Dockerfile 基于 vllm-ascend 预构建镜像",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-06-24T11:48:00",
+      "command": "检查静态检查配置：.pre-commit-config.yaml 存在；搜索 lint-runner 配置（.lint-runner.* / .lintrunner.toml）",
+      "success": true,
+      "output": "pre-commit 已配置（15 个 hook）；未找到任何 lint-runner 配置文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-06-24T11:48:30",
+      "command": "检查 .devcontainer/ 目录",
+      "success": true,
+      "output": "不存在 .devcontainer 目录，仓库未配置 devcontainer 能力",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-24T11:50:00",
+      "command": "docker pull hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "success": true,
+      "output": "Status: Image is up to date，Digest: sha256:ace677f4...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-06-24T11:51:00",
+      "command": "MSYS_NO_PATHCONV=1 docker run -d --name ttfhw-MindIE-PyMotor-openeuler-env -v <repo>/tmp_src:/workspace -w /workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts tail -f /dev/null",
+      "success": true,
+      "output": "容器启动成功；容器规格：openEuler 24.03 (LTS) / x86_64 / 20 核 / 16Gi 内存 / 1007G 磁盘",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-06-24T11:52:00",
+      "command": "第一层依赖：dnf install -y gcc gcc-c++ make cmake git python3 python3-pip",
+      "success": true,
+      "output": "安装完成：gcc 12.3.1, g++ 12.3.1, make 4.4.1, cmake 3.27.9, git 2.43.0, python3 3.11.6, pip 23.3.1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 990
+    },
+    {
+      "timestamp": "2026-06-24T12:09:00",
+      "command": "pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple",
+      "success": false,
+      "output": "",
+      "error": "清华源对 psutil 等部分 whl 返回 HTTP 403 Forbidden，无法下载",
+      "returncode": 1,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-24T12:10:00",
+      "command": "pip3 config set global.index-url https://repo.huaweicloud.com/repository/pypi/simple（与 Dockerfile 一致）",
+      "success": true,
+      "output": "pip 源切换至 Huawei 云镜像",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-06-24T12:11:00",
+      "command": "第三层依赖：pip3 install --no-cache-dir -r requirements.txt",
+      "success": true,
+      "output": "Successfully installed 全部依赖：fastapi-0.138.0 grpcio-1.81.1 grpcio-tools-1.81.1 pydantic-2.13.4 transformers-5.12.1 kubernetes-35.0.0 等共 80+ 包",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 405
+    },
+    {
+      "timestamp": "2026-06-24T12:18:00",
+      "command": "cd /workspace && bash build.sh",
+      "success": false,
+      "output": "build.sh: line 11: $'\\r': command not found；line 12: set: pipefail: invalid option name",
+      "error": "挂载的仓库为 Windows 宿主机 clone，脚本为 CRLF 行尾，openEuler bash 无法解析",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-24T12:19:00",
+      "command": "cd /opt && git clone --depth 1 https://gitcode.com/Ascend/MindIE-PyMotor.git MindIE-PyMotor（容器内重新 clone 获得 LF 行尾，与官方 Dockerfile 做法一致）",
+      "success": true,
+      "output": "clone 成功，build.sh 为标准 LF Bourne-Again shell script",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 12
+    },
+    {
+      "timestamp": "2026-06-24T12:20:00",
+      "command": "cd /opt/MindIE-PyMotor && bash build.sh",
+      "success": false,
+      "output": "Generating protobuf files... Error: grpcio-tools is not installed.",
+      "error": "generate_proto.sh 使用 `python` 命令检测 grpc_tools，但 openEuler 仅提供 python3，无 python 命令",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-24T12:21:00",
+      "command": "ln -sf /usr/bin/python3 /usr/local/bin/python（提供 python 命令，base 镜像 vllm-ascend 自带而纯净 openEuler 缺失）",
+      "success": true,
+      "output": "python --version → 3.11.6；python -c 'import grpc_tools.protoc' 通过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-24T12:22:00",
+      "command": "cd /opt/MindIE-PyMotor && rm -rf build/ dist/ motor.egg-info/ && bash build.sh",
+      "success": true,
+      "output": "3 个 proto（kv/auth/rpc）生成成功；Building wheel... 产出 dist/motor-0.1.0-py3-none-any.whl (744K)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 9
+    },
+    {
+      "timestamp": "2026-06-24T12:24:00",
+      "command": "pip install --force-reinstall dist/motor-0.1.0-py3-none-any.whl && cd /tmp && python -c 'import motor; print(\"motor import OK\")'",
+      "success": true,
+      "output": "Successfully installed motor-0.1.0；motor import OK（冒烟测试通过）；engine_server CLI 已注册（运行需昇腾 NPU 运行时）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-06-24T12:26:00",
+      "command": "cd /opt/MindIE-PyMotor && bash tests/run_tests.sh -n 12",
+      "success": true,
+      "output": "1960 passed, 1 skipped, 40 warnings in 8.51s（pytest-xdist 12 进程并行）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 24
+    },
+    {
+      "timestamp": "2026-06-24T12:40:00",
+      "command": "pip install pre-commit && cd /opt/MindIE-PyMotor && git config --global --add safe.directory . && pre-commit run --all-files",
+      "success": true,
+      "output": "15 个 hook 执行完成：9 通过 / 5 失败 / 1 跳过（exit code 1），详见 final_results.static_analysis",
+      "error": "detect-private-key/ruff-check/codespell/pylint/bandit 报告问题",
+      "returncode": 1,
+      "duration_seconds": 227
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-06-24T11:44:00",
+      "step": "start",
+      "action": "开始验证流程（openEuler 原生构建模式），clone MindIE-PyMotor 仓库",
+      "result": "已启动",
+      "details": {"repo": "https://gitcode.com/Ascend/MindIE-PyMotor.git"}
+    },
+    {
+      "timestamp": "2026-06-24T11:46:00",
+      "step": "document_reading",
+      "action": "从 README.md 入口逐层阅读 build.sh/setup.py/requirements.txt/tests/run_tests.sh/scripts/generate_proto.sh/docker 文档",
+      "result": "成功",
+      "details": {"project_type": "Python 包 motor (wheel)", "python_requires": ">=3.11", "build_entry": "build.sh", "ut_entry": "tests/run_tests.sh"}
+    },
+    {
+      "timestamp": "2026-06-24T11:47:30",
+      "step": "dockerfile_analysis",
+      "action": "读取官方 openEuler Dockerfile 提取依赖并映射",
+      "result": "成功",
+      "details": {
+        "dockerfile": "docker/mindie-motor-vllm/3.0.0-800I-A2-py3.11-openEuler24.03-lts-x86_64/Dockerfile",
+        "original_base_image": "quay.nju.edu.cn/ascend/vllm-ascend:v0.18.0-openeuler（预构建 NPU 镜像）",
+        "will_use": "openEuler 24.03 LTS（纯净）"
+      }
+    },
+    {
+      "timestamp": "2026-06-24T11:48:00",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 pre-commit 配置",
+      "result": "已配置",
+      "details": {"config_file": ".pre-commit-config.yaml", "hooks_count": 15}
+    },
+    {
+      "timestamp": "2026-06-24T11:48:20",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 lint-runner 配置",
+      "result": "未配置",
+      "details": {"searched_patterns": [".lint-runner.yaml", ".lint-runner.json", "lint-runner.config.*", ".lintrunner.toml"]}
+    },
+    {
+      "timestamp": "2026-06-24T11:48:30",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录",
+      "result": "未配置",
+      "details": {"exists": false}
+    },
+    {
+      "timestamp": "2026-06-24T11:50:00",
+      "step": "container_setup",
+      "action": "拉取 openEuler 基础镜像并启动容器（挂载仓库到 /workspace）",
+      "result": "成功",
+      "details": {"image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts", "container_name": "ttfhw-MindIE-PyMotor-openeuler-env", "cores": 20, "memory": "16Gi"}
+    },
+    {
+      "timestamp": "2026-06-24T11:52:00",
+      "step": "dependency_installation_layer1",
+      "action": "安装系统工具链（gcc gcc-c++ make cmake git python3 python3-pip）",
+      "result": "成功",
+      "details": {"source": "openEuler 官方仓库 (dnf)", "note": "首层安装耗时约 16.5 分钟（镜像源较慢）", "versions": {"gcc": "12.3.1", "cmake": "3.27.9", "python3": "3.11.6"}}
+    },
+    {
+      "timestamp": "2026-06-24T12:10:00",
+      "step": "dependency_installation_layer3",
+      "action": "切换 pip 源至 Huawei 云后安装 requirements.txt 全部 Python 依赖",
+      "result": "成功",
+      "details": {"source": "pip (Huawei 云镜像)", "note": "清华源对部分 whl 返回 403，按 Dockerfile 指定改用 Huawei 云", "duration_seconds": 405}
+    },
+    {
+      "timestamp": "2026-06-24T12:18:00",
+      "step": "build_attempt",
+      "action": "首次构建（挂载的 Windows clone 源码）",
+      "result": "失败",
+      "details": {"error": "CRLF 行尾导致 bash 无法解析 build.sh"}
+    },
+    {
+      "timestamp": "2026-06-24T12:19:00",
+      "step": "problem_resolution",
+      "action": "容器内重新 git clone 获得 LF 行尾源码（与官方 Dockerfile 做法一致）",
+      "result": "已解决",
+      "details": {"path": "/opt/MindIE-PyMotor"}
+    },
+    {
+      "timestamp": "2026-06-24T12:20:00",
+      "step": "build_attempt",
+      "action": "第二次构建",
+      "result": "失败",
+      "details": {"error": "脚本调用 python 命令，纯净 openEuler 仅有 python3"}
+    },
+    {
+      "timestamp": "2026-06-24T12:21:00",
+      "step": "problem_resolution",
+      "action": "创建 python→python3 符号链接（base 镜像自带，纯净 openEuler 缺失）",
+      "result": "已解决",
+      "details": {"command": "ln -sf /usr/bin/python3 /usr/local/bin/python"}
+    },
+    {
+      "timestamp": "2026-06-24T12:22:00",
+      "step": "build_retry",
+      "action": "清理缓存后第三次构建（生成 proto + 构建 wheel）",
+      "result": "成功",
+      "details": {"artifact": "dist/motor-0.1.0-py3-none-any.whl", "size": "744K", "proto_generated": ["kv", "auth", "rpc"]}
+    },
+    {
+      "timestamp": "2026-06-24T12:24:00",
+      "step": "sample_execution",
+      "action": "安装 wheel 并做冒烟测试 import motor",
+      "result": "成功",
+      "details": {"smoke_test": "import motor OK", "cli": "engine_server 已注册（运行依赖昇腾 NPU）"}
+    },
+    {
+      "timestamp": "2026-06-24T12:26:00",
+      "step": "ut_execution",
+      "action": "执行单元测试 bash tests/run_tests.sh -n 12",
+      "result": "成功",
+      "details": {"total": 1961, "passed": 1960, "skipped": 1, "failed": 0, "concurrency": 12, "concurrency_ratio": "60%"}
+    },
+    {
+      "timestamp": "2026-06-24T12:40:00",
+      "step": "static_analysis_execution",
+      "action": "安装 pre-commit 并执行 pre-commit run --all-files",
+      "result": "部分通过",
+      "details": {"total_hooks": 15, "passed": 9, "failed": 5, "skipped": 1}
+    },
+    {
+      "timestamp": "2026-06-24T12:54:00",
+      "step": "cleanup",
+      "action": "停止并删除容器 ttfhw-MindIE-PyMotor-openeuler-env",
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-24T12:55:00",
+      "step": "report_generation",
+      "action": "生成验证报告",
+      "result": "成功",
+      "details": {"output_file": "verification_report_WSL_MindIE-PyMotor_20260624.json"}
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（15 个 hook：9 通过 / 5 失败 / 1 跳过），未检测到 lint-runner 配置。失败项为存量代码质量/安全告警（ruff、pylint、bandit、codespell）及测试夹具私钥，非构建阻断问题。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "部分通过",
+        "duration_seconds": 227,
+        "total_hooks": 15,
+        "passed": 9,
+        "failed": 5,
+        "skipped": 1,
+        "passed_hooks": ["trailing-whitespace", "end-of-file-fixer", "check-yaml", "check-added-large-files", "check-merge-conflict", "check-json", "ruff-format", "typos", "log-quality-basic"],
+        "skipped_hooks": ["clang-format（无 C/C++ 文件需检查）"],
+        "failures": [
+          {
+            "hook_name": "detect-private-key",
+            "file": "tests/coordinator/test_http_server_cert.py",
+            "error": "检测到测试用私钥（证书相关单元测试的夹具数据，属预期）"
+          },
+          {
+            "hook_name": "ruff-check",
+            "file": "多个文件",
+            "error": "12 处问题：E402 模块导入不在文件顶部、F841 局部变量赋值未使用、E741 变量名歧义 l、F811 重复定义等"
+          },
+          {
+            "hook_name": "codespell",
+            "file": "motor/common/etcd/proto/rpc.proto / .gitcode/ISSUE_TEMPLATE/feature-request.yml",
+            "error": "2 处拼写：recieved→received、Backgroud→Background"
+          },
+          {
+            "hook_name": "pylint",
+            "file": "多个文件",
+            "error": "约 112 处代码质量提示：W1514 open 未指定编码、R1732 建议使用 with、C0207/R1721 等约定/重构建议"
+          },
+          {
+            "hook_name": "bandit",
+            "file": "examples/deployer/lib/utils.py 等",
+            "error": "5 处安全告警：1 High (B605 shell 启动进程注入风险 examples/deployer/lib/utils.py:62)、4 Low (B105/B107 疑似硬编码口令，实为常量字符串误报)"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "summary": "仓库未配置 .devcontainer 开发容器能力"
+    },
+    "build": {
+      "status": "成功",
+      "duration_seconds": 9,
+      "artifacts": [
+        {
+          "name": "motor wheel 包",
+          "path": "dist/motor-0.1.0-py3-none-any.whl",
+          "size": "744 KB"
+        },
+        {
+          "name": "生成的 protobuf（kv/auth/rpc）",
+          "path": "motor/common/etcd/proto/*_pb2.py, *_pb2_grpc.py",
+          "size": "6 个生成文件"
+        }
+      ]
+    },
+    "ut": {
+      "status": "成功",
+      "duration_seconds": 24,
+      "total": 1961,
+      "passed": 1960,
+      "failed": 0,
+      "skipped": 1,
+      "failures": []
+    },
+    "sample": {
+      "status": "成功",
+      "duration_seconds": 10,
+      "results": [
+        {
+          "sample_name": "wheel 安装冒烟测试 (import motor)",
+          "execution_status": "成功",
+          "output_summary": "pip install motor-0.1.0-py3-none-any.whl 成功，python -c 'import motor' 返回 motor import OK",
+          "execution_time": "约 10 秒"
+        },
+        {
+          "sample_name": "examples/ 部署样例 (deployer/features/infer_engines)",
+          "execution_status": "跳过",
+          "output_summary": "样例为 K8s + 昇腾 NPU 推理部署脚本，需 NPU 设备与集群环境，纯 CPU openEuler 容器无法运行（符合 NPU 推理软件特性）",
+          "execution_time": "N/A"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    "构建/测试脚本（build.sh、scripts/generate_proto.sh、tests/run_tests.sh）调用 `python` 命令，但官方 openEuler Dockerfile 依赖的 vllm-ascend 基础镜像已自带 python；纯净 openEuler 仅提供 python3，文档未说明需自行提供 python 命令（本次以 ln -sf 解决）",
+    "官方 openEuler Dockerfile 基于昇腾 NPU 预构建镜像 vllm-ascend:v0.18.0-openeuler，未提供纯净 openEuler 从零构建的依赖清单；从零构建需自行从 requirements.txt 与 build.sh 推导",
+    "README.md 主体仅为项目简介与外链文档，未直接给出本地构建/UT 命令；构建入口 build.sh、UT 入口 tests/run_tests.sh 需从仓库文件结构与贡献指南推断",
+    "requirements.txt 未固定 pip 源，默认 PyPI/清华源对部分 whl（如 psutil）返回 403，需按 Dockerfile 改用 Huawei 云源；文档未在主流程中提示此点",
+    "仓库未配置 .devcontainer，无法一键拉起开发容器"
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-06-24T12:09:00",
+      "problem": "pip 清华源对 psutil 等部分 whl 返回 HTTP 403 Forbidden",
+      "solution": "按官方 Dockerfile 指定，切换 pip 源至 Huawei 云镜像 https://repo.huaweicloud.com/repository/pypi/simple，全部依赖安装成功",
+      "source": "docker Dockerfile 第21行 ARG PIP_INDEX_URL"
+    },
+    {
+      "timestamp": "2026-06-24T12:18:00",
+      "problem": "挂载的仓库源码为 Windows 宿主机 clone，脚本为 CRLF 行尾，openEuler bash 报 $'\\r': command not found / pipefail invalid",
+      "solution": "在容器内重新 git clone 获得 LF 行尾源码（与官方 Dockerfile clone 到 /opt/MindIE-PyMotor 的做法一致），未修改任何仓库文件",
+      "source": "Windows/Linux 行尾差异（环境因素，非仓库缺陷）"
+    },
+    {
+      "timestamp": "2026-06-24T12:20:00",
+      "problem": "build.sh 内 scripts/generate_proto.sh 调用 `python` 命令检测 grpc_tools，纯净 openEuler 仅有 python3 无 python 命令",
+      "solution": "创建符号链接 ln -sf /usr/bin/python3 /usr/local/bin/python（提供官方 base 镜像自带、纯净 openEuler 缺失的 python 命令），未修改仓库源码",
+      "source": "scripts/generate_proto.sh 第36行 python -c 'import grpc_tools.protoc'"
+    }
+  ]
+}
