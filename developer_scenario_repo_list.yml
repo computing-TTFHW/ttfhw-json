@@ -264,3 +264,43 @@ CANN:
       url: "https://gitcode.com/cann/amct.git"
       branch: master
       component: "工具"
+
+MindCluster:
+  description: "MindCluster 开发者场景验证代码仓列表"
+  repos:
+    - name: mind-cluster
+      url: "https://gitcode.com/Ascend/mind-cluster.git"
+      branch: master
+      component: MindCluster
+    - name: ascend-deployer
+      url: "https://gitcode.com/Ascend/ascend-deployer.git"
+      branch: dev
+      component: MindCluster
+
+MindSDK:
+  description: "MindSDK 开发者场景验证代码仓列表"
+  repos:
+    - name: RecSDK
+      url: "https://gitcode.com/Ascend/RecSDK.git"
+      branch: develop
+      component: MindSDK
+    - name: IndexSDK
+      url: "https://gitcode.com/Ascend/IndexSDK.git"
+      branch: master
+      component: MindSDK
+    - name: MultimodalSDK
+      url: "https://gitcode.com/Ascend/MultimodalSDK.git"
+      branch: master
+      component: MindSDK
+    - name: AgentSDK
+      url: "https://gitcode.com/Ascend/AgentSDK.git"
+      branch: master
+      component: MindSDK
+    - name: RAGSDK
+      url: "https://gitcode.com/Ascend/RAGSDK.git"
+      branch: master
+      component: MindSDK
+    - name: VisionSDK
+      url: "https://gitcode.com/Ascend/VisionSDK.git"
+      branch: master
+      component: MindSDK
