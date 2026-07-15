@@ -64,6 +64,7 @@ jobs:
       - name: Run deterministic validation
         if: steps.changed-files.outputs.any_changed == 'true'
         id: validate
+        continue-on-error: true
         working-directory: pr
         run: |
           set +e
@@ -99,6 +100,26 @@ jobs:
           "
           exit $VALIDATE_EXIT
 
+      # Run sensitive info scan (trusted script from base/ on PR's JSON files).
+      # Detects cloud credentials, API tokens, DB connection strings, PII, etc.
+      - name: Run sensitive info scan
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: sensitive
+        continue-on-error: true
+        working-directory: pr
+        run: |
+          set +e
+          python3 ../base/scripts/scan_sensitive_info.py ${{ steps.changed-files.outputs.all_changed_files }} > /tmp/sensitive_results.json 2>/tmp/sensitive_stderr.txt
+          SCAN_EXIT=$?
+          echo "::group::敏感信息扫描结果"
+          cat /tmp/sensitive_results.json
+          if [ -s /tmp/sensitive_stderr.txt ]; then
+            echo "--- stderr ---"
+            cat /tmp/sensitive_stderr.txt
+          fi
+          echo "::endgroup::"
+          exit $SCAN_EXIT
+
       - name: Run AI semantic analysis
         if: steps.changed-files.outputs.any_changed == 'true'
         id: ai-check
@@ -116,7 +137,7 @@ jobs:
           fi
 
       - name: Post results as Check Run and PR comment
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: always() && steps.changed-files.outputs.any_changed == 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -129,6 +150,13 @@ jobs:
               console.log('Failed to read deterministic results:', e.message);
             }
 
+            let sensitiveResults = { pass: true, files: {} };
+            try {
+              sensitiveResults = JSON.parse(fs.readFileSync('/tmp/sensitive_results.json', 'utf8'));
+            } catch (e) {
+              console.log('Sensitive scan results not available:', e.message);
+            }
+
             let aiResults = { pass: true, files: {} };
             try {
               aiResults = JSON.parse(fs.readFileSync('/tmp/ai_results.json', 'utf8'));
@@ -138,6 +166,7 @@ jobs:
 
             const allFiles = new Set();
             for (const f of Object.keys(detResults.files)) allFiles.add(f);
+            for (const f of Object.keys(sensitiveResults.files)) allFiles.add(f);
             for (const f of Object.keys(aiResults.files)) allFiles.add(f);
 
             const findings = {};
@@ -147,9 +176,10 @@ jobs:
             for (const file of allFiles) {
               findings[file] = [];
               const df = detResults.files[file] || { issues: [] };
+              const sf = sensitiveResults.files[file] || { issues: [] };
               const af = aiResults.files[file] || { issues: [] };
 
-              for (const issue of [...df.issues, ...af.issues]) {
+              for (const issue of [...df.issues, ...sf.issues, ...af.issues]) {
                 findings[file].push(issue);
                 if (issue.severity === 'error') totalErrors++;
                 else if (issue.severity === 'warning') totalWarnings++;
@@ -188,8 +218,10 @@ jobs:
                 title: checkTitle,
                 summary: `已检查 ${allFiles.size} 个文件的 JSON 质量问题。\n\n` +
                          `- **确定性检查**：${Object.keys(detResults.files).length} 个文件\n` +
+                         `- **敏感信息扫描**：${Object.keys(sensitiveResults.files).length} 个文件\n` +
                          `- **AI 语义分析**：${Object.keys(aiResults.files).length} 个文件${aiResults.error ? ' (部分可用)' : ''}\n\n` +
-                         `此为**建议性**门禁 — 发现的问题不会阻止代码合入。`,
+                         `🚫 ERROR 级别问题（确定性检查 + 敏感信息扫描）将**阻塞** PR 合入。\n` +
+                         `⚠️ WARNING 和 ℹ️ NOTICE 为建议性，不阻塞合入。`,
                 annotations: annotations.slice(0, 50),
               },
             });
@@ -254,7 +286,7 @@ jobs:
             commentBody += '---\n';
             commentBody += '🤖 由 [JSON 质量门禁]' +
               `(https://github.com/${context.repo.owner}/${context.repo.repo}/actions) 自动生成\n`;
-            commentBody += 'ℹ️ 此为**建议性**检查 — 发现的问题不会阻止代码合入。';
+            commentBody += '🚫 **ERROR** 级别问题将阻塞 PR 合入 | ⚠️ WARNING 和 ℹ️ NOTICE 为建议性';
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -284,7 +316,7 @@ jobs:
             }
       # Write workflow summary with token usage
       - name: Write workflow summary
-        if: steps.changed-files.outputs.any_changed == 'true'
+        if: always() && steps.changed-files.outputs.any_changed == 'true'
         run: |
           {
             echo "## JSON 质量门禁"
@@ -293,33 +325,49 @@ jobs:
           import json
           with open('/tmp/deterministic_results.json') as f:
               det = json.load(f)
+          sensitive = {\"files\": {}}
+          try:
+              with open('/tmp/sensitive_results.json') as f:
+                  sensitive = json.load(f)
+          except: pass
           ai_avail = False
           ai_skipped = '${{ env.SKIP_AI_CHECK }}' == 'true'
           try:
               with open('/tmp/ai_results.json') as f:
                   ai = json.load(f)
-              # AI is available if no error and not skipped
               ai_avail = not ai.get('error') and not ai_skipped
           except: pass
+          # Collect all files
+          all_files = set(det.get('files', {}).keys()) | set(sensitive.get('files', {}).keys())
           # Header
           if ai_avail:
-              print('| 文件 | 检查结果 | Token 消耗 | 费用 |')
-              print('|------|---------|-----------|------|')
+              print('| 文件 | 确定性 | 敏感信息 | Token 消耗 | 费用 |')
+              print('|------|--------|---------|-----------|------|')
           else:
-              print('| 文件 | 检查结果 |')
-              print('|------|---------|')
+              print('| 文件 | 确定性 | 敏感信息 |')
+              print('|------|--------|---------|')
           total_cost = 0
           total_tokens = 0
-          for path, info in sorted(det.get('files', {}).items()):
-              name = path.split('/')[-1][:55]
-              issues = info.get('issues', [])
-              errors = sum(1 for i in issues if i.get('severity') == 'error')
-              warnings = sum(1 for i in issues if i.get('severity') == 'warning')
-              notices = sum(1 for i in issues if i.get('severity') == 'notice')
-              if errors: status = f'🚫 {errors}E'
-              elif warnings: status = f'⚠️ {warnings}W'
-              elif notices: status = f'ℹ️ {notices}N'
-              else: status = '✅ 通过'
+          for path in sorted(all_files):
+              name = path.split('/')[-1][:45]
+              # Deterministic status
+              det_info = det.get('files', {}).get(path, {})
+              det_issues = det_info.get('issues', [])
+              det_errors = sum(1 for i in det_issues if i.get('severity') == 'error')
+              det_warnings = sum(1 for i in det_issues if i.get('severity') == 'warning')
+              if det_errors: det_status = f'🚫 {det_errors}E'
+              elif det_warnings: det_status = f'⚠️ {det_warnings}W'
+              else: det_status = '✅'
+              # Sensitive status
+              sens_info = sensitive.get('files', {}).get(path, {})
+              sens_issues = sens_info.get('issues', [])
+              sens_errors = sum(1 for i in sens_issues if i.get('severity') == 'error')
+              sens_warnings = sum(1 for i in sens_issues if i.get('severity') == 'warning')
+              sens_notices = sum(1 for i in sens_issues if i.get('severity') == 'notice')
+              if sens_errors: sens_status = f'🚫 {sens_errors}E'
+              elif sens_warnings: sens_status = f'⚠️ {sens_warnings}W'
+              elif sens_notices: sens_status = f'ℹ️ {sens_notices}N'
+              else: sens_status = '✅'
               if ai_avail:
                   ai_info = ai.get('files', {}).get(path, {})
                   meta = ai_info.get('_meta', {})
@@ -333,15 +381,35 @@ jobs:
                       cost_str = f'¥{cost:.4f}'
                       total_cost += cost
                       total_tokens += tok
-                      print(f'| {name} | {status} | {token_str} | {cost_str} |')
+                      print(f'| {name} | {det_status} | {sens_status} | {token_str} | {cost_str} |')
                   else:
-                      print(f'| {name} | {status} | - | - |')
+                      print(f'| {name} | {det_status} | {sens_status} | - | - |')
               else:
-                  print(f'| {name} | {status} |')
+                  print(f'| {name} | {det_status} | {sens_status} |')
           if total_cost > 0:
-              print(f'| **合计** | | **{total_tokens}** | **¥{total_cost:.4f}** |')
+              print(f'| **合计** | | | **{total_tokens}** | **¥{total_cost:.4f}** |')
           " 2>/dev/null || echo "| - | 结果解析失败 | - |"
             echo ""
             echo "---"
             echo "🤖 由 [JSON 质量门禁](https://github.com/${{ github.repository }}/actions) 自动生成"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # Final gate: fail the job if any blocking (ERROR-level) issues found
+      - name: Quality gate
+        if: always() && steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          BLOCKED=false
+          if [ "${{ steps.validate.outcome }}" = "failure" ]; then
+            echo "::error:: 确定性检查未通过（存在 ERROR 级别问题）"
+            BLOCKED=true
+          fi
+          if [ "${{ steps.sensitive.outcome }}" = "failure" ]; then
+            echo "::error:: 敏感信息扫描未通过（检测到敏感信息泄漏）"
+            BLOCKED=true
+          fi
+          if [ "$BLOCKED" = "true" ]; then
+            echo "::error:: 质量门禁未通过，PR 将被阻塞。请修复上述 ERROR 级别问题后重新提交。"
+            exit 1
+          else
+            echo "✅ 质量门禁通过"
+          fi

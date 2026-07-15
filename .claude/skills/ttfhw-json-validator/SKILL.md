@@ -5,20 +5,23 @@ description: 验证 reports/ 目录中的 TTFHW JSON 验证报告的结构完整
 
 # TTFHW JSON Validator
 
-验证 `reports/` 目录中的 TTFHW 验证报告 JSON 文件，检查三个维度：
+验证 `reports/` 目录中的 TTFHW 验证报告 JSON 文件，检查四个维度：
 
 1. **格式正确性** — 结构、类型、时间戳、数值一致性
-2. **安全风险** — 注入检测、敏感信息泄漏
-3. **语义合理性** — AI 驱动的中文语义分析
+2. **敏感信息扫描** — 云凭证、Token、数据库连接串、PII、内网信息、高熵字符串
+3. **安全风险** — 注入检测（shell/XSS/AI prompt injection）
+4. **语义合理性** — AI 驱动的中文语义分析
 
 ## 调用方式
 
 ```bash
-# 检查所有报告（确定性部分）
+# 确定性检查（结构、类型、注入检测）
 python3 scripts/validate_json.py reports/*.json
 
-# 检查单个报告（含 AI 语义分析）
-python3 scripts/validate_json.py reports/<file>.json
+# 敏感信息扫描（云凭证、Token、PII 等）
+python3 scripts/scan_sensitive_info.py reports/*.json
+
+# AI 语义分析（需要 DEEPSEEK_API_KEY）
 python3 scripts/ai_quality_check.py reports/<file>.json
 ```
 
@@ -48,20 +51,22 @@ https://github.com/computing-TTFHW/ttfhw-report/blob/master/.claude/skills/ttfhw
 | 空数组合理性 | INFO |
 | failure_reason 简短检查 | WARNING |
 
-### 安全风险（8 个检测维度）
+### 敏感信息扫描（8 个检测维度，独立脚本 `scan_sensitive_info.py`）
 
 | 检查项 | 严重级别 |
 |--------|----------|
-| 非命令字段 shell 注入检测 | ERROR |
-| XSS/HTML 注入 | ERROR |
-| 敏感信息泄漏 (API key, token, private key) | ERROR |
-| 异常 URL 检测 | WARNING |
-| 敏感文件路径 | WARNING |
-| Base64 混淆内容 | WARNING |
-| 危险命令审计 (rm -rf /, chmod 777 等) | INFO |
-| JWT token 检测 | ERROR |
+| 云厂商凭证 (AWS/Huawei/Tencent/Alibaba/Azure) | ERROR |
+| 代码托管 Token (GitHub/GitLab/GitCode) | ERROR |
+| 通信平台 Token (Slack/Telegram/Discord/Lark) | ERROR |
+| 数据库连接串 (含用户名密码) | ERROR |
+| 私钥 / JWT / Bearer Token / OpenAI Key | ERROR |
+| 通用密钥赋值 (password=/api_key=/token= 等) | ERROR |
+| 中国身份证号 | ERROR |
+| 邮箱地址 / 手机号 | WARNING |
+| 私有 IP 地址 / MAC 地址 | WARNING/NOTICE |
+| 高熵字符串（疑似编码密钥） | WARNING |
 
-**注意**：`execution_log[].command`、`execution_log[].output` 等命令相关字段中的 shell 语法（`&&`、`$()` 等）被正确排除，不会误报。安全检查聚焦于 `metadata.repo_path`、`*.problem`、`*.source` 等描述性字段。
+**误报控制**：自动跳过 CJK 中文文本、文件名、git SSH URL、Conan 包版本号、已知占位符值（N/A/xxx/your_password 等）。
 
 ### AI 语义分析（6 个检查维度）
 

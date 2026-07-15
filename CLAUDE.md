@@ -24,13 +24,19 @@
 
 提交 PR 时会自动触发 JSON 质量门禁（`.github/workflows/json-quality-gate.yml`），包含：
 - **格式校验**：结构完整性、类型正确性、时间戳格式、数值一致性
-- **安全检查**：注入模式检测、敏感信息泄漏
+- **敏感信息扫描**：云厂商凭证、代码托管 Token、通信平台 Token、数据库连接串、PII 个人信息、内网信息、高熵字符串
+- **安全检查**：注入模式检测（shell/XSS/AI prompt injection）
 - **AI 语义分析**：状态一致性、失败原因质量、文档缺口评估
+
+ERROR 级别问题（格式校验 + 敏感信息扫描）将**阻塞** PR 合入，WARNING/NOTICE 为建议性。
 
 本地手动验证：
 ```bash
 # 确定性检查
 python scripts/validate_json.py reports/*.json
+
+# 敏感信息扫描
+python scripts/scan_sensitive_info.py reports/*.json
 
 # AI 语义分析（需要 DEEPSEEK_API_KEY 环境变量）
 python scripts/ai_quality_check.py reports/<filename>.json
