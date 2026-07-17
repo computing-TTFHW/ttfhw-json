@@ -1,0 +1,446 @@
+{
+  "metadata": {
+    "repo_path": "/home/m00818315/mskpp",
+    "repo_url": "https://gitcode.com/Ascend/mskpp.git",
+    "start_time": "2026-07-02T10:35:00",
+    "end_time": "2026-07-02T10:45:00",
+    "duration_seconds": 600,
+    "total_steps": 28
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "aarch64 (Kunpeng 920)",
+      "cpu_cores": 16,
+      "memory": "30Gi",
+      "disk": "78G total, ~40G available",
+      "docker_version": "Docker version 26.1.3, build b72abbb"
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS)",
+      "architecture": "aarch64",
+      "cpu_cores": 16,
+      "memory": "30Gi (无限制)"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "仓库无 Dockerfile，强制使用 openEuler 24.03 LTS 基础镜像。文档链推荐使用预构建镜像 mindstudio-build，根据验证规范从 openEuler 原生镜像从零构建",
+      "dependency_mapping": {
+        "from_documentation_chain": "README → develop_guide.md → msot/dev_env_setup.md → msot/docker_image_build_guide.md",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md + CMakeLists.txt + 文档架构说明",
+      "value": "aarch64（昇腾 AI 处理器配套环境），C++11 编译，Python >= 3.7"
+    },
+    "recommended_image": {
+      "source": "msot/docs/zh/common/dev_env_setup.md",
+      "value": "文档推荐预构建镜像 mindstudio-build:26.1.0-0701，已改用 openEuler 24.03 LTS 从零构建"
+    },
+    "dockerfile_dependencies": {
+      "source": "无 Dockerfile（仓库无此文件）",
+      "value": []
+    },
+    "dependencies": {
+      "source": "README.md + CMakeLists.txt + setup.py + requirement.txt + dependencies.json + develop_guide.md",
+      "value": [
+        "cmake >= 3.16 (dnf: cmake-3.27.9)",
+        "gcc/g++ >= 9.0 C++11 (dnf: gcc-12.3.1, gcc-c++-12.3.1)",
+        "make (dnf: make-4.4.1)",
+        "python3 >= 3.7 (dnf: python3-3.11.6)",
+        "python3-devel (dnf: python3-devel-3.11.6，cmake find_package(Python REQUIRED))",
+        "git (dnf: git-2.43.0，用于 submodule)",
+        "boost 1.81.0 (下载自 mirrors.aliyun.com，113MB，解压到 thirdparty/boost)",
+        "googletest 1.12.1 (下载自 gitee.com，用于C++测试)",
+        "mockcpp (git submodule: gitcode.com/Ascend/mockcpp.git)",
+        "plotly >= 5.11.0 (dnf: python3-plotly-5.15.0)",
+        "pandas >= 1.0.0 (dnf: python3-pandas-2.2.2)",
+        "pytest (dnf: python3-pytest-7.4.4)",
+        "coverage (dnf: python3-coverage-7.3.2)",
+        "wheel (pip: wheel-0.47.0，构建 whl 包需要)"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/zh/development_guide/develop_guide.md + docs/zh/install_guide/mskpp_install_guide.md",
+      "value": "python build.py（一键式：下载依赖→cmake→make install→whl 打包）或 分步骤：mkdir build && cd build && cmake .. && make -j$(nproc) install"
+    },
+    "ut_commands": {
+      "source": "docs/zh/development_guide/develop_guide.md 第4节 + build.py",
+      "value": "python build.py test（下载测试依赖→cmake -DBUILD_TESTS=ON→make→C++ gtest→Python pytest+coverage）"
+    },
+    "sample_commands": {
+      "source": "docs/zh/quick_start/mskpp_quick_start.md",
+      "value": "需要 CANN + NPU 环境，无法在本验证环境执行"
+    },
+    "special_dependencies": {
+      "source": "dependencies.json + .gitmodules + build.py",
+      "value": [
+        "boost: 从 aliyun 镜像下载 boost_1_81_0.tar.bz2 (113MB)，解压到 thirdparty/boost",
+        "googletest: 从 gitee 下载 release-1.12.1.tar.gz",
+        "mockcpp: git submodule (gitcode.com/Ascend/mockcpp.git, branch ascend_mindstudio_mockcpp_master)",
+        "auditwheel: 可选，用于修复 manylinux wheel，容器中未安装"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-02T10:35:30",
+      "command": "git clone https://gitcode.com/Ascend/mskpp.git",
+      "success": true,
+      "output": "克隆完成",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-02T10:36:00",
+      "command": "文档阅读：README.md → develop_guide.md → install_guide.md → CMakeLists.txt → setup.py → dependencies.json → build.py → download_dependencies.py → .gitmodules",
+      "success": true,
+      "output": "完整理解项目结构：C++/Python混合项目，C++共享库(_C.so)+Python包(mskpp)，构建流程：下载依赖→cmake→make→whl打包",
+      "returncode": 0,
+      "duration_seconds": 90
+    },
+    {
+      "timestamp": "2026-07-02T10:37:30",
+      "command": "检查 .devcontainer/ 目录",
+      "success": true,
+      "output": "不存在 .devcontainer/ 目录",
+      "returncode": 2,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-07-02T10:37:31",
+      "command": "检查 lint-runner 配置",
+      "success": true,
+      "output": "未找到 lint-runner 配置文件",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-07-02T10:37:32",
+      "command": "pip3 install pre-commit ruff pylint bandit codespell（宿主机，华为云镜像）",
+      "success": true,
+      "output": "所有工具已安装（复用之前安装）",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-02T10:37:34",
+      "command": "SKIP=pylint,bandit,typos pre-commit run --all-files",
+      "success": false,
+      "output": "trailing-whitespace: Failed(31文件修复)\nend-of-file-fixer: Failed(60+文件修复)\ncheck-yaml: Passed\ncheck-added-large-files: Passed\ncheck-merge-conflict: Passed\ndetect-private-key: Passed\ncheck-json: Passed\nruff-check: Failed(多文件)\nruff-format: Failed(41文件重新格式化)\ncodespell: Failed(pre-commit/typos.toml + api文档中vor→for)\nclang-format: Failed(24个C++文件格式化)\npylint: Skipped(宿主机Python3.9.9<3.10)\nbandit: Skipped\ntypos: Skipped(GitHub超时)",
+      "error": "5通过/6失败/3跳过",
+      "returncode": 1,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-07-02T10:38:00",
+      "command": "docker run -d --name ttfhw-mskpp-openeuler-env -v .../mskpp:/workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "success": true,
+      "output": "Container: bcb317213781...",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-02T10:38:10",
+      "command": "配置 dnf 华为云镜像源",
+      "success": true,
+      "output": "替换 repo.openeuler.org → mirrors.huaweicloud.com/openeuler",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-07-02T10:38:11",
+      "command": "第1层：dnf install -y gcc gcc-c++ make cmake git python3 python3-pip python3-devel",
+      "success": true,
+      "output": "安装 python3-devel-3.11.6 及依赖链（含 systemd/shadow/util-linux 等间接依赖），共30+包",
+      "returncode": 0,
+      "duration_seconds": 62
+    },
+    {
+      "timestamp": "2026-07-02T10:39:13",
+      "command": "第2层：dnf install -y python3-pandas python3-plotly python3-pytest python3-coverage python3-packaging",
+      "success": true,
+      "output": "python3-pandas-2.2.2, python3-plotly-5.15.0, python3-pytest-7.4.4, python3-coverage-7.3.2 等13包",
+      "returncode": 0,
+      "duration_seconds": 28
+    },
+    {
+      "timestamp": "2026-07-02T10:39:20",
+      "command": "git submodule update --init thirdparty/mockcpp",
+      "success": true,
+      "output": "mockcpp submodule 检出成功 (ascend_mindstudio_mockcpp_master)",
+      "returncode": 0,
+      "duration_seconds": 8
+    },
+    {
+      "timestamp": "2026-07-02T10:39:37",
+      "command": "第1次构建：python build.py",
+      "success": false,
+      "output": "C++编译成功(mskpp_c/_C.so)，但 whl 打包失败",
+      "error": "setup.py: error: invalid command 'bdist_wheel' — 缺少 wheel Python 包",
+      "returncode": 1,
+      "duration_seconds": 8
+    },
+    {
+      "timestamp": "2026-07-02T10:39:38",
+      "command": "pip3 install wheel → rm -rf build → 第2次构建：python build.py",
+      "success": true,
+      "output": "C++ 编译+链接成功 → whl 打包成功 → mindstudio_kpp-0.0.0.dev0-py3-none-manylinux_2_38_aarch64.whl (2.6MB)，归档到 artifacts/",
+      "returncode": 0,
+      "duration_seconds": 8
+    },
+    {
+      "timestamp": "2026-07-02T10:39:56",
+      "command": "python build.py test（下载boost 113MB+googletest，cmake Debug，C++ gtest + Python pytest）",
+      "success": true,
+      "output": "C++ gtest: 37 tests from 6 suites, ALL PASSED (106ms)\nPython pytest: 129 passed in 9.61s\nCoverage: 82% (5803 statements)",
+      "returncode": 0,
+      "duration_seconds": 99
+    },
+    {
+      "timestamp": "2026-07-02T10:41:35",
+      "command": "pip3 install artifacts/mindstudio_kpp-*.whl && python3 -c 'import mskpp; print(dir(mskpp))'",
+      "success": true,
+      "output": "mindstudio-kpp-0.0.0.dev0 安装成功，mskpp 导入成功，80+ API 函数可用",
+      "returncode": 0,
+      "duration_seconds": 3
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-07-02T10:35:30",
+      "step": "start",
+      "action": "开始验证流程（openEuler 原生构建模式）",
+      "result": "已启动",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-02T10:36:00",
+      "step": "document_reading",
+      "action": "读取 README.md 及完整文档链（install_guide/develop_guide/CMakeLists.txt/dependencies.json/build.py）",
+      "result": "成功",
+      "details": {"project_type": "C++/Python 混合（C++11 共享库 _C.so + Python 包 mskpp）", "build_system": "CMake 3.16+ + setuptools wheel", "test_framework": "GTest(C++) + pytest(Python) + coverage"}
+    },
+    {
+      "timestamp": "2026-07-02T10:37:30",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录",
+      "result": "未配置",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-02T10:37:31",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 和 lint-runner 配置",
+      "result": "pre-commit 已配置，lint-runner 未配置",
+      "details": {"pre_commit": ".pre-commit-config.yaml（14 hooks）", "lint_runner": "未找到"}
+    },
+    {
+      "timestamp": "2026-07-02T10:37:34",
+      "step": "static_analysis_execution",
+      "action": "执行 pre-commit run --all-files（跳过 pylint/bandit/typos）",
+      "result": "部分通过（5/14 通过）",
+      "details": {"passed": 5, "failed": 6, "skipped": 3}
+    },
+    {
+      "timestamp": "2026-07-02T10:38:00",
+      "step": "container_setup",
+      "action": "拉取 openEuler 24.03 LTS 镜像并启动容器",
+      "result": "成功",
+      "details": {"image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts", "container": "ttfhw-mskpp-openeuler-env"}
+    },
+    {
+      "timestamp": "2026-07-02T10:38:11",
+      "step": "dependency_installation_layer1",
+      "action": "安装系统工具链 + Python 开发包（gcc gcc-c++ make cmake git python3 python3-pip python3-devel）",
+      "result": "成功",
+      "details": {"packages": ["gcc-12.3.1", "gcc-c++-12.3.1", "make-4.4.1", "cmake-3.27.9", "git-2.43.0", "python3-3.11.6", "python3-devel-3.11.6"]}
+    },
+    {
+      "timestamp": "2026-07-02T10:39:13",
+      "step": "dependency_installation_layer2",
+      "action": "安装 Python 依赖（pandas/plotly/pytest/coverage，全部从 dnf 仓库）",
+      "result": "成功",
+      "details": {"packages": ["python3-pandas-2.2.2", "python3-plotly-5.15.0", "python3-pytest-7.4.4", "python3-coverage-7.3.2"]}
+    },
+    {
+      "timestamp": "2026-07-02T10:39:20",
+      "step": "dependency_installation_layer3",
+      "action": "初始化 git submodule（mockcpp）",
+      "result": "成功",
+      "details": {"submodule": "thirdparty/mockcpp (gitcode.com/Ascend/mockcpp.git)"}
+    },
+    {
+      "timestamp": "2026-07-02T10:39:37",
+      "step": "build_attempt_1",
+      "action": "第1次构建：python build.py",
+      "result": "失败（C++编译成功，whl打包失败）",
+      "details": {"error": "setup.py bdist_wheel 命令不可用——缺少 wheel 包"}
+    },
+    {
+      "timestamp": "2026-07-02T10:39:38",
+      "step": "problem_resolution",
+      "action": "pip3 install wheel → rm -rf build → 重试",
+      "result": "已解决",
+      "details": {"solution": "pip3 install wheel（openEuler dnf 的 python3-wheel 未提供 bdist_wheel 注册）"}
+    },
+    {
+      "timestamp": "2026-07-02T10:39:46",
+      "step": "build_retry",
+      "action": "第2次构建：python build.py",
+      "result": "成功",
+      "details": {"artifact": "mindstudio_kpp-0.0.0.dev0-py3-none-manylinux_2_38_aarch64.whl", "size": "2.6 MB", "includes": "_C.so 共享库"}
+    },
+    {
+      "timestamp": "2026-07-02T10:39:56",
+      "step": "dependency_download",
+      "action": "下载测试依赖（boost 113MB + googletest）",
+      "result": "成功",
+      "details": {"boost": "mirrors.aliyun.com (113MB, ~9s下载, ~40s解压)", "googletest": "gitee.com/mirrors/googletest"}
+    },
+    {
+      "timestamp": "2026-07-02T10:41:17",
+      "step": "ut_execution_cpp",
+      "action": "C++ 单元测试（GTest）",
+      "result": "成功",
+      "details": {"total": 37, "passed": 37, "failed": 0, "suites": 6, "duration": "106ms"}
+    },
+    {
+      "timestamp": "2026-07-02T10:41:17",
+      "step": "ut_execution_python",
+      "action": "Python 单元测试（pytest + coverage）",
+      "result": "成功",
+      "details": {"total": 129, "passed": 129, "failed": 0, "duration": "9.61s", "coverage": "82%"}
+    },
+    {
+      "timestamp": "2026-07-02T10:41:35",
+      "step": "smoke_test",
+      "action": "pip3 install whl 包并导入验证",
+      "result": "成功",
+      "details": {"package": "mindstudio-kpp-0.0.0.dev0", "import": "成功", "api_count": "80+"}
+    },
+    {
+      "timestamp": "2026-07-02T10:42:00",
+      "step": "cleanup",
+      "action": "停止并删除容器 ttfhw-mskpp-openeuler-env",
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-02T10:43:00",
+      "step": "report_generation",
+      "action": "生成验证报告",
+      "result": "成功",
+      "details": {"output_file": "verification_report_WSL_mskpp_20260702.json"}
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（14个hooks，5通过6失败3跳过），未检测到 lint-runner 配置。clang-format 成功格式化24个C++文件。pylint/bandit/typos 因宿主机 Python 3.9.9 和网络限制跳过",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "部分通过",
+        "duration_seconds": 120,
+        "total_hooks": 14,
+        "passed": 5,
+        "failed": 6,
+        "skipped": 3,
+        "failures": [
+          {"hook_name": "trailing-whitespace", "error": "31个文件行尾空白（已自动修复）"},
+          {"hook_name": "end-of-file-fixer", "error": "60+文件缺少末尾换行（已自动修复）"},
+          {"hook_name": "ruff-check", "error": "F841/E402/E701/SIM115等多类问题"},
+          {"hook_name": "ruff-format", "error": "41个Python文件重新格式化"},
+          {"hook_name": "codespell", "error": "pre-commit/typos.toml 中排除词被误报 + API文档vor→for"},
+          {"hook_name": "clang-format", "error": "24个C++文件格式化（pre-commit环境自带了clang-format）"}
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "original_base_image": null,
+      "used_image": "openEuler 24.03 LTS",
+      "summary": "仓库未配置 devcontainer"
+    },
+    "build": {
+      "status": "成功（第2次尝试，安装 wheel 后）",
+      "duration_seconds": 8,
+      "artifacts": [
+        {
+          "name": "mindstudio_kpp-0.0.0.dev0-py3-none-manylinux_2_38_aarch64.whl",
+          "path": "output/mindstudio_kpp-0.0.0.dev0-py3-none-manylinux_2_38_aarch64.whl",
+          "size": "2.6 MB"
+        },
+        {
+          "name": "_C.so (C++ 共享库)",
+          "path": "output/lib64/_C.so",
+          "size": "随 whl 打包"
+        }
+      ]
+    },
+    "ut": {
+      "status": "成功",
+      "duration_seconds": 99,
+      "cpp_tests": {"total": 37, "passed": 37, "failed": 0, "suites": 6},
+      "python_tests": {"total": 129, "passed": 129, "failed": 0},
+      "coverage": "82%"
+    },
+    "sample": {
+      "status": "跳过",
+      "duration_seconds": 0,
+      "results": [
+        {
+          "sample_name": "mskpp 性能预测示例（quick_start）",
+          "execution_status": "无法执行",
+          "output_summary": "需要 CANN + NPU 硬件环境，无法在通用 openEuler 容器中运行",
+          "execution_time": "N/A"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    "setup.py packages 配置不完整：mskpp 子包未显式声明，setuptools 产生警告",
+    "requirement.txt 仅列出 plotly，未包含 pandas 和构建依赖（pytest/coverage），须从 develop_guide.md 补充",
+    "README 未直接列出构建依赖和命令，需通过文档链间接获取",
+    "文档未提及 bdist_wheel 需要 pip install wheel（dnf 的 python3-wheel 不自动注册 bdist_wheel 命令）",
+    "无 Dockerfile，文档链指向外部预构建镜像而非自包含构建方案",
+    "dependencies.json 中 boost 从 aliyun 下载（113MB），首次构建耗时较长"
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-07-02T10:39:37",
+      "problem": "第1次构建 whl 打包失败：setup.py bdist_wheel 命令不可用（error: invalid command 'bdist_wheel'）",
+      "solution": "pip3 install wheel（openEuler dnf 的 python3-wheel-0.40.0 安装后未注册 bdist_wheel 到 setuptools，需额外 pip 安装）",
+      "source": "CMakeLists.txt custom_target package_mskpp 中的 python setup.py bdist_wheel"
+    },
+    {
+      "timestamp": "2026-07-02T10:37:34",
+      "problem": "pre-commit pylint hook 无法安装：宿主机 Python 3.9.9 < pylint v4.0.5 要求的 >=3.10",
+      "solution": "跳过 pylint 和 bandit hook，记录为环境限制",
+      "source": ".pre-commit-config.yaml pylint hook"
+    },
+    {
+      "timestamp": "2026-07-02T10:37:34",
+      "problem": "pre-commit typos hook 无法安装：GitHub 二进制下载超时",
+      "solution": "跳过 typos hook",
+      "source": ".pre-commit-config.yaml typos hook"
+    },
+    {
+      "timestamp": "2026-07-02T10:40:05",
+      "problem": "boost 下载耗时较长：113MB 从 mirrors.aliyun.com 下载约9秒，解压约40秒",
+      "solution": "属于正常现象，boost 为 C++ 测试依赖（仅 BUILD_TESTS=ON 时需要）",
+      "source": "dependencies.json artifact_spec.boost"
+    }
+  ]
+}
