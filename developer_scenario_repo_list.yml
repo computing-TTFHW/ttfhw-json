@@ -300,7 +300,3 @@ MindSDK:
       url: "https://gitcode.com/Ascend/RAGSDK.git"
       branch: master
       component: MindSDK
-    - name: VisionSDK
-      url: "https://gitcode.com/Ascend/VisionSDK.git"
-      branch: master
-      component: MindSDK
