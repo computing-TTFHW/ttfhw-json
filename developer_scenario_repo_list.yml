@@ -300,3 +300,31 @@ MindSDK:
       url: "https://gitcode.com/Ascend/RAGSDK.git"
       branch: master
       component: MindSDK
+
+BoostKit:
+  description: "BoostKit 开发者场景验证代码仓列表"
+  repos:
+    - name: kpglibc
+      url: "https://gitcode.com/boostkit/kpglibc.git"
+      branch: master
+      component: BoostKit
+    - name: Megascan
+      url: "https://gitcode.com/boostkit/Megascan.git"
+      branch: master
+      component: BoostKit
+    - name: Ultrascan
+      url: "https://gitcode.com/boostkit/Ultrascan.git"
+      branch: master
+      component: BoostKit
+    - name: KTAG
+      url: "https://gitcode.com/boostkit/KTAG.git"
+      branch: master
+      component: BoostKit
+    - name: kqmalloc
+      url: "https://gitcode.com/boostkit/kqmalloc.git"
+      branch: master
+      component: BoostKit
+    - name: KAE
+      url: "https://gitcode.com/boostkit/KAE.git"
+      branch: master
+      component: BoostKit
