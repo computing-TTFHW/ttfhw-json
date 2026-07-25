@@ -137,6 +137,30 @@ MindSpeed:
       branch: master
       component: MindSpeed
 
+MindStudio:
+  description: "MindSpeed 开发者场景验证代码仓列表"
+  repos:
+    - name: mspti
+      url: "https://gitcode.com/Ascend/mspti.git"
+      branch: master
+      component: MindStudio
+    - name: mskpp
+      url: "https://gitcode.com/Ascend/mskpp.git"
+      branch: master
+      component: MindStudio
+    - name: mstx
+      url: "https://gitcode.com/Ascend/mstx.git"
+      branch: master
+      component: MindStudio
+    - name: msmonitor
+      url: "https://gitcode.com/Ascend/msmonitor.git"
+      branch: master
+      component: MindStudio
+    - name: mskl
+      url: "https://gitcode.com/Ascend/mskl.git"
+      branch: master
+      component: MindStudio
+
 PTA:
   description: "PTA 开发者场景验证代码仓列表"
   repos:
