@@ -326,5 +326,5 @@ BoostKit:
       component: BoostKit
     - name: KAE
       url: "https://gitcode.com/boostkit/KAE.git"
-      branch: master
+      branch: kae2
       component: BoostKit
