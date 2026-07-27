@@ -60,10 +60,6 @@ OpenUBMC:
       url: "https://gitcode.com/openUBMC/devmon.git"
       branch: main
       component: OpenUBMC
-    - name: libipmi
-      url: "https://gitcode.com/openUBMC/libipmi.git"
-      branch: main
-      component: OpenUBMC
     - name: component_drivers
       url: "https://gitcode.com/openUBMC/component_drivers.git"
       branch: main
