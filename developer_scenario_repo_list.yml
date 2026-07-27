@@ -44,6 +44,10 @@
       url: "https://gitcode.com/openeuler/ubturbo.git"
       branch: master
       component: "UB OS Compent"
+      - name: ubs-atomic
+      url: "https://gitcode.com/openeuler/ubs-atomic.git"
+      branch: master
+      component: "UBS Core"
 
 OpenUBMC:
   description: "OpenUBMC 开发者场景验证代码仓列表"
