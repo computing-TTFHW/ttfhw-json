@@ -184,12 +184,12 @@ OpenEuler:
       url: "https://gitcode.com/openeuler/kernel.git"
       branch: OLK-6.6
       component: OpenEuler
-    - name: isula
-      url: "https://gitcode.com/openeuler/iSulad.git"
+    - name: PolyMind
+      url: "https://gitcode.com/openeuler/polymind.git"
       branch: master
       component: OpenEuler
-    - name: A-Tune
-      url: "https://gitcode.com/openeuler/A-Tune.git"
+    - name: Witty-Service
+      url: "https://gitcode.com/openeuler/witty-service.git"
       branch: master
       component: OpenEuler
     - name: stratovirt
