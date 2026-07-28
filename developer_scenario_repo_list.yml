@@ -352,3 +352,24 @@ BoostKit:
       url: "https://gitcode.com/boostkit/KAE.git"
       branch: kae2
       component: BoostKit
+
+openGauss:
+  description: "openGauss 开发者场景验证代码仓列表"
+  repos:
+    - name: openGauss-server
+      url: "https://gitcode.com/openGauss/openGauss-server.git"
+      branch: master
+      component: openGauss
+    - name: Plugin
+      url: "https://gitcode.com/openGauss/Plugin.git"
+      branch: master
+      component: openGauss
+    - name: oGRAC
+      url: "https://gitcode.com/openGauss/oGRAC.git"
+      branch: master
+      component: openGauss
+    - name: openGauss-connector-jdbc
+      url: "https://gitcode.com/openGauss/openGauss-connector-jdbc.git"
+      branch: master
+      component: openGauss
+
