@@ -44,6 +44,10 @@
       url: "https://gitcode.com/openeuler/ubturbo.git"
       branch: master
       component: "UB OS Compent"
+    - name: ubs-atomic
+      url: "https://gitcode.com/openeuler/ubs-atomic.git"
+      branch: master
+      component: "UBS Core"
 
 OpenUBMC:
   description: "OpenUBMC 开发者场景验证代码仓列表"
@@ -54,10 +58,6 @@ OpenUBMC:
       component: OpenUBMC
     - name: devmon
       url: "https://gitcode.com/openUBMC/devmon.git"
-      branch: main
-      component: OpenUBMC
-    - name: libipmi
-      url: "https://gitcode.com/openUBMC/libipmi.git"
       branch: main
       component: OpenUBMC
     - name: component_drivers
@@ -137,6 +137,30 @@ MindSpeed:
       branch: master
       component: MindSpeed
 
+MindStudio:
+  description: "MindStudio 开发者场景验证代码仓列表"
+  repos:
+    - name: mspti
+      url: "https://gitcode.com/Ascend/mspti.git"
+      branch: master
+      component: MindStudio
+    - name: mskpp
+      url: "https://gitcode.com/Ascend/mskpp.git"
+      branch: master
+      component: MindStudio
+    - name: mstx
+      url: "https://gitcode.com/Ascend/mstx.git"
+      branch: master
+      component: MindStudio
+    - name: msmonitor
+      url: "https://gitcode.com/Ascend/msmonitor.git"
+      branch: master
+      component: MindStudio
+    - name: mskl
+      url: "https://gitcode.com/Ascend/mskl.git"
+      branch: master
+      component: MindStudio
+
 PTA:
   description: "PTA 开发者场景验证代码仓列表"
   repos:
@@ -160,12 +184,12 @@ OpenEuler:
       url: "https://gitcode.com/openeuler/kernel.git"
       branch: OLK-6.6
       component: OpenEuler
-    - name: isula
-      url: "https://gitcode.com/openeuler/iSulad.git"
+    - name: PolyMind
+      url: "https://gitcode.com/openeuler/polymind.git"
       branch: master
       component: OpenEuler
-    - name: A-Tune
-      url: "https://gitcode.com/openeuler/A-Tune.git"
+    - name: Witty-Service
+      url: "https://gitcode.com/openeuler/witty-service.git"
       branch: master
       component: OpenEuler
     - name: stratovirt
