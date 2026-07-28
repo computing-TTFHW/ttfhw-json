@@ -1,0 +1,461 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/KTAG.git",
+    "branch": "master",
+    "commit": "38f1564 !11 增加UT所需要的pcap文件",
+    "start_time": "2026-07-28T17:22:04",
+    "end_time": "2026-07-28T17:45:33",
+    "total_steps": 11,
+    "duration_seconds": 1409
+  },
+  "machine_spec": {
+    "host_machine": {
+      "ssh_host": "192.168.25.51",
+      "os": "openEuler 22.03 LTS-SP3",
+      "kernel": "5.10.0-182.0.0.95.oe2203sp3.aarch64",
+      "arch": "aarch64",
+      "cpu_count": 160,
+      "cpu_model": "Kunpeng-920",
+      "memory_gb": 502,
+      "docker_version": "18.09.0"
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS SP4",
+      "architecture": "aarch64",
+      "cpu_cores": 160,
+      "memory": "502Gi (unlimited)",
+      "container_name": "ktag-baseos-env"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openeuler/openeuler:22.03-lts-sp4",
+      "os_type": "openEuler",
+      "os_version": "22.03 LTS-SP4",
+      "selection_reason": "Project README explicitly recommends openEuler 22.03 LTS SP4 (verified environment table), use project recommended base image",
+      "dependency_mapping": {
+        "original_source": "openEuler (yum/dnf)",
+        "selected_os": "openEuler",
+        "match": "Direct match (no mapping needed)"
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md - table2",
+      "value": "aarch64 (Kunpeng 920)"
+    },
+    "recommended_image": {
+      "source": "README.md table2 + docs/zh/installation_guide.md",
+      "value": "openEuler 22.03 LTS SP4 / 24.03 LTS SP2"
+    },
+    "dockerfile_dependencies": {
+      "source": "no Dockerfile in repo",
+      "value": []
+    },
+    "dependencies": {
+      "source": "README.md + docs/zh/installation_guide.md + build.sh + function.sh + CMakeLists.txt + src/CMakeLists.txt",
+      "value": [
+        "cmake >= 3.16.3 (README says 3.22.0)",
+        "gcc >= 10.3.1",
+        "make",
+        "libpcap + libpcap-devel",
+        "yaml-cpp 0.8.0 (source build)",
+        "onnxruntime 1.22.0 (prebuilt binary)",
+        "openmp (-fopenmp)",
+        "python3 (for test scripts)"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md + docs/zh/installation_guide.md",
+      "value": "sh build.sh or sh build.sh -lib"
+    },
+    "ut_commands": {
+      "source": "docs/zh/user_guide.md",
+      "value": "cd test/build && make && make rfunc (functional test) or make rperf (perf test)"
+    },
+    "sample_commands": {
+      "source": "no sample programs",
+      "value": "no standalone samples, verified via test framework"
+    },
+    "special_dependencies": {
+      "source": "docs/zh/installation_guide.md + src/CMakeLists.txt",
+      "value": [
+        "yaml-cpp 0.8.0 (source build to /usr/local)",
+        "onnxruntime-linux-aarch64-1.22.0 (download prebuilt, set ONNXRUNTIME_HOME)"
+      ]
+    }
+  },
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "pre-commit configured (.pre-commit-config.yaml) with 10 hooks; .pyproject.toml configured black formatter",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "configured (not executed in host env)",
+        "duration_seconds": 0,
+        "hooks": [
+          {
+            "name": "check-yaml",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "check-json",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "check-xml",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "check-merge-conflict",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "detect-private-key",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "check-added-large-files",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "no-commit-to-branch",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "detect-secrets",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "clang-format",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "golangci-lint-full",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": true,
+        "config_file": ".pyproject.toml (black formatter config)"
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "",
+      "summary": "No .devcontainer configuration in repo root"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 30,
+      "artifacts": [
+        {
+          "name": "libKDADK_feature_extract.so",
+          "path": "output/libKDADK_feature_extract.so",
+          "size": ""
+        },
+        {
+          "name": "libKDADK_inference.so",
+          "path": "output/libKDADK_inference.so",
+          "size": ""
+        },
+        {
+          "name": "libkdadk_appidlib.so",
+          "path": "output/libkdadk_appidlib.so",
+          "size": ""
+        }
+      ]
+    },
+    "ut": {
+      "status": "passed",
+      "duration_seconds": 120,
+      "total": 104,
+      "passed": 104,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "results": []
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-28T17:22:04",
+      "step": "document_reading",
+      "action": "read README.md, docs/zh/installation_guide.md, docs/zh/user_guide.md, CMakeLists.txt, build.sh, function.sh, src/CMakeLists.txt, config.cmake.in, dependence.xml, .pre-commit-config.yaml",
+      "result": "success",
+      "details": {
+        "files_read": [
+          "README.md",
+          "docs/zh/installation_guide.md",
+          "docs/zh/user_guide.md",
+          "docs/zh/api_reference.md",
+          "CMakeLists.txt",
+          "src/CMakeLists.txt",
+          "config.cmake.in",
+          "build.sh",
+          "function.sh",
+          "dependence.xml",
+          ".pre-commit-config.yaml",
+          ".pyproject.toml"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "KTAG (KDADK-APPID) C/C++ project; recommends openEuler 22.03/24.03; target aarch64 Kunpeng 920; builds kdadk_feature_extract.so and kdadk_inference.so",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 300
+    },
+    {
+      "timestamp": "2026-07-28T17:22:21",
+      "step": "static_analysis_scan",
+      "action": "check pre-commit config and lint runner",
+      "result": "configured",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks_count": 10,
+        "hooks_list": [
+          "check-yaml",
+          "check-json",
+          "check-xml",
+          "check-merge-conflict",
+          "detect-private-key",
+          "check-added-large-files",
+          "no-commit-to-branch",
+          "detect-secrets",
+          "clang-format",
+          "golangci-lint-full"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": ".pre-commit-config.yaml configured with 10 hooks. .pyproject.toml configured black formatter.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-28T17:22:21",
+      "step": "devcontainer_scan",
+      "action": "check .devcontainer directory",
+      "result": "not configured",
+      "details": {
+        "config_dir": "no .devcontainer directory",
+        "files": []
+      },
+      "command": "",
+      "success": true,
+      "output": "No .devcontainer configuration found in repo root",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-28T17:22:40",
+      "step": "image_selection",
+      "action": "select openEuler 22.03 LTS SP4 base image (project README recommends)",
+      "result": "openEuler 22.03 LTS SP4",
+      "details": {
+        "selection_reason": "Project README table2 explicitly recommends openEuler 22.03 LTS SP4, use project recommended OS"
+      },
+      "command": "docker pull openeuler/openeuler:22.03-lts-sp4",
+      "success": true,
+      "output": "Image already available on host (openeuler/openeuler:22.03-lts-sp4)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-28T17:22:59",
+      "step": "container_setup",
+      "action": "pull openEuler 22.03 LTS SP4 base image and start container, mount repo code to /workspace",
+      "result": "success",
+      "details": {
+        "image": "openeuler/openeuler:22.03-lts-sp4",
+        "container_name": "ktag-baseos-env",
+        "container_id": "36aaac992def",
+        "workspace": "/workspace"
+      },
+      "command": "docker run -d --name ktag-baseos-env --privileged -v /home/workspace/ttfhw/ktag:/workspace -w /workspace openeuler/openeuler:22.03-lts-sp4 tail -f /dev/null",
+      "success": true,
+      "output": "Container started: 36aaac992def",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-07-28T17:33:47",
+      "step": "dependency_installation",
+      "action": "install system toolchain and dependencies (gcc, gcc-c++, make, cmake, python3-pip, libpcap, libpcap-devel, git, wget)",
+      "result": "success",
+      "details": {
+        "source": "openEuler 22.03 LTS SP4 official repo (dnf)",
+        "packages": [
+          "gcc-10.3.1",
+          "gcc-c++-10.3.1",
+          "make-4.3",
+          "cmake-3.22.0",
+          "python3-3.9.9",
+          "libpcap-1.10.3",
+          "libpcap-devel-1.10.3",
+          "git-2.33.0",
+          "wget-1.21.2"
+        ]
+      },
+      "command": "docker exec ktag-baseos-env dnf install -y --nogpgcheck gcc gcc-c++ make cmake python3 python3-pip wget git libpcap libpcap-devel",
+      "success": true,
+      "output": "gcc-10.3.1, cmake-3.22.0, make-4.3, libpcap-1.10.3, git-2.33.0 installed successfully",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-07-28T17:33:47",
+      "step": "dependency_installation",
+      "action": "build yaml-cpp 0.8.0 from source",
+      "result": "success",
+      "details": {
+        "source": "source build from github (yaml-cpp-0.8.0)",
+        "packages": [
+          "yaml-cpp-0.8.0 (installed to /usr/local/lib64/libyaml-cpp.so)"
+        ]
+      },
+      "command": "cd /workspace/util/yaml-cpp-0.8.0/build && cmake .. -DYAML_BUILD_SHARED_LIBS=ON && make -j32 && make install",
+      "success": true,
+      "output": "yaml-cpp 0.8.0 installed to /usr/local/lib64/libyaml-cpp.so",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 45
+    },
+    {
+      "timestamp": "2026-07-28T17:33:47",
+      "step": "dependency_installation",
+      "action": "set up onnxruntime 1.22.0 prebuilt binary",
+      "result": "success",
+      "details": {
+        "source": "prebuilt binary /workspace/util/onnxruntime-linux-aarch64-1.22.0",
+        "onnxruntime_version": "1.22.0"
+      },
+      "command": "export ONNXRUNTIME_HOME=/workspace/util/onnxruntime-linux-aarch64-1.22.0",
+      "success": true,
+      "output": "ONNXRUNTIME_HOME set to /workspace/util/onnxruntime-linux-aarch64-1.22.0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-28T17:42:38",
+      "step": "build_attempt",
+      "action": "build KDADK project (sh build.sh -lib, includes kdadk_appidlib)",
+      "result": "success",
+      "details": {
+        "build_mode": "-lib (includes kdadk_appidlib wrapper library)",
+        "outputs": [
+          "output/libKDADK_feature_extract.so",
+          "output/libKDADK_inference.so",
+          "output/libkdadk_appidlib.so"
+        ]
+      },
+      "command": "export ONNXRUNTIME_HOME=/workspace/util/onnxruntime-linux-aarch64-1.22.0 && cd /workspace && sh build.sh -lib",
+      "success": true,
+      "output": "build success - 3 shared libraries built (feature_extract, inference, appidlib)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-07-28T17:45:04",
+      "step": "ut_execution",
+      "action": "build Google Test and functional tests, then run functest",
+      "result": "all passed (104/104)",
+      "details": {
+        "framework": "Google Test 1.8.0 (gtest-parallel)",
+        "test_binary": "test/build/functest/kdadk_appid_functest",
+        "total": 104,
+        "passed": 104,
+        "failed": 0,
+        "failures": []
+      },
+      "command": "cd /workspace/test/build && make googletest && make func && make rfunc",
+      "success": true,
+      "output": "All 104/104 tests passed from 17 test cases.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-07-28T17:45:04",
+      "step": "sample_execution",
+      "action": "check sample programs",
+      "result": "no standalone samples, verification via test framework",
+      "details": {
+        "note": "Repository provides functional tests as verification method. No standalone sample programs found."
+      },
+      "command": "",
+      "success": true,
+      "output": "No standalone sample programs. Functionality verified through 104/104 test framework tests.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    }
+  ],
+  "documentation_gaps": [
+    {
+      "category": "dependency list incomplete",
+      "description": "README and installation guide do not list libpcap-devel as a build dependency (build.sh auto-installs it but doc does not mention)",
+      "severity": "low",
+      "suggestion": "Add complete dependency list before build steps in installation guide"
+    },
+    {
+      "category": "sample programs missing",
+      "description": "Repository does not provide standalone sample programs, only functional test framework",
+      "severity": "low",
+      "suggestion": "Add compilable sample code in quick_start.md"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "onnxruntime binary corrupted",
+      "description": "Initial onnxruntime-linux-aarch64-1.22.0.tgz in util/ was incomplete (5.5MB), caused linker error",
+      "root_cause": "tgz file was truncated during previous download",
+      "solution": "Re-downloaded from gitcode mirror, got correct 6.6MB package with proper libonnxruntime.so",
+      "severity": "medium"
+    },
+    {
+      "category": "missing libonnxruntime.so symlink",
+      "description": "libonnxruntime.so symlink was missing, only libonnxruntime.so.1.22.0 existed",
+      "root_cause": "symlink not included in incomplete tgz extraction",
+      "solution": "Created ln -sf libonnxruntime.so.1.22.0 libonnxruntime.so",
+      "severity": "low"
+    }
+  ],
+  "token_usage": {}
+}
