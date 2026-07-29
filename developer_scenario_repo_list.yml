@@ -9,8 +9,8 @@
       branch: master
       component: "UBS Core"
     - name: ubs-comm
-      url: "https://gitcode.com/openeuler/ubs-comm.git"
-      branch: br_BeiMing.26.0.RC1
+      url: "https://atomgit.com/jh-partner-collab/ubscomm.git"
+      branch: master
       component: "UBS Core"
     - name: ubs-virt
       url: "https://gitcode.com/openeuler/ubs-virt.git"
