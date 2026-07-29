@@ -373,3 +373,10 @@ openGauss:
       branch: master
       component: openGauss
 
+Triton-Ascend:
+  description: "Triton-Ascend 开发者场景验证代码仓列表"
+  repos:
+    - name: triton-ascend
+      url: "https://github.com/triton-lang/triton-ascend"
+      branch: main
+      component: Triton-Ascend
