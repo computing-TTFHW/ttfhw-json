@@ -140,8 +140,8 @@ MindSpeed:
 MindStudio:
   description: "MindStudio 开发者场景验证代码仓列表"
   repos:
-    - name: mspti
-      url: "https://gitcode.com/Ascend/mspti.git"
+    - name: msdebug
+      url: "https://gitcode.com/Ascend/msdebug.git"
       branch: master
       component: MindStudio
     - name: mskpp
@@ -166,11 +166,11 @@ PTA:
   repos:
     - name: Ascend/pytorch
       url: "https://gitcode.com/Ascend/pytorch.git"
-      branch: v2.7.1
+      branch: master
       component: PTA
     - name: Ascend/op-plugin
       url: "https://gitcode.com/Ascend/op-plugin.git"
-      branch: v2.7.1
+      branch: master
       component: PTA
     - name: Ascend/torchair
       url: "https://gitcode.com/Ascend/torchair.git"
@@ -184,12 +184,12 @@ OpenEuler:
       url: "https://gitcode.com/openeuler/kernel.git"
       branch: OLK-6.6
       component: OpenEuler
-    - name: isula
-      url: "https://gitcode.com/openeuler/iSulad.git"
+    - name: PolyMind
+      url: "https://gitcode.com/openeuler/polymind.git"
       branch: master
       component: OpenEuler
-    - name: A-Tune
-      url: "https://gitcode.com/openeuler/A-Tune.git"
+    - name: Witty-Service
+      url: "https://gitcode.com/openeuler/witty-service.git"
       branch: master
       component: OpenEuler
     - name: stratovirt
@@ -352,3 +352,31 @@ BoostKit:
       url: "https://gitcode.com/boostkit/KAE.git"
       branch: kae2
       component: BoostKit
+
+openGauss:
+  description: "openGauss 开发者场景验证代码仓列表"
+  repos:
+    - name: openGauss-server
+      url: "https://gitcode.com/openGauss/openGauss-server.git"
+      branch: master
+      component: openGauss
+    - name: Plugin
+      url: "https://gitcode.com/openGauss/Plugin.git"
+      branch: master
+      component: openGauss
+    - name: oGRAC
+      url: "https://gitcode.com/openGauss/oGRAC.git"
+      branch: master
+      component: openGauss
+    - name: openGauss-connector-jdbc
+      url: "https://gitcode.com/openGauss/openGauss-connector-jdbc.git"
+      branch: master
+      component: openGauss
+
+Triton-Ascend:
+  description: "Triton-Ascend 开发者场景验证代码仓列表"
+  repos:
+    - name: triton-ascend
+      url: "https://github.com/triton-lang/triton-ascend"
+      branch: main
+      component: Triton-Ascend
