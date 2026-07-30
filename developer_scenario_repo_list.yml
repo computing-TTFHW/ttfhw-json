@@ -140,8 +140,8 @@ MindSpeed:
 MindStudio:
   description: "MindStudio 开发者场景验证代码仓列表"
   repos:
-    - name: mspti
-      url: "https://gitcode.com/Ascend/mspti.git"
+    - name: msdebug
+      url: "https://gitcode.com/Ascend/msdebug.git"
       branch: master
       component: MindStudio
     - name: mskpp
