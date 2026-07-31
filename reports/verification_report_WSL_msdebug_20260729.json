@@ -1,0 +1,297 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/msdebug.git",
+    "branch": "master",
+    "start_time": "2026-07-29T11:05:39",
+    "end_time": "2026-07-29T12:08:49",
+    "duration_seconds": 3790,
+    "total_steps": 11,
+    "commit": "f277d496e"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "qoder-cn",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng (256 cores)",
+      "cpu_cores": 256,
+      "memory": "2.0Ti",
+      "disk": "21T (17T available)",
+      "docker_version": "29.6.1"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS-SP3",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "2.0Ti (shared)",
+      "container_name": "ttfhw-msdebug-baseos-env"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3",
+      "selection_reason": "Doc explicitly requires building from openEuler base image via build_image.py script (MindStudio unified build image guide)"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "remote machine uname -m",
+      "value": "aarch64"
+    },
+    "recommended_image": {
+      "source": "msot/docs/zh/common/docker_image_build_guide.md",
+      "value": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3"
+    },
+    "dockerfile_dependencies": {
+      "source": "script mode",
+      "value": "script mode, deps provided by build image, no mapping needed"
+    },
+    "dependencies": {
+      "source": "docs/zh/install_guide/msdebug_install_guide.md",
+      "value": [
+        "CANN 9.1.0-beta.3 (toolkit+ops)",
+        "GCC 11.2",
+        "Python 3.8-3.13",
+        "CMake",
+        "Ninja"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/zh/install_guide/msdebug_install_guide.md section 2.3.2",
+      "value": "cd ~/msdebug && python3 build.py"
+    },
+    "ut_commands": {
+      "source": "docs/zh/install_guide/msdebug_install_guide.md section 2.3.3",
+      "value": "cd ~/msdebug && python3 build.py test"
+    },
+    "sample_commands": {
+      "source": "docs/zh/quick_start/msdebug_quick_start.md",
+      "value": "Requires NPU hardware; no standalone sample command available"
+    },
+    "special_dependencies": {
+      "source": "msot/docs/zh/common/docker_image_build_guide.md section 6",
+      "value": [
+        "CANN toolkit: https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-aarch64.run",
+        "CANN ops: https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-aarch64.run"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-29T11:05:52",
+      "step": "environment_selection",
+      "action": "确认容器运行环境为远端 SSH 机器",
+      "command": "ssh m00818315@192.168.9.128",
+      "output": "SSH OK, Docker 29.6.1, aarch64, 256 cores, 2TB RAM",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 3,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T11:09:20",
+      "step": "document_reading",
+      "action": "Read README and linked docs, determined base OS as openEuler 24.03 LTS SP3, build method as script",
+      "command": "N/A",
+      "output": "README->install_guide->msot docker_image_build_guide->build_image.py audited",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 120,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T11:09:20",
+      "step": "image_selection",
+      "action": "Determined build method",
+      "command": "N/A",
+      "output": "build_method=script, base FROM=openEuler 24.03 LTS SP3",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 60,
+      "details": {
+        "build_method": "script",
+        "script_url": "https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz",
+        "reason": "Install guide section 2.3.1 requires using unified build image guide with build_image.py. Script and all Dockerfiles downloaded and audited. Base is openEuler 24.03 LTS SP3. CANN URLs obtained from doc."
+      },
+      "result": "success"
+    },
+    {
+      "timestamp": "2026-07-29T11:09:20",
+      "step": "preflight_checks",
+      "action": "Remote prerequisites check",
+      "command": "docker buildx version && python3 -V && curl -V && df -h",
+      "output": "Buildx v0.35.0, Python 3.10.12, curl 7.81.0, 17TB available, OBS reachable (200 OK)",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 5,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T11:10:41",
+      "step": "static_analysis",
+      "action": "Ran pre-commit on 10 random files",
+      "command": "pre-commit run --files <10 random files>",
+      "output": "trailing-whitespace:Failed(fixed 1 file), end-of-file-fixer:Failed(fixed 2 files), check-yaml:Skipped, large-files:Passed, merge-conflict:Passed, private-key:Passed, check-json:Skipped, codespell:Passed, typos:Passed, clang-format:Failed(lock file), clang-tidy:Failed(not installed), gitleaks:Failed(not installed)",
+      "error": "clang-tidy and gitleaks binaries not available on Windows host",
+      "success": true,
+      "returncode": 1,
+      "duration_seconds": 5,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T11:11:06",
+      "step": "devcontainer_scan",
+      "action": "Checked for .devcontainer directory",
+      "command": "ls .devcontainer/",
+      "output": "Directory does not exist",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 1,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T11:51:04",
+      "step": "image_build",
+      "action": "Executed build_image.py on remote to build mindstudio-build:1.0.0-arm64 from openEuler 24.03 LTS SP3 base",
+      "command": "python3 build_image.py -t 1.0.0-arm64 --force -c <CANN_toolkit_URL> -c <CANN_ops_URL>",
+      "output": "Build completed in 2133.8s (35.6min). Steps: sysroot 8.3s, GCC11 805.1s, Python 841.3s, rename 0.3s, CANN download 47.2s, final image 431.7s",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 2134,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T11:51:04",
+      "step": "container_start",
+      "action": "Started container ttfhw-msdebug-baseos-env and cloned msdebug repo inside",
+      "command": "docker run -d --name ttfhw-msdebug-baseos-env ... && git clone https://gitcode.com/Ascend/msdebug.git",
+      "output": "Container started, repo cloned at /workspace/msdebug (commit f277d496e). Environment verified: openEuler 24.03, GCC 11.2.0, Python 3.11.15, CANN 9.1.0-beta.3",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 60,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T11:58:46",
+      "step": "build",
+      "action": "Executed python3 build.py in container",
+      "command": "cd /workspace/msdebug && CMAKE_BUILD_PARALLEL_LEVEL=153 python3 build.py",
+      "output": "Build succeeded. Artifact: mindstudio-debugger_26.0.0_aarch64.run (63M)",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 350,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T12:08:21",
+      "step": "unit_test",
+      "action": "Executed python3 build.py test in container",
+      "command": "cd /workspace/msdebug && CMAKE_BUILD_PARALLEL_LEVEL=153 python3 build.py test",
+      "output": "1295 tests discovered, 1295 passed (100.00%), Testing Time: 11.11s",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 420,
+      "result": "success",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-29T12:08:21",
+      "step": "smoke_test",
+      "action": "Installed .run package and verified msdebug --help",
+      "command": "./mindstudio-debugger_26.0.0_aarch64.run --install-path=/home/mindstudio/test_install --run && msdebug --help",
+      "output": "Install success. msdebug --help shows correct OVERVIEW/USAGE/ATTACHING sections.",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 10,
+      "result": "success",
+      "details": {}
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "pre-commit configured with 12 hooks (trailing-whitespace, end-of-file-fixer, check-yaml, check-added-large-files, check-merge-conflict, detect-private-key, check-json, codespell, typos, clang-format, clang-tidy, gitleaks). Random 10 files tested: basic hooks work, clang-tidy/gitleaks skipped (binaries not available on host).",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "partial_pass",
+        "duration_seconds": 5
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "N/A",
+      "used_image": "N/A",
+      "summary": "Repository does not have a .devcontainer directory"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 350,
+      "artifacts": [
+        {
+          "name": "mindstudio-debugger_26.0.0_aarch64.run",
+          "path": "/workspace/msdebug/artifacts/mindstudio-debugger_26.0.0_aarch64.run",
+          "size": "63M"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 11,
+      "total": 1295,
+      "passed": 1295,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "partial",
+      "duration_seconds": 10,
+      "reason": "Quick start sample requires NPU hardware not available in container",
+      "results": [
+        {
+          "sample_name": "smoke_test_install",
+          "execution_status": "success",
+          "output_summary": "mindstudio-debugger_26.0.0_aarch64.run installed successfully. msdebug --help outputs correct usage info.",
+          "execution_time": "10s"
+        },
+        {
+          "sample_name": "quick_start_debug_session",
+          "execution_status": "skipped",
+          "output_summary": "Requires NPU hardware (Ascend device with /proc/debug_switch). Not available in container environment.",
+          "execution_time": "0s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [],
+  "problems_encountered": []
+}

@@ -90,15 +90,15 @@ HPCKit:
       component: HPCKit
     - name: hmpi
       url: "https://gitcode.com/kunpengcompute/hmpi.git"
-      branch: v26.1.x
+      branch: main
       component: HPCKit
     - name: hucx
       url: "https://gitcode.com/kunpengcompute/hucx.git"
-      branch: v26.1.x
+      branch: main
       component: HPCKit
     - name: xucg
       url: "https://gitcode.com/kunpengcompute/xucg.git"
-      branch: v26.1.x
+      branch: main
       component: HPCKit
     - name: kpex
       url: "https://gitcode.com/kunpengcompute/kunpeng-extension-for-pytorch.git"
@@ -140,8 +140,8 @@ MindSpeed:
 MindStudio:
   description: "MindStudio 开发者场景验证代码仓列表"
   repos:
-    - name: mspti
-      url: "https://gitcode.com/Ascend/mspti.git"
+    - name: msdebug
+      url: "https://gitcode.com/Ascend/msdebug.git"
       branch: master
       component: MindStudio
     - name: mskpp
@@ -373,3 +373,10 @@ openGauss:
       branch: master
       component: openGauss
 
+Triton-Ascend:
+  description: "Triton-Ascend 开发者场景验证代码仓列表"
+  repos:
+    - name: triton-ascend
+      url: "https://github.com/triton-lang/triton-ascend"
+      branch: main
+      component: Triton-Ascend
