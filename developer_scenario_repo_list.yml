@@ -144,20 +144,56 @@ MindStudio:
       url: "https://gitcode.com/Ascend/msdebug.git"
       branch: master
       component: MindStudio
+    - name: mskl
+      url: "https://gitcode.com/Ascend/mskl.git"
+      branch: master
+      component: MindStudio      
     - name: mskpp
       url: "https://gitcode.com/Ascend/mskpp.git"
       branch: master
       component: MindStudio
-    - name: mstx
-      url: "https://gitcode.com/Ascend/mstx.git"
+    - name: msmemscope
+      url: "https://gitcode.com/Ascend/msmemscope.git"
       branch: master
-      component: MindStudio
+      component: MindStudio      
     - name: msmonitor
       url: "https://gitcode.com/Ascend/msmonitor.git"
       branch: master
-      component: MindStudio
-    - name: mskl
-      url: "https://gitcode.com/Ascend/mskl.git"
+      component: MindStudio      
+    - name: msopgen
+      url: "https://gitcode.com/Ascend/msopgen.git"
+      branch: master
+      component: MindStudio      
+    - name: msopprof
+      url: "https://gitcode.com/Ascend/msopprof.git"
+      branch: master
+      component: MindStudio      
+    - name: msprobe
+      url: "https://gitcode.com/Ascend/msprobe.git"
+      branch: master
+      component: MindStudio  
+    - name: msprof
+      url: "https://gitcode.com/Ascend/msprof.git"
+      branch: master
+      component: MindStudio   
+    - name: msprof-analyze
+      url: "https://gitcode.com/Ascend/msprof-analyze.git"
+      branch: master
+      component: MindStudio   
+    - name: mspti
+      url: "https://gitcode.com/Ascend/mspti.git"
+      branch: master
+      component: MindStudio      
+    - name: mssanitizer
+      url: "https://gitcode.com/Ascend/mssanitizer.git"
+      branch: master
+      component: MindStudio       
+    - name: msserviceprofiler
+      url: "https://gitcode.com/Ascend/msserviceprofiler.git"
+      branch: master
+      component: MindStudio        
+    - name: mstx
+      url: "https://gitcode.com/Ascend/mstx.git"
       branch: master
       component: MindStudio
 
