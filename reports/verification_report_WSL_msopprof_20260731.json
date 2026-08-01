@@ -1,0 +1,551 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/msopprof.git",
+    "branch": "master",
+    "start_time": "2026-07-31T12:27:12",
+    "end_time": "2026-07-31T13:33:35",
+    "duration_seconds": 3983,
+    "total_steps": 11,
+    "commit": "9f53f86"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "N/A",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng (256 cores)",
+      "cpu_cores": 256,
+      "memory": "2.0 TiB",
+      "disk": "21T total, 17T available",
+      "docker_version": "29.6.1 (buildx v0.35.0)"
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS-SP3)",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "2.0 TiB"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3",
+      "selection_reason": "安装指南明确引用《MindStudio统一构建镜像制作指南》，该指南指定从 openEuler 24.03 LTS 基础镜像现场构建环境镜像。构建链底层 FROM 为 hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3，优先使用项目推荐的基础 OS。环境由文档脚本 build_image.py 现场构建。",
+      "dependency_mapping": {
+        "from_dockerfile": "script 模式，依赖由构建镜像提供，无需映射",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "MindStudio统一构建镜像制作指南 + CANN URL 中的 $(arch) 变量",
+      "value": "x86_64"
+    },
+    "recommended_image": {
+      "source": "安装指南 2.3.1 节引用《MindStudio统一构建镜像制作指南》",
+      "value": "openEuler 24.03 LTS（hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3），通过 build_image.py 脚本现场构建"
+    },
+    "dockerfile_dependencies": {
+      "source": "script 模式",
+      "value": "script 模式，依赖由构建镜像提供，无需映射"
+    },
+    "dependencies": {
+      "source": "安装指南 2.3.1 节 + 统一镜像制作指南",
+      "value": [
+        "GCC 11.2（构建镜像提供）",
+        "Python 3.11（构建镜像提供）",
+        "CMake >= 3.20.2（构建镜像提供）",
+        "Ninja（构建镜像提供）",
+        "CANN 9.1.0-beta.3 toolkit + ops（构建镜像提供）",
+        "系统级依赖由构建镜像提供"
+      ]
+    },
+    "build_commands": {
+      "source": "安装指南 2.3.2 节",
+      "value": "cd ~/msopprof && python3 build.py"
+    },
+    "ut_commands": {
+      "source": "安装指南 2.3.3 节",
+      "value": "cd ~/msopprof && python3 build.py test"
+    },
+    "sample_commands": {
+      "source": "example/ 目录 README",
+      "value": "example/sample_sim_analysis/build.sh（仿真模式，需 CANN 环境）"
+    },
+    "special_dependencies": {
+      "source": "统一镜像制作指南第6节",
+      "value": [
+        "CANN toolkit: https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-x86_64.run",
+        "CANN ops: https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-x86_64.run"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-31T12:29:50",
+      "step": "environment_selection",
+      "action": "确认容器运行环境为远端 SSH 机器",
+      "result": "成功",
+      "details": {
+        "host_type": "remote_ssh",
+        "remote_host": "192.168.9.128",
+        "remote_user": "m00818315",
+        "remote_port": 22,
+        "remote_workdir": "/tmp/ttfhw-msopprof/"
+      },
+      "command": "",
+      "success": true,
+      "output": "用户选择远端 SSH 环境",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-31T12:29:50",
+      "step": "document_reading",
+      "action": "阅读 README.md、安装指南、快速入门、统一镜像制作指南，完成文档闭包",
+      "result": "成功",
+      "details": {
+        "docs_read": [
+          "README.md",
+          "docs/zh/install_guide/msopprof_install_guide.md",
+          "docs/zh/quick_start/msopprof_quick_start.md",
+          "msot/docs/zh/common/docker_image_build_guide.md"
+        ],
+        "build_method": "script",
+        "script_url": "https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz",
+        "base_image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3"
+      },
+      "command": "",
+      "success": true,
+      "output": "文档闭包完成，构建方式确定为 script",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-07-31T12:29:50",
+      "step": "image_selection",
+      "action": "选定基础 OS 为 openEuler 24.03 LTS，构建方式为 script",
+      "result": "成功",
+      "details": {
+        "build_method": "script",
+        "script_url": "https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz",
+        "reason": "安装指南明确引用统一镜像制作指南，文档闭包中发现环境构建脚本 build_image.py，脚本及全部 Dockerfile 已下载审查，构建链底层 FROM 为 openEuler 24.03 LTS SP3，必填参数（CANN URL）已从文档获取"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-07-31T12:31:11",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 和 lint-runner 配置",
+      "result": "pre-commit 已配置，lint-runner 未配置",
+      "details": {
+        "pre_commit_config": ".pre-commit-config.yaml",
+        "hooks_count": 12,
+        "lint_runner_found": false
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-31T12:31:11",
+      "step": "static_analysis_execution",
+      "action": "随机抽取10个文件执行 pre-commit run",
+      "result": "部分通过（4通过、5失败、2跳过）",
+      "details": {
+        "selected_files": [
+          "csrc/op_profiling/profiling/device/data_visualize/pmu_calculator.cpp",
+          "docs/en/figures/MemoryL0-csv-file.png",
+          "docs/zh/development_guide/architecture_figures/8dd1dc24b25bf85bbcf95909f0596fe9_491x499.png",
+          "csrc/include/thirdparty/ascend_hal/ascend_hal.cpp",
+          "docs/en/figures/ResourceConflictRatio-csv-file-13.png",
+          "test/ut/op_profiling/parse/data_parser/test_real_time_parser.cpp",
+          "docs/en/development_guide/architecture_figures/cf1aff15b08bb3fe4b7634e5202de28e_606x467.png",
+          "test/ut/utils/cpputils/CMakeLists.txt",
+          "docs/zh/development_guide/architecture_figures/4f2aa7604d013cd8200e9d3dec0e0cb3_554x139.png",
+          "docs/zh/user_guide/msopprof_usage.md"
+        ],
+        "total_files": 10,
+        "passed": 4,
+        "failed": 5,
+        "skipped": 2
+      },
+      "command": "pre-commit run --files <10 random files>",
+      "success": false,
+      "output": "trailing-whitespace Failed, end-of-file-fixer Failed, check-yaml Skipped, check-added-large-files Passed, check-merge-conflict Passed, detect-private-key Passed, check-json Skipped, codespell Passed, typos Passed, clang-format Failed, gitleaks Failed (not found), clang-tidy Failed (not found)",
+      "error": "gitleaks 和 clang-tidy 本地二进制未安装",
+      "returncode": 1,
+      "duration_seconds": 45
+    },
+    {
+      "timestamp": "2026-07-31T12:31:36",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录及配置",
+      "result": "已配置",
+      "details": {
+        "config_dir": ".devcontainer",
+        "files": [
+          "devcontainer.json",
+          "README.md",
+          "git-safe-pull.sh",
+          "initialize.sh",
+          "post-create.sh"
+        ],
+        "original_base_image": "swr.cn-north-4.myhuaweicloud.com/mindstudio-image/mindstudio-build:26.1.0-0701",
+        "will_use": "openEuler 24.03 LTS (script build)"
+      },
+      "command": "",
+      "success": true,
+      "output": "devcontainer.json 使用预构建 mindstudio-build 镜像",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-07-31T12:36:00",
+      "step": "image_build",
+      "action": "执行 build_image.py 从 openEuler 基础镜像分层构建 mindstudio-build:1.0.0-arm64",
+      "result": "成功（步骤4 docker rmi 非关键失败，手动完成步骤5-6）",
+      "details": {
+        "script": "build_image.py -t 1.0.0 --force -c <CANN_toolkit_URL> -c <CANN_ops_URL>",
+        "layers": [
+          "步骤1: 下载解压 sysroot (4.8s)",
+          "步骤2: 构建 GCC11 基础镜像 mindstudio-gcc11-glibc217:1.0.0-arm64 (689.9s)",
+          "步骤3: 构建多版本 Python 镜像 manylinux (846.9s)",
+          "步骤4: docker tag 重命名成功，docker rmi 因 containerd store 报 NotFound（非关键）",
+          "步骤5: CANN 包已下载（Ascend-cann_9.1.0-beta.3 + Ascend-cann-910b-ops_9.1.0-beta.3）",
+          "步骤6: docker build 最终镜像 mindstudio-build:1.0.0-arm64 (约300s)"
+        ],
+        "final_image": "mindstudio-build:1.0.0-arm64",
+        "image_id": "c7b44947f9cd",
+        "base_os": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3",
+        "cann_version": "9.1.0-beta.3",
+        "total_duration_approx": "约35分钟"
+      },
+      "command": "python3 build_image.py -t 1.0.0 --force -c \"https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-aarch64.run\" -c \"https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-aarch64.run\"",
+      "success": true,
+      "output": "镜像 mindstudio-build:1.0.0-arm64 构建成功，包含 GCC 11.2 / Python 3.8-3.13 / CANN 9.1.0-beta.3",
+      "error": "步骤4 docker rmi quay.io/pypa/mindstudio-python_aarch64:1.0.0 报 NotFound（containerd image store 特性，不影响构建）",
+      "returncode": 0,
+      "duration_seconds": 2100
+    },
+    {
+      "timestamp": "2026-07-31T13:12:00",
+      "step": "container_setup",
+      "action": "使用 ctr_in.py 创建并启动容器，在容器内克隆代码仓",
+      "result": "成功",
+      "details": {
+        "container_name": "ttfhw_msopprof",
+        "container_id": "ae1937737fb6",
+        "image": "mindstudio-build:1.0.0-arm64",
+        "create_method": "ctr_in.py（TTY attach 因非交互 SSH 失败，容器仍正常创建运行）",
+        "repo_clone_path": "/workspace/msopprof",
+        "repo_commit": "9f53f86",
+        "container_user": "root",
+        "container_env": {
+          "gcc": "11.2.0 (MindStudio glibc-2.17)",
+          "cmake": "3.31.10",
+          "python": "3.11.15",
+          "git": "2.54.0",
+          "cann": "9.1.0-beta.3"
+        }
+      },
+      "command": "python3 ctr_in.py mindstudio-build:1.0.0-arm64 ttfhw_msopprof -y && docker exec ttfhw_msopprof bash -c \"cd /workspace && git clone https://gitcode.com/Ascend/msopprof.git\"",
+      "success": true,
+      "output": "容器 ttfhw_msopprof 运行中，代码仓已克隆到 /workspace/msopprof",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-07-31T13:14:41",
+      "step": "build_execution",
+      "action": "在容器内执行产品构建 python3 build.py",
+      "result": "成功",
+      "details": {
+        "command": "cd /workspace/msopprof && python3 build.py",
+        "phases": [
+          "依赖下载: git submodule update (json, securec, makeself, llvm-project, msopscommon) 约3分钟",
+          "CMake 配置: cmake ../cmake (13:17:39)",
+          "并行编译: make -j 256 (13:17:40 - 13:20:58)",
+          "打包: makeself 生成 mindstudio-opprof_26.0.0_aarch64.run",
+          "归档: artifacts/mindstudio-opprof_26.0.0_aarch64.run (11MB)"
+        ],
+        "artifact": "mindstudio-opprof_26.0.0_aarch64.run",
+        "artifact_size": "11MB",
+        "build_jobs": 256,
+        "compiler": "GCC 11.2.0",
+        "cmake_version": "3.31.10"
+      },
+      "command": "docker exec ttfhw_msopprof bash -lc \"cd /workspace/msopprof && python3 build.py\"",
+      "success": true,
+      "output": "Self-extractable archive mindstudio-opprof_26.0.0_aarch64.run successfully created. [100%] Built target package_msopprof",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 378
+    },
+    {
+      "timestamp": "2026-07-31T13:27:21",
+      "step": "unit_test_execution",
+      "action": "在容器内执行单元测试 python3 build.py test local",
+      "result": "成功（首次因缺少 googletest/boost artifact 失败，手动下载 msopscommon 测试依赖后通过）",
+      "details": {
+        "command": "cd /workspace/msopprof && python3 build.py test local",
+        "issue_encountered": "首次运行 CMake 报错: msopscommon/thirdparty/googletest 目录不存在。原因: build.py test local 跳过依赖下载，而 googletest/boost 是 msopscommon 的 artifact 依赖（非 git submodule），需额外执行 msopscommon/download_dependencies.py test",
+        "fix": "cd msopscommon && python3 download_dependencies.py test",
+        "cmake_configure": "13:27:22 (2s)",
+        "make_install": "13:27:24 - 13:30:40 (约196s, -j256, Debug)",
+        "test_execution": "13:30:40 开始",
+        "total_tests": 656,
+        "test_suites": 87,
+        "passed": 656,
+        "failed": 0,
+        "test_duration_ms": 24844,
+        "xml_report": "build_ut/test_detail.xml"
+      },
+      "command": "docker exec ttfhw_msopprof bash -lc \"cd /workspace/msopprof && python3 build.py test local\"",
+      "success": true,
+      "output": "[==========] 656 tests from 87 test suites ran. (24844 ms total) [  PASSED  ] 656 tests.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 220
+    },
+    {
+      "timestamp": "2026-07-31T13:35:00",
+      "step": "sample_execution",
+      "action": "尝试编译运行 example/sample_sim_analysis 样例（sim 模式）",
+      "result": "部分成功（ASC 编译通过，链接失败）",
+      "details": {
+        "sample": "sample_sim_analysis (GroupedMatmul 仿真优化分析)",
+        "command": "bash build.sh after sim dav-3510",
+        "cmake_configure": "成功，检测到 bisheng 编译器和 CANN 9.1.0-beta.3",
+        "asc_compile": "成功（grouped_matmul_custom.asc.o 编译通过）",
+        "link": "失败: ld.lld: error: unable to find library -lruntime_camodel / -lnpu_drv_camodel",
+        "root_cause": "CANN toolkit + ops 安装包未包含仿真器运行时库（tools/simulator/dav_3510/lib/ 为空）。样例 README 引用的《算子工具开发环境安装指导》可能包含额外安装包",
+        "documentation_gap": "安装指南未说明仿真器库的来源和安装方法"
+      },
+      "command": "docker exec ttfhw_msopprof bash -lc \"cd /workspace/msopprof/example/sample_sim_analysis && bash build.sh after sim dav-3510\"",
+      "success": false,
+      "output": "[100%] Linking ASC executable grouped_matmul_after\nld.lld: error: unable to find library -lruntime_camodel\nld.lld: error: unable to find library -lnpu_drv_camodel",
+      "error": "ld.lld: error: unable to find library -lruntime_camodel; ld.lld: error: unable to find library -lnpu_drv_camodel",
+      "returncode": 1,
+      "duration_seconds": 15
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（12个hooks：4通过、5失败、2跳过、1因缺少本地二进制失败），未检测到 lint-runner 配置",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "部分通过",
+        "duration_seconds": 45,
+        "total_hooks": 12,
+        "passed": 4,
+        "failed": 5,
+        "skipped": 2,
+        "executed_in_verification": true,
+        "note": "随机抽取10个文件执行。gitleaks 和 clang-tidy 为 local system hook，需要预装本地二进制（./gitleaks 和 clang-tidy），当前环境未安装，标记为失败。",
+        "hooks": [
+          {
+            "name": "trailing-whitespace",
+            "status": "failed",
+            "detail": "修复了 docs/zh/user_guide/msopprof_usage.md"
+          },
+          {
+            "name": "end-of-file-fixer",
+            "status": "failed",
+            "detail": "修复了 3 个文件"
+          },
+          {
+            "name": "check-yaml",
+            "status": "skipped",
+            "detail": "无匹配文件"
+          },
+          {
+            "name": "check-added-large-files",
+            "status": "passed",
+            "detail": ""
+          },
+          {
+            "name": "check-merge-conflict",
+            "status": "passed",
+            "detail": ""
+          },
+          {
+            "name": "detect-private-key",
+            "status": "passed",
+            "detail": ""
+          },
+          {
+            "name": "check-json",
+            "status": "skipped",
+            "detail": "无匹配文件"
+          },
+          {
+            "name": "codespell",
+            "status": "passed",
+            "detail": ""
+          },
+          {
+            "name": "typos",
+            "status": "passed",
+            "detail": ""
+          },
+          {
+            "name": "clang-format",
+            "status": "failed",
+            "detail": "修改了 csrc/include/thirdparty/ascend_hal/ascend_hal.cpp"
+          },
+          {
+            "name": "gitleaks-offline-scan",
+            "status": "failed",
+            "detail": "Executable ./gitleaks not found"
+          },
+          {
+            "name": "clang-tidy",
+            "status": "failed",
+            "detail": "Executable clang-tidy not found"
+          }
+        ],
+        "failures": [
+          {
+            "hook_name": "trailing-whitespace",
+            "file": "docs/zh/user_guide/msopprof_usage.md",
+            "error": "文件末尾存在多余空白字符"
+          },
+          {
+            "hook_name": "end-of-file-fixer",
+            "file": "csrc/include/thirdparty/ascend_hal/ascend_hal.cpp",
+            "error": "文件末尾缺少换行符"
+          },
+          {
+            "hook_name": "clang-format",
+            "file": "csrc/include/thirdparty/ascend_hal/ascend_hal.cpp",
+            "error": "代码格式不符合 clang-format 规范"
+          },
+          {
+            "hook_name": "gitleaks-offline-scan",
+            "file": "(all)",
+            "error": "Executable ./gitleaks not found"
+          },
+          {
+            "hook_name": "clang-tidy",
+            "file": "(all)",
+            "error": "Executable clang-tidy not found"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        "devcontainer.json",
+        "README.md",
+        "git-safe-pull.sh",
+        "initialize.sh",
+        "post-create.sh"
+      ],
+      "original_base_image": "swr.cn-north-4.myhuaweicloud.com/mindstudio-image/mindstudio-build:26.1.0-0701",
+      "used_image": "openEuler 24.03 LTS (hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3)",
+      "summary": "仓库配置了 devcontainer，使用预构建的 mindstudio-build 镜像。本次验证按 skill 要求从 openEuler 基础镜像通过 build_image.py 脚本现场构建环境镜像，不直接使用预构建镜像。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 378,
+      "cmake": "3.31.10",
+      "compiler": "GCC 11.2.0 (MindStudio glibc-2.17)",
+      "concurrency": 256,
+      "artifacts": [
+        {
+          "name": "mindstudio-opprof_26.0.0_aarch64.run",
+          "path": "/workspace/msopprof/artifacts/mindstudio-opprof_26.0.0_aarch64.run",
+          "size": "11MB",
+          "type": "binary"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 220,
+      "total": 656,
+      "passed": 656,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "partial_failure",
+      "duration_seconds": 15,
+      "reason": "CANN 仿真器运行时库（libruntime_camodel, libnpu_drv_camodel）未包含在标准安装包中，样例链接失败",
+      "results": [
+        {
+          "sample_name": "sample_sim_analysis",
+          "execution_status": "link_failed",
+          "output_summary": "CMake 配置成功，ASC 编译（bisheng）通过，链接失败: unable to find library -lruntime_camodel / -lnpu_drv_camodel",
+          "execution_time": "15s"
+        },
+        {
+          "sample_name": "sample_npu_metrics_analysis",
+          "execution_status": "not_run",
+          "output_summary": "需要 NPU 硬件或完整仿真环境，当前环境不具备运行条件",
+          "execution_time": "0s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-07-31T13:35:00",
+      "title": "样例编译缺少仿真器库安装说明",
+      "body": "sample_sim_analysis 样例链接时需要 libruntime_camodel 和 libnpu_drv_camodel（CANN 仿真器运行时库），但安装指南和统一镜像构建指南均未说明如何安装这些库。CANN toolkit + ops 标准安装包不包含 tools/simulator/ 下的运行时文件。样例 README 引用的《算子工具开发环境安装指导》可能包含额外安装包，但该文档未在 msopprof 仓库中直接可达。",
+      "source": "example/sample_sim_analysis/build.sh 链接阶段报错"
+    },
+    {
+      "time": "2026-07-31T13:27:00",
+      "title": "build.py test local 未提示缺少 msopscommon artifact 依赖",
+      "body": "使用 build.py test local 跳过依赖下载时，msopscommon 的 artifact 依赖（googletest, boost）不会被下载，导致 CMake 配置失败（报错 msopscommon/thirdparty/googletest 目录不存在）。文档未说明 test local 前需要先手动下载 msopscommon 测试依赖（cd msopscommon && python3 download_dependencies.py test）。",
+      "source": "build.py test local 首次执行 CMake 报错"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-07-31T13:22:00",
+      "problem": "build.py test local 首次运行失败：CMake 报错 add_subdirectory given source msopscommon/thirdparty/googletest which is not an existing directory",
+      "solution": "手动执行 cd msopscommon && python3 download_dependencies.py test 下载 googletest 和 boost artifact 后重试成功",
+      "source": "容器内 /tmp/ut.log CMake 错误输出"
+    },
+    {
+      "timestamp": "2026-07-31T13:35:00",
+      "problem": "sample_sim_analysis 链接失败：ld.lld: error: unable to find library -lruntime_camodel / -lnpu_drv_camodel",
+      "solution": "未解决。CANN 标准安装包（toolkit + ops）不含仿真器运行时库，需要额外的仿真器组件包。ASC 编译阶段（bisheng）已验证通过。",
+      "source": "容器内 bash build.sh after sim dav-3510 输出"
+    },
+    {
+      "timestamp": "2026-07-31T12:50:00",
+      "problem": "build_image.py 步骤4 docker rmi 报 NotFound（containerd image store 下 buildx --load 后多平台 manifest 引用无法按 tag 删除）",
+      "solution": "docker tag 已成功，rmi 仅为清理操作。手动执行步骤5-6（CANN 包已就绪，直接 docker build 最终镜像）完成构建",
+      "source": "远程 /tmp/ttfhw-msopprof/build_image.log"
+    }
+  ]
+}

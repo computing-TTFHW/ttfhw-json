@@ -1,0 +1,527 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/mssanitizer.git",
+    "branch": "master",
+    "start_time": "2026-07-31T10:47:30",
+    "end_time": "2026-07-31T11:53:30",
+    "duration_seconds": 3960,
+    "total_steps": 13,
+    "commit": "6e0c036"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng-920",
+      "cpu_cores": 256,
+      "memory": "2.0Ti",
+      "disk": "21T total, 17T available",
+      "docker_version": "Docker version 29.6.1"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS SP3",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "2.0Ti",
+      "image": "mindstudio-build:1.0.0-arm64",
+      "container_name": "mssanitizer-verify"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3",
+      "selection_reason": "��Ŀ�Ƽ� openEuler 24.03 LTS��ͳһ������������ָ����ȷָ�������������ĵ��ű� build_image.py �ֳ��������������ײ� FROM Ϊ openEuler 24.03 LTS SP3 �ٷ���������"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "docker_image_build_guide.md + build_image.py���Զ�����������ܹ���",
+      "value": "x86_64/aarch64���ű��Զ����䣩"
+    },
+    "recommended_image": {
+      "source": "MindStudioͳһ������������ָ�� + devtoolset7/Dockerfile FROM ָ��",
+      "value": "openEuler 24.03 LTS SP3��hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3��"
+    },
+    "dockerfile_dependencies": {
+      "source": "script ģʽ",
+      "value": "script ģʽ�������ɹ��������ṩ������ӳ��"
+    },
+    "dependencies": {
+      "source": "��װָ�� 2.3.1 ��",
+      "value": [
+        "ϵͳ�������ɹ��������ṩ��GCC 11.2��CMake��Python 3.8-3.13��CANN 9.1.0-beta.3��",
+        "����ʱ������ download_dependencies.py �Զ���ȡ��git submodules: json/securec/makeself/llvm-project/msopscommon��"
+      ]
+    },
+    "build_commands": {
+      "source": "��װָ�� 2.3.2 ��",
+      "value": "cd ~/mssanitizer && python3 build.py"
+    },
+    "ut_commands": {
+      "source": "��װָ�� 2.3.3 ��",
+      "value": "cd ~/mssanitizer && python3 build.py test"
+    },
+    "sample_commands": {
+      "source": "���������ĵ�",
+      "value": "mssanitizer --tool=memcheck -- bash run.sh����Ҫ NPU Ӳ���� CANN ����������"
+    },
+    "special_dependencies": {
+      "source": "docker_image_build_guide.md ��6��",
+      "value": [
+        "CANN toolkit: https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-x86_64.run",
+        "CANN ops: https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-x86_64.run"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-31T10:50:34",
+      "step": "environment_selection",
+      "action": "ȷ���������л���ΪԶ�� SSH ����",
+      "result": "�ɹ�",
+      "details": {
+        "host_type": "remote_ssh",
+        "remote_host": "192.168.9.128",
+        "remote_user": "m00818315",
+        "remote_port": 22,
+        "remote_workdir": "/tmp/ttfhw-mssanitizer/"
+      },
+      "command": "",
+      "success": true,
+      "output": "�û�ѡ��Զ�� SSH ������m00818315@192.168.9.128:22������Ŀ¼ /tmp/ttfhw-mssanitizer/",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-31T10:50:34",
+      "step": "document_reading",
+      "action": "�Ķ� README.md����װָ�ϡ��������š�build.py��CMakeLists.txt��dependencies.json",
+      "result": "�ɹ�",
+      "details": {
+        "files_read": [
+          "README.md",
+          "docs/zh/install_guide/mssanitizer_install_guide.md",
+          "docs/zh/quick_start/mssanitizer_quick_start.md",
+          "build.py",
+          "CMakeLists.txt",
+          "dependencies.json",
+          "download_dependencies.py"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "��װָ����ȷָ��MindStudioͳһ������������ָ�ϡ���openEuler�������񹹽��������������� python3 build.py��UT���� python3 build.py test",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-07-31T10:50:34",
+      "step": "document_reading",
+      "action": "�Ķ��ⲿ�����ĵ���MindStudioͳһ������������ָ�ϣ�msot�ֿ⣩",
+      "result": "�ɹ�",
+      "details": {
+        "files_read": [
+          "msot/docs/zh/common/docker_image_build_guide.md"
+        ],
+        "source": "https://gitcode.com/Ascend/msot/blob/master/docs/zh/common/docker_image_build_guide.md"
+      },
+      "command": "git clone --depth 1 https://gitcode.com/Ascend/msot.git",
+      "success": true,
+      "output": "ָ���ṩ build_image.py �ű����� openEuler 24.03 LTS SP3 ��������ֲ㹹�� GCC11��Python��CANN ��������",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-07-31T10:50:34",
+      "step": "document_reading",
+      "action": "���ز���鹹���ű���ȫ�� Dockerfile����֤�������ײ�Ϊ���� OS ����",
+      "result": "�ɹ�",
+      "details": {
+        "script_url": "https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz",
+        "dockerfiles": [
+          "devtoolset7/Dockerfile",
+          "manylinux/docker/Dockerfile",
+          "mindstudio/Dockerfile"
+        ],
+        "base_image_chain": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3 �� GCC11 �� Python(manylinux) �� mindstudio-build(+CANN)",
+        "cann_urls": [
+          "https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-x86_64.run",
+          "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-x86_64.run"
+        ]
+      },
+      "command": "curl -fLO https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz && tar zxf dockerfile.tar.gz",
+      "success": true,
+      "output": "�������ײ� FROM Ϊ hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3�����ϻ��� OS ����Ҫ��",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-07-31T10:50:34",
+      "step": "image_selection",
+      "action": "ȷ������ OS Ϊ openEuler 24.03 LTS SP3������������ʽΪ script",
+      "result": "�ɹ�",
+      "details": {
+        "build_method": "script",
+        "script_url": "https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz",
+        "reason": "��װָ����ȷ���á�MindStudioͳһ������������ָ�ϡ����ṩ build_image.py �ű��� openEuler �������񹹽��������ű���ȫ�� Dockerfile ���������ͨ�������������CANN toolkit/ops URL������ȡ��",
+        "selection_reason": "��Ŀ�Ƽ� openEuler 24.03 LTS��ͳһ������������ָ����ȷָ����������ʹ����Ŀ�Ƽ��Ļ��� OS"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-07-31T10:51:54",
+      "step": "static_analysis_scan",
+      "action": "���ֿ� pre-commit �� lint-runner ����",
+      "result": "pre-commit �����ã�12��hooks����lint-runner δ����",
+      "details": {
+        "pre_commit_config": ".pre-commit-config.yaml",
+        "hooks_count": 12,
+        "lint_runner_found": false
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-31T10:51:54",
+      "step": "static_analysis_execution",
+      "action": "�����ȡ10��Git�����ļ�ִ�� pre-commit run --files",
+      "result": "����ͨ����6ͨ����4ʧ�ܡ�2����",
+      "details": {
+        "selected_files": [
+          "csrc/plugin/ccec/calc_instructions/vscatter.cpp",
+          "test/ut/plugin/ccec/calc_instructions/test_vaddrelu.cpp",
+          "csrc/race_sanitizer/alg_framework/mem_event_checker.h",
+          "csrc/plugin/ccec/calc_instructions/vmul.cpp",
+          "csrc/plugin/ccec/dbi/probes/sync_instructions.cpp",
+          "test/ut/plugin/ccec/calc_instructions/vector_dup.cpp",
+          "csrc/plugin/ccec/calc_instructions/vrsqrt.cpp",
+          "test/ut/plugin/test_recorder.cpp",
+          "csrc/plugin/record_main_scalar_empty_instructions.h",
+          "csrc/core/framework/barrier_database.h"
+        ],
+        "files_count": 10,
+        "hooks": [
+          {
+            "name": "trailing-whitespace",
+            "status": "failed",
+            "note": "�޸��� test_vaddrelu.cpp"
+          },
+          {
+            "name": "end-of-file-fixer",
+            "status": "failed",
+            "note": "�޸��� vscatter.cpp �� record_main_scalar_empty_instructions.h"
+          },
+          {
+            "name": "check-yaml",
+            "status": "skipped",
+            "note": "��ƥ���ļ�"
+          },
+          {
+            "name": "check-added-large-files",
+            "status": "passed"
+          },
+          {
+            "name": "check-merge-conflict",
+            "status": "passed"
+          },
+          {
+            "name": "detect-private-key",
+            "status": "passed"
+          },
+          {
+            "name": "check-json",
+            "status": "skipped",
+            "note": "��ƥ���ļ�"
+          },
+          {
+            "name": "codespell",
+            "status": "passed"
+          },
+          {
+            "name": "typos",
+            "status": "passed"
+          },
+          {
+            "name": "clang-format",
+            "status": "passed"
+          },
+          {
+            "name": "gitleaks-offline-scan",
+            "status": "failed",
+            "note": "Executable ./gitleaks not found"
+          },
+          {
+            "name": "clang-tidy",
+            "status": "failed",
+            "note": "Executable clang-tidy not found"
+          }
+        ]
+      },
+      "command": "pre-commit run --files <10������ļ�>",
+      "success": false,
+      "output": "trailing-whitespace:Failed, end-of-file-fixer:Failed, check-yaml:Skipped, check-added-large-files:Passed, check-merge-conflict:Passed, detect-private-key:Passed, check-json:Skipped, codespell:Passed, typos:Passed, clang-format:Passed, gitleaks:Failed(not found), clang-tidy:Failed(not found)",
+      "error": "gitleaks �� clang-tidy ��ִ���ļ�δ��װ",
+      "returncode": 1,
+      "duration_seconds": 95
+    },
+    {
+      "timestamp": "2026-07-31T10:51:54",
+      "step": "devcontainer_scan",
+      "action": "��� .devcontainer Ŀ¼",
+      "result": "�ֿ�δ���� devcontainer",
+      "details": {
+        "config_dir": null,
+        "files": []
+      },
+      "command": "",
+      "success": true,
+      "output": ".devcontainer Ŀ¼������",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-07-31T10:54:42",
+      "step": "container_setup",
+      "action": "��Զ�� SSH ���������ع����ű������� build_image.py ���񹹽�",
+      "result": "����������",
+      "details": {
+        "remote_host": "m00818315@192.168.9.128",
+        "build_script": "/tmp/ttfhw-mssanitizer/docker/build_image.py",
+        "img_tag": "1.0.0-arm64",
+        "cann_urls": [
+          "https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-aarch64.run",
+          "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-aarch64.run"
+        ],
+        "pid": 2664855
+      },
+      "command": "python3 build_image.py -t 1.0.0-arm64 --force -c <CANN_toolkit_URL> -c <CANN_ops_URL>",
+      "success": true,
+      "output": "����������������PID 2664855",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-07-31T11:30:05",
+      "step": "container_setup",
+      "action": "镜像构建完成，6步全部成功",
+      "result": "成功",
+      "details": {
+        "final_image": "mindstudio-build:1.0.0-arm64",
+        "total_duration_seconds": 2083.4,
+        "step_durations": {
+          "sysroot": "8.0s",
+          "gcc11": "747.6s",
+          "manylinux_python": "854.7s",
+          "rename": "0.4s",
+          "cann_download": "50.1s",
+          "final_image": "422.5s"
+        }
+      },
+      "command": "",
+      "success": true,
+      "output": "总耗时 2083.4s (34.7min)，最终镜像 mindstudio-build:1.0.0-arm64",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2083
+    },
+    {
+      "timestamp": "2026-07-31T11:31:00",
+      "step": "container_setup",
+      "action": "使用 ctr_in.py 启动容器并克隆代码仓",
+      "result": "成功",
+      "details": {
+        "container_name": "mssanitizer-verify",
+        "container_id": "e375d8068442",
+        "user": "mindstudio",
+        "repo_clone_path": "/home/mindstudio/mssanitizer"
+      },
+      "command": "python3 ~/ctr_in.py mindstudio-build:1.0.0-arm64 mssanitizer-verify",
+      "success": true,
+      "output": "容器创建成功，代码仓克隆至 /home/mindstudio/mssanitizer",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-07-31T11:52:00",
+      "step": "build",
+      "action": "在容器内执行 python3 build.py",
+      "result": "成功",
+      "details": {
+        "command": "cd /home/mindstudio/mssanitizer && python3 build.py",
+        "artifact": "output/mindstudio-sanitizer_26.0.0_aarch64.run",
+        "artifact_size": "13MB"
+      },
+      "command": "python3 build.py",
+      "success": true,
+      "output": "构建成功，产出 mindstudio-sanitizer_26.0.0_aarch64.run (13MB)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1200
+    },
+    {
+      "timestamp": "2026-07-31T11:53:00",
+      "step": "unit_test",
+      "action": "在容器内执行 python3 build.py test",
+      "result": "成功",
+      "details": {
+        "command": "cd /home/mindstudio/mssanitizer && python3 build.py test",
+        "total_tests": 1296,
+        "passed": 1296,
+        "failed": 0,
+        "test_suites": 168
+      },
+      "command": "python3 build.py test",
+      "success": true,
+      "output": "[==========] 1296 tests from 168 test suites ran. (32044 ms total) [  PASSED  ] 1296 tests.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 32
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "��⵽ pre-commit ���ã�12��hooks��6ͨ��4ʧ��2��������gitleaks �� clang-tidy ���ִ���ļ�ȱʧʧ�ܣ�δ��⵽ lint-runner ����",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "����ͨ��",
+        "duration_seconds": 95,
+        "total_hooks": 12,
+        "passed": 6,
+        "failed": 4,
+        "skipped": 2,
+        "executed_in_verification": true,
+        "hooks": [
+          {
+            "name": "trailing-whitespace",
+            "status": "failed"
+          },
+          {
+            "name": "end-of-file-fixer",
+            "status": "failed"
+          },
+          {
+            "name": "check-yaml",
+            "status": "skipped"
+          },
+          {
+            "name": "check-added-large-files",
+            "status": "passed"
+          },
+          {
+            "name": "check-merge-conflict",
+            "status": "passed"
+          },
+          {
+            "name": "detect-private-key",
+            "status": "passed"
+          },
+          {
+            "name": "check-json",
+            "status": "skipped"
+          },
+          {
+            "name": "codespell",
+            "status": "passed"
+          },
+          {
+            "name": "typos",
+            "status": "passed"
+          },
+          {
+            "name": "clang-format",
+            "status": "passed"
+          },
+          {
+            "name": "gitleaks-offline-scan",
+            "status": "failed"
+          },
+          {
+            "name": "clang-tidy",
+            "status": "failed"
+          }
+        ],
+        "failures": [
+          {
+            "hook_name": "trailing-whitespace",
+            "file": "test/ut/plugin/ccec/calc_instructions/test_vaddrelu.cpp",
+            "error": "�ļ�ĩβ���ڶ���հ��ַ�"
+          },
+          {
+            "hook_name": "end-of-file-fixer",
+            "file": "csrc/plugin/ccec/calc_instructions/vscatter.cpp",
+            "error": "�ļ�ĩβȱ�ٻ��з�"
+          },
+          {
+            "hook_name": "gitleaks-offline-scan",
+            "file": "(all)",
+            "error": "Executable ./gitleaks not found"
+          },
+          {
+            "hook_name": "clang-tidy",
+            "file": "(all)",
+            "error": "Executable clang-tidy not found"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "original_base_image": "unknown",
+      "used_image": "openEuler 24.03 LTS SP3",
+      "summary": "�ֿ�δ���� devcontainer ������������"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 1200,
+      "artifacts": [
+        "output/mindstudio-sanitizer_26.0.0_aarch64.run"
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 32,
+      "total": 1296,
+      "passed": 1296,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "results": [],
+      "reason": "样例需要 NPU 硬件和 CANN 运行时环境，当前验证环境无 NPU 设备"
+    }
+  },
+  "documentation_gaps": [],
+  "problems_encountered": []
+}

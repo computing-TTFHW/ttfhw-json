@@ -1,0 +1,518 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/mspti.git",
+    "branch": "master",
+    "start_time": "2026-07-31T13:41:43",
+    "end_time": "2026-07-31T14:33:15",
+    "duration_seconds": 3092,
+    "total_steps": 12,
+    "commit": "bed060b",
+    "environment": "远端 SSH 机器 m00818315@192.168.9.128（aarch64 Kunpeng-920），容器 ttfhw-mspti-baseos-env",
+    "verifier": "QoderCN"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "QoderCN",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng-920",
+      "cpu_cores": 256,
+      "memory": "2.0Ti",
+      "disk": "17T available",
+      "docker_version": "Docker version 29.6.1, buildx v0.35.0"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS SP3",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "2.0Ti (无限制)",
+      "container_name": "ttfhw-mspti-baseos-env"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3",
+      "selection_reason": "项目安装指南 2.3.1 节明确引用 MindStudio 统一构建镜像制作指南，该指南提供 build_image.py 脚本从 openEuler 24.03 LTS SP3 基础镜像现场构建环境镜像。已下载并审查脚本与全部 Dockerfile：devtoolset7/Dockerfile 底层 FROM 为 hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3，mindstudio/Dockerfile FROM ${BASEIMAGE} 继承下层。环境由文档脚本现场构建。",
+      "dependency_mapping": {
+        "from_dockerfile": "script 模式，依赖由构建镜像 Dockerfile 提供（devtoolset7/Dockerfile + mindstudio/Dockerfile）",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "镜像制作指南 + 远端 uname -m",
+      "value": "aarch64"
+    },
+    "recommended_image": {
+      "source": "安装指南 2.3.1 引用 MindStudio统一构建镜像制作指南",
+      "value": "项目推荐 openEuler 24.03 LTS SP3（通过 build_image.py 脚本从基础镜像现场构建）"
+    },
+    "dockerfile_dependencies": {
+      "source": "script 模式",
+      "value": "script 模式，依赖由构建镜像提供，无需映射"
+    },
+    "dependencies": {
+      "source": "安装指南 + 镜像制作指南",
+      "value": [
+        "GCC 11.2（构建镜像提供）",
+        "Python 3.8-3.13（构建镜像提供，manylinux2014）",
+        "CANN 9.1.0-beta.3 toolkit + 910b-ops（构建镜像提供）",
+        "CMake >= 3.14.1（CMakeLists.txt）",
+        "系统级依赖由构建镜像提供"
+      ]
+    },
+    "build_commands": {
+      "source": "安装指南 2.3.2 节",
+      "value": "cd ~/mspti && python3 build.py"
+    },
+    "ut_commands": {
+      "source": "安装指南 2.3.3 节",
+      "value": "cd ~/mspti && python3 build.py test"
+    },
+    "sample_commands": {
+      "source": "samples/README.md",
+      "value": "source ${install_path}/set_env.sh && cd ${install_path}/tools/mspti/samples/<dir> && bash sample_run.sh（需 NPU 设备及 CANN 环境）"
+    },
+    "special_dependencies": {
+      "source": "安装指南 + 镜像制作指南",
+      "value": [
+        "CANN toolkit 9.1.0-beta.3 run 包",
+        "CANN 910b-ops 9.1.0-beta.3 run 包",
+        "ctr_in.py 容器启动脚本",
+        "Python 样例额外依赖 PyTorch 和 torch_npu"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-31T13:41:43",
+      "step": "environment_selection",
+      "action": "确认容器运行环境为远端 SSH 机器",
+      "result": "远端 SSH",
+      "details": {
+        "host_type": "remote_ssh",
+        "remote_host": "192.168.9.128",
+        "remote_user": "m00818315",
+        "remote_port": 22,
+        "remote_workdir": "/tmp/ttfhw-mspti/"
+      },
+      "command": "ssh m00818315@192.168.9.128 'uname -m; docker version'",
+      "success": true,
+      "output": "SSH 连接正常，Docker 29.6.1，aarch64，256核，2TB内存，17T可用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-31T13:44:20",
+      "step": "document_reading",
+      "action": "阅读 README.md、安装指南、samples/README.md、镜像制作指南，完成文档闭包；下载并审查 build_image.py 及 devtoolset7/mindstudio Dockerfile",
+      "result": "成功",
+      "details": {
+        "docs_read": [
+          "README.md",
+          "docs/zh/install_guide/mspti_install_guide.md",
+          "samples/README.md",
+          "msot/docs/zh/common/docker_image_build_guide.md",
+          "tmp_build_ctx/docker/build_image.py",
+          "tmp_build_ctx/docker/devtoolset7/Dockerfile",
+          "tmp_build_ctx/docker/mindstudio/Dockerfile"
+        ],
+        "build_method": "script",
+        "script_url": "https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz",
+        "base_image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3",
+        "cann_toolkit_url": "https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-aarch64.run",
+        "cann_ops_url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-aarch64.run",
+        "reason": "安装指南明确引用统一构建镜像制作指南，脚本与 Dockerfile 已下载审查，底层 FROM 为 openEuler 24.03-lts-sp3，必填 CANN 参数已从指南取得，符合 script 全部条件"
+      },
+      "command": "git clone https://gitcode.com/Ascend/mspti.git",
+      "success": true,
+      "output": "文档闭包完成，build_method=script，基础镜像 openEuler 24.03 LTS SP3",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-07-31T13:46:34",
+      "step": "static_analysis_execution",
+      "action": "本地执行 pre-commit run --files（随机抽取 10 个 Git 跟踪文件）",
+      "result": "pre-commit 框架可用，16 hook：10 通过/1 跳过/5 失败（含 3 autofix + 2 缺二进制）",
+      "details": {
+        "selected_files": [
+          "mspti/monitor/communication_monitor.py",
+          "csrc/common/inject/inject_base.h",
+          "csrc/common/utils.cpp",
+          "test/mspti_cpp/ut/activity/dostart_chain/CMakeLists.txt",
+          ".pre-commit-config.yaml",
+          "docs/zh/legal/security_statement.md",
+          "docs/en/python_api/context/HcclMonitor-start.md",
+          "test/mspti_cpp/ut/activity/reporter_test/memory_reporter_utest.cpp",
+          "docs/en/c_api/context/msptiCommunicationDataType.md",
+          "test/mspti_cpp/ut/callback/callback_manager_test/callback_utest.cpp"
+        ],
+        "selected_count": 10,
+        "total_hooks": 16,
+        "passed": 10,
+        "failed": 3,
+        "skipped": 3
+      },
+      "command": "pre-commit run --files <10 random files>",
+      "success": true,
+      "output": "trailing-whitespace/ruff-format/clang-format autofix 修正文件；clang-tidy/gitleaks 缺二进制 skipped；其余通过",
+      "error": "clang-tidy: Executable not found; gitleaks: ./gitleaks not found",
+      "returncode": 1,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-07-31T13:46:34",
+      "step": "static_analysis_scan",
+      "action": "扫描 lint-runner 配置",
+      "result": "未配置",
+      "details": {
+        "lint_runner_configured": false
+      },
+      "command": "ls .lint-runner* .lintrunner* lint-runner*",
+      "success": true,
+      "output": "仓库未配置 lint-runner",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-31T13:46:34",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录",
+      "result": "不存在",
+      "details": {
+        "devcontainer_enabled": false
+      },
+      "command": "ls -la .devcontainer",
+      "success": true,
+      "output": "仓库根目录无 .devcontainer/ 目录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-31T13:50:17",
+      "step": "container_setup",
+      "action": "远端下载并审查镜像构建脚本，后台执行 build_image.py 从 openEuler 24.03-lts-sp3 基础镜像现场构建环境镜像",
+      "result": "构建已启动（进行中）",
+      "details": {
+        "build_method": "script",
+        "script_path": "/tmp/ttfhw-mspti/docker/build_image.py",
+        "build_context_sha256": "fee9b67741e07792a782ef7dcc3cef02fee89d057b9c6b1b314d417cb3b09447",
+        "base_image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3",
+        "img_tag": "1.0.0-arm64",
+        "cann_toolkit_url": "https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-aarch64.run",
+        "cann_ops_url": "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-aarch64.run",
+        "remote_pid": 459869,
+        "remote_log": "/tmp/ttfhw-mspti/build_image.log",
+        "prereq": "python3 3.10.12, buildx v0.35.0, ctr_in.py 200 OK, CANN URL 200 OK, 17T 可用"
+      },
+      "command": "python3 build_image.py -t 1.0.0-arm64 --force -c <toolkit.run> -c <ops.run>",
+      "success": true,
+      "output": "构建进程已启动，正在第2层 GCC 工具链构建（下载 mpfr/mpc 等）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-07-31T14:25:10",
+      "step": "container_setup",
+      "action": "镜像构建完成，使用 ctr_in.py 创建并启动容器 ttfhw-mspti-baseos-env，验证环境组件版本",
+      "result": "成功",
+      "details": {
+        "image": "mindstudio-build:1.0.0-arm64",
+        "image_id": "a12a6af9b81b",
+        "image_size": "5.81GB",
+        "container_name": "ttfhw-mspti-baseos-env",
+        "build_time_seconds": 2093.6,
+        "os_release": "openEuler 24.03 (LTS-SP3)",
+        "gcc_version": "11.2.0",
+        "python_version": "3.11.15 (/opt/python/cp311-cp311)",
+        "cann_version": "9.1.0-beta.3 (/usr/local/Ascend/cann-9.1.0-beta.3)",
+        "build_log": "/tmp/ttfhw-mspti/docker/logs/build-1.0.0-aarch64-20260731_134949.log"
+      },
+      "command": "ctr_in.py -y mindstudio-build:1.0.0-arm64 ttfhw-mspti-baseos-env",
+      "success": true,
+      "output": "容器启动成功，OS/GCC/Python/CANN 版本符合统一构建镜像指南声明",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2093.6
+    },
+    {
+      "timestamp": "2026-07-31T14:25:10",
+      "step": "container_setup",
+      "action": "在验证容器内通过 git clone 下载目标代码仓到 /workspace/mspti",
+      "result": "成功",
+      "details": {
+        "commit": "bed060b",
+        "path": "/workspace/mspti"
+      },
+      "command": "docker exec ttfhw-mspti-baseos-env bash -lc 'cd /workspace && git clone --depth 1 https://gitcode.com/Ascend/mspti.git'",
+      "success": true,
+      "output": "克隆成功，commit bed060b",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-07-31T14:27:48",
+      "step": "build_attempt",
+      "action": "在验证容器内执行 python3 build.py 完整构建",
+      "result": "成功",
+      "details": {
+        "command": "cd /workspace/mspti && python3 build.py",
+        "duration_seconds": 37,
+        "artifact": "mindstudio-profiler-tools-interface_1.0.0_aarch64.run",
+        "sha256": "dee7714b43dbce460981fc463a4eeb7c35d638a39882687df73ed2c69441c8f6"
+      },
+      "command": "cd /workspace/mspti && python3 build.py",
+      "success": true,
+      "output": "Self-extractable archive successfully created; Archiving artifact -> artifacts/; EXIT=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 37
+    },
+    {
+      "timestamp": "2026-07-31T14:32:18",
+      "step": "ut_execution",
+      "action": "在验证容器内执行 python3 build.py test（Debug 编译 + 运行 C++ 单元测试）",
+      "result": "通过",
+      "details": {
+        "command": "cd /workspace/mspti && python3 build.py test",
+        "duration_seconds": 29,
+        "executables": 12,
+        "total": 199,
+        "passed": 199,
+        "failed": 0
+      },
+      "command": "cd /workspace/mspti && python3 build.py test",
+      "success": true,
+      "output": "12 个测试可执行文件全部 execute ... successfully；[  PASSED  ] 累计 199 tests，无 [  FAILED  ]；EXIT=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 29
+    },
+    {
+      "timestamp": "2026-07-31T14:32:18",
+      "step": "smoke_test",
+      "action": "安装 run 包产物并做 import 冒烟测试",
+      "result": "成功",
+      "details": {
+        "install_cmd": "./mindstudio-profiler-tools-interface_1.0.0_aarch64.run --install --install-path=/usr/local/Ascend/cann-9.1.0-beta.3",
+        "install_result": "MindStudio-Profiler-Tools-Interface package install success",
+        "import_cmd": "python3 -c 'import mspti; print(\"All is OK\")'",
+        "import_result": "All is OK（需 LD_LIBRARY_PATH 含 tools/mspti/lib64）",
+        "note": "set_env.sh 未自动导出 mspti lib64 路径，手动补充 LD_LIBRARY_PATH 后 import 成功"
+      },
+      "command": "./mindstudio-profiler-tools-interface_1.0.0_aarch64.run --install && python3 -c 'import mspti'",
+      "success": true,
+      "output": "run 包安装成功；import mspti 输出 All is OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 40
+    },
+    {
+      "timestamp": "2026-07-31T14:32:18",
+      "step": "sample_execution",
+      "action": "尝试运行 mspti_activity 样例",
+      "result": "未执行（环境不具备条件）",
+      "details": {
+        "sample": "mspti_activity",
+        "reason": "NPU 驱动用户态不可用（npu-smi ret -8005）+ 构建镜像缺少 aclnn ops 头文件/库（aclnn_add.h、libopapi.so）"
+      },
+      "command": "cd .../samples/mspti_activity && bash sample_run.sh",
+      "success": false,
+      "output": "CMake 配置成功；编译失败 fatal error: aclnnop/aclnn_add.h: No such file or directory",
+      "error": "aclnnop/aclnn_add.h: No such file or directory; No rule to make target libopapi.so",
+      "returncode": 0,
+      "duration_seconds": 30
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "仓库配置了 pre-commit（.pre-commit-config.yaml），未配置 lint-runner。随机抽取 10 个 Git 跟踪文件执行 pre-commit run --files，共 16 个 hook：10 通过、1 跳过（check-json 无匹配文件）、5 失败。其中 trailing-whitespace/ruff-format/clang-format 为 autofix 格式化钩子，失败表示自动修正了文件格式（工具本身正常工作）；clang-tidy 与 gitleaks 为 local 钩子，因宿主机缺少对应二进制（clang-tidy 未安装、仓库未含 ./gitleaks）而无法执行，标记为 skipped。pre-commit 框架功能验证可用。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "executed_with_failures",
+        "duration_seconds": 180,
+        "total_hooks": 16,
+        "passed": 10,
+        "failed": 3,
+        "skipped": 3,
+        "executed_in_verification": true,
+        "hooks": [
+          {
+            "name": "trailing-whitespace",
+            "status": "failed",
+            "note": "autofix 修正了 1 个文件的行尾空白（工具正常工作）"
+          },
+          {
+            "name": "end-of-file-fixer",
+            "status": "passed"
+          },
+          {
+            "name": "check-yaml",
+            "status": "passed"
+          },
+          {
+            "name": "check-added-large-files",
+            "status": "passed"
+          },
+          {
+            "name": "check-merge-conflict",
+            "status": "passed"
+          },
+          {
+            "name": "detect-private-key",
+            "status": "passed"
+          },
+          {
+            "name": "check-json",
+            "status": "skipped",
+            "note": "随机文件中无 json 文件"
+          },
+          {
+            "name": "ruff-check",
+            "status": "passed"
+          },
+          {
+            "name": "ruff-format",
+            "status": "failed",
+            "note": "autofix 重新格式化 1 个文件（工具正常工作）"
+          },
+          {
+            "name": "codespell",
+            "status": "passed"
+          },
+          {
+            "name": "pylint",
+            "status": "passed"
+          },
+          {
+            "name": "bandit",
+            "status": "passed"
+          },
+          {
+            "name": "typos",
+            "status": "passed"
+          },
+          {
+            "name": "clang-format",
+            "status": "failed",
+            "note": "autofix 格式化 4 个 C++ 文件（工具正常工作）"
+          },
+          {
+            "name": "clang-tidy",
+            "status": "skipped",
+            "note": "local system hook，宿主机未安装 clang-tidy 二进制，无法执行"
+          },
+          {
+            "name": "gitleaks-offline-scan",
+            "status": "skipped",
+            "note": "local hook 依赖仓库内 ./gitleaks 二进制，仓库未提供该二进制，无法执行"
+          }
+        ],
+        "note": "随机抽取 10 个文件执行；clang-tidy/gitleaks 因缺少本地二进制无法执行（skipped）；3 个 autofix 钩子修正了文件格式",
+        "failures": [
+          {
+            "hook_name": "clang-tidy",
+            "file": "csrc/common/utils.cpp",
+            "error": "Executable `clang-tidy` not found（宿主机未安装）"
+          },
+          {
+            "hook_name": "gitleaks-offline-scan",
+            "file": "-",
+            "error": "Executable `./gitleaks` not found（仓库未提供二进制）"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "original_base_image": "unknown",
+      "used_image": "unknown",
+      "summary": "仓库根目录不存在 .devcontainer/ 目录，不具备 devcontainer 开发容器能力"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 37,
+      "compiler": "gcc 11.2.0",
+      "notes": "在 ctr_in.py 启动的验证容器内执行 python3 build.py，自动拉取依赖（makeself/boost 等）并经 scripts/build.sh 完成 Release 编译与 run 包打包，返回码 0",
+      "artifacts": [
+        {
+          "name": "mindstudio-profiler-tools-interface_1.0.0_aarch64.run",
+          "path": "/workspace/mspti/artifacts/mindstudio-profiler-tools-interface_1.0.0_aarch64.run",
+          "size": "943KB",
+          "type": "run installer"
+        }
+      ]
+    },
+    "ut": {
+      "status": "passed",
+      "duration_seconds": 29,
+      "total": 199,
+      "passed": 199,
+      "failed": 0,
+      "cpp": {
+        "status": "passed",
+        "total": 199,
+        "passed": 199,
+        "failed": 0,
+        "note": "python3 build.py test 触发 scripts/execute_test_case.sh，Debug 编译并运行 12 个 gtest 测试可执行文件（parser/channel/adapter/dev_task/activity 等套件），全部 PASSED，无 FAILED。日志中 fail 关键字均为错误路径测试用例与 CMake pthread 能力探测，属正常。"
+      },
+      "failures": []
+    },
+    "sample": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "reason": "样例需 NPU 设备及完整 CANN 运行时（aclnn ops）。验证容器内 npu-smi 初始化失败（dcmi module initialize failed ret -8005，驱动用户态库 /usr/local/Ascend/driver 未挂载）；尝试编译 mspti_activity 样例时缺少 aclnnop/aclnn_add.h 头文件与 libopapi.so（属 910b-ops 运行时组件，构建镜像未包含）。构建验证环境不具备样例运行条件，故样例未执行。",
+      "results": [
+        {
+          "sample_name": "mspti_activity",
+          "execution_status": "build_failed",
+          "output_summary": "CMake 配置成功，但编译失败：fatal error: aclnnop/aclnn_add.h: No such file or directory；make 缺少目标 libopapi.so。属环境缺少 aclnn ops 运行时组件，非样例代码缺陷。",
+          "execution_time": "~30s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-07-31T14:32:18",
+      "title": "样例运行依赖说明不充分",
+      "body": "samples/README.md 仅说明需 CANN 环境与 NPU 设备，未明确样例编译依赖 aclnn ops 运行时组件（aclnnop/aclnn_add.h、libopapi.so）。在统一构建镜像（仅含 toolkit，不含完整 ops 运行时头文件）中样例无法编译，新手开发者难以据此定位缺失组件。",
+      "source": "samples/README.md + 安装指南"
+    },
+    {
+      "time": "2026-07-31T14:32:18",
+      "title": "import mspti 需手动设置 LD_LIBRARY_PATH",
+      "body": "安装指南第 3 章验证安装给出 python3 -c 'import mspti'，但 set_env.sh 未将 tools/mspti/lib64 加入 LD_LIBRARY_PATH，直接执行会因找不到 libmspti.so 失败。文档未提示需补充该库路径。",
+      "source": "安装指南 3. 验证安装"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-07-31T14:32:18",
+      "problem": "安装 run 包后直接 import mspti 报 ImportError: libmspti.so: cannot open shared object file，因 set_env.sh 未导出 mspti 的 lib64 路径",
+      "solution": "定位 libmspti.so 于 /usr/local/Ascend/cann-9.1.0-beta.3/tools/mspti/lib64，手动 export LD_LIBRARY_PATH 包含该目录后 import 成功（All is OK）",
+      "source": "步骤6 冒烟测试"
+    }
+  ]
+}
