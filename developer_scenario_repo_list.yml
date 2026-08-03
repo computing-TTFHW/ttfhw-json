@@ -192,6 +192,10 @@ MindStudio:
       url: "https://gitcode.com/Ascend/msserviceprofiler.git"
       branch: master
       component: MindStudio        
+    - name: msmodelslim
+      url: "https://gitcode.com/Ascend/msmodelslim.git"
+      branch: master
+      component: MindStudio        
     - name: mstx
       url: "https://gitcode.com/Ascend/mstx.git"
       branch: master
