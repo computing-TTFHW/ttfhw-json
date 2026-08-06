@@ -195,6 +195,10 @@ MindStudio:
     - name: msmodelslim
       url: "https://gitcode.com/Ascend/msmodelslim.git"
       branch: master
+      component: MindStudio     
+    - name: msmodeling
+      url: "https://gitcode.com/Ascend/msmodeling.git"
+      branch: master
       component: MindStudio        
     - name: mstx
       url: "https://gitcode.com/Ascend/mstx.git"
