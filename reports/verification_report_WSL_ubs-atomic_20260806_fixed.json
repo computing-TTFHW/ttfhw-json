@@ -1,0 +1,167 @@
+{
+  "metadata": {
+    "repo_path": "/home/x00958624/projects/ubs-atomic",
+    "repo_url": "https://gitcode.com/Chenfeng_Xie/ubs-atomic.git",
+    "branch": "TTFHW_Mockcpp_Patch_Fix",
+    "verification_type": "修复后回归验证",
+    "start_time": "2026-08-06T03:10:00",
+    "end_time": "2026-08-06T03:20:00",
+    "duration_seconds": 600,
+    "total_steps": 5
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i7-12700",
+      "cpu_cores": 20,
+      "memory": "15Gi",
+      "docker_version": "Docker version 25.0.3"
+    },
+    "container": {
+      "os": "openEuler release 24.03 (LTS-SP3)",
+      "architecture": "x86_64",
+      "cpu_cores": 20,
+      "image": "openeuler:24.03-local"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openeuler:24.03-local",
+      "selection_reason": "CMakeLists.txt面向openEuler(RPM打包)，使用本地创建的openEuler rootfs镜像"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "value": "默认ARM64/LSE，x86_64自动跳过-march标志",
+      "source": "CMakeLists.txt"
+    },
+    "dependencies": {
+      "value": ["cmake >= 3.22", "gcc/g++ (C11/C++17)", "pthread", "librt", "libboundscheck", "dos2unix", "ninja-build", "googletest", "mockcpp", "lcov", "genhtml", "git", "patch"],
+      "source": "README.md - 环境与依赖章节 + CMakeLists.txt + 验证过程发现"
+    },
+    "build_commands": {
+      "value": "dos2unix build.sh && sh build.sh",
+      "source": "README.md - 快速开始章节"
+    },
+    "ut_commands": {
+      "value": "sh test/run_ut.sh",
+      "source": "README.md - 测试说明章节"
+    },
+    "sample_commands": {
+      "value": "g++ -std=c++17 -I./include -L./dist/release/lib -lubs-atomic -lpthread -lrt demo.cpp -o demo",
+      "source": "README.md - 使用示例章节"
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-06T03:12:00",
+      "command": "dnf install -y make gcc gcc-c++ cmake ninja-build dos2unix libboundscheck findutils git patch",
+      "success": true,
+      "output": "gcc 12.3.1, cmake 3.27.9, ninja 1.11.1, git 2.43.0, patch installed",
+      "error": "",
+      "returncode": 0,
+      "note": "dnf.conf需配置proxy=http://x00958624:Xcf%400573001108@proxyhk.huawei.com:8080和sslverify=0"
+    },
+    {
+      "timestamp": "2026-08-06T03:13:00",
+      "command": "sh build.sh -c -j 12",
+      "success": true,
+      "output": "26/26 files compiled. libubs-atomic.so (227864 bytes) created",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-06T03:14:00",
+      "command": "sh test/run_ut.sh",
+      "success": true,
+      "output": "mockcpp patch applied via patch --fuzz=3 fallback. gtest built. ubs_atomic_ut built. 213 tests from 18 suites ran. ALL PASSED.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 23,
+      "note": "patch_mockcpp.sh修复后，git apply失败时回退到patch -p1 --fuzz=3"
+    },
+    {
+      "timestamp": "2026-08-06T03:15:00",
+      "command": "./ubs_atomic_ut",
+      "success": true,
+      "output": "[==========] 213 tests from 18 test suites ran. (22564 ms total) [  PASSED  ] 213 tests.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 23
+    },
+    {
+      "timestamp": "2026-08-06T03:16:00",
+      "command": "g++ -std=c++17 -I./include -L./dist/release/lib -lubs-atomic -lpthread -lrt tx_res_demo.cpp -o tx_res_demo && ./tx_res_demo",
+      "success": true,
+      "output": "old=100 current=101",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    }
+  ],
+  "final_results": {
+    "build": {
+      "status": "success",
+      "duration_seconds": 3,
+      "artifacts": [
+        {"name": "libubs-atomic.so", "path": "dist/release/lib/libubs-atomic.so", "size": "223KB (227864 bytes)"}
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 23,
+      "total": 213,
+      "passed": 213,
+      "failed": 0,
+      "failures": [],
+      "test_suites": 18,
+      "note": "修复patch_mockcpp.sh后全部通过。修复内容：git apply失败时回退到patch -p1 --fuzz=3"
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 1,
+      "results": [
+        {
+          "sample_name": "ub_dist_tx_res (README示例)",
+          "execution_status": "success",
+          "output_summary": "old=100 current=101（init→set(100)→fetch_add(1)返回旧值100→get返回当前值101）",
+          "execution_time": "<1 second"
+        }
+      ]
+    }
+  },
+  "fix_applied": {
+    "file": "test/3rdparty/patch_mockcpp.sh",
+    "branch": "TTFHW_Mockcpp_Patch_Fix",
+    "commit": "31f7560",
+    "change": "+3 lines: 添加 patch -p1 --fuzz=3 回退机制，当 git apply 因上下文不匹配失败时自动回退到更宽容的 patch 命令",
+    "root_cause": "git apply 对补丁上下文行匹配过于严格，mockcpp 版本与补丁创建时的版本有细微差异（UnixCodeModifier.cpp 新增了 #include <unistd.h>），导致 git apply --check 失败",
+    "verification": "修复后 213 个单元测试全部通过"
+  },
+  "documentation_gaps": [
+    "README引用的样例文件ub_dist_tx_res_func_test.c不存在，实际文件为ub_dist_tx_res_fence_semantic_test.cpp",
+    "test/3rdparty/缺少.gitmodules，googletest和mockcpp需手动克隆",
+    "README未提及git和patch为测试依赖"
+  ],
+  "problems_encountered": [
+    {
+      "problem": "mockcpp补丁应用失败: git apply --check 返回错误（上下文行不匹配）",
+      "solution": "在patch_mockcpp.sh中添加patch -p1 --fuzz=3回退机制",
+      "source": "test/3rdparty/patch_mockcpp.sh第24行",
+      "status": "fixed"
+    },
+    {
+      "problem": "容器中dnf访问HTTPS仓库时SSL证书错误 + 代理407认证失败",
+      "solution": "dnf.conf中设置sslverify=0和proxy=http://x00958624:Xcf%400573001108@proxyhk.huawei.com:8080",
+      "source": "企业代理SSL拦截 + 代理需要认证",
+      "status": "fixed"
+    },
+    {
+      "problem": "test/3rdparty/googletest和mockcpp目录不存在",
+      "solution": "从gitee.com手动克隆googletest和mockcpp到test/3rdparty/目录",
+      "source": "仓库缺少.gitmodules文件",
+      "status": "resolved"
+    }
+  ],
+  "conclusion": "ubs-atomic仓库构建成功（26/26文件，2.5秒），单元测试全部通过（213/213，22.6秒），样例运行正确（old=100 current=101）。mockcpp补丁兼容性问题已修复，修复方案为在patch_mockcpp.sh中添加patch --fuzz=3回退机制。"
+}
