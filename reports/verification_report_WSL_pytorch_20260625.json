@@ -1,0 +1,766 @@
+{
+  "metadata": {
+    "repo_path": "/home/s30067059/ttfhw_verify_pytorch_20260625/pytorch",
+    "start_time": "2026-06-25T13:09:05",
+    "end_time": "2026-06-25T13:44:45",
+    "duration_seconds": 2140,
+    "total_steps": 32,
+    "duration_breakdown": {
+      "environment_preparation_seconds": 268,
+      "build_seconds": 1780,
+      "ut_seconds": 92,
+      "sample_seconds": 0,
+      "total_seconds": 2140,
+      "formula": "environment_preparation + build + ut + sample",
+      "note": "环境准备时长未包含真实 CANN 安装，因为未从仓库文档获得可直接安装的 openEuler CANN 包；本次仅进行了 CANN 来源检查和 stub 尝试。"
+    }
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng-920",
+      "cpu_cores": 256,
+      "memory": "2.0Ti",
+      "disk": "5.6T available (/home)",
+      "docker_version": "Docker version 18.09.0, build 4d60db4"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "2.0Ti (未限制)"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "强制使用 openEuler 24.03 LTS 基础镜像；仓库 docker/Dockerfile 原基于 quay.io/ascend/cann，docker/builder/ARM/Dockerfile 原基于 manylinux_2_28_aarch64，均未直接使用。",
+      "dependency_mapping": {
+        "from_dockerfile": "docker/builder/ARM/Dockerfile、ci/docker/ARM/Dockerfile、docker/Dockerfile 的 yum/pip 指令",
+        "mappings": [
+          {
+            "original": "yum install ninja-build",
+            "openEuler": "dnf install -y ninja-build（实际 openEuler 安装 python3-ninja 提供 ninja 命令）",
+            "source": "docker/builder/ARM/Dockerfile 第43-45行"
+          },
+          {
+            "original": "yum install dos2unix",
+            "openEuler": "dnf install -y dos2unix",
+            "source": "docker/builder/ARM/Dockerfile 第43-45行"
+          },
+          {
+            "original": "yum install vim-common",
+            "openEuler": "dnf install -y vim-common",
+            "source": "docker/builder/ARM/Dockerfile 第43行"
+          },
+          {
+            "original": "yum install gcc-toolset-14",
+            "openEuler": "dnf install -y gcc gcc-c++（openEuler 24.03 仓库提供 GCC 12.3.1，未使用 CentOS gcc-toolset）",
+            "source": "docker/builder/ARM/Dockerfile 第46行"
+          },
+          {
+            "original": "pip3.11 install pyyaml setuptools torch==2.7.1+cpu numpy==1.23.2",
+            "openEuler": "pip 安装 pyyaml、setuptools、wheel、numpy；torch 按 requirements.txt/ci/build.sh 改为 2.13 系列",
+            "source": "docker/builder/ARM/Dockerfile 第60-63行"
+          },
+          {
+            "original": "FROM quay.io/ascend/cann:${CANN_VERSION}-${CHIP_ARCH}-${OS}${OS_VERSION}-py${PY_VERSION}",
+            "openEuler": "未使用 CANN 预构建镜像；按 README 的 https://www.hiascend.com/cann 检查 CANN 来源，仓库内 stub 仅用于编译",
+            "source": "docker/Dockerfile 第7行"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "远端宿主机 uname/lscpu + README 版本表",
+      "value": "aarch64（192.168.9.121 为 Kunpeng-920 aarch64）"
+    },
+    "recommended_image": {
+      "source": "docker/Dockerfile、docker/builder/ARM/Dockerfile、docker/OVERVIEW.md",
+      "value": "文档推荐 CANN/manylinux 构建镜像或 CANN base image；本次按要求改用 openEuler 24.03 LTS 基础镜像从零安装依赖。"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/builder/ARM/Dockerfile、ci/docker/ARM/Dockerfile、docker/Dockerfile RUN 指令",
+      "value": [
+        {
+          "original": "yum install -y ninja-build dos2unix gcc-toolset-14 vim-common",
+          "openEuler_equivalent": "dnf install -y ninja-build dos2unix gcc gcc-c++ vim-common"
+        },
+        {
+          "original": "pip3.11 install pyyaml setuptools torch==2.7.1+cpu numpy==1.23.2",
+          "openEuler_equivalent": "pip install pyyaml setuptools wheel numpy==1.23.2；torch 按 requirements/ci/build.sh 选择 2.13 nightly 可用版本"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md + requirements.txt + ci/build.sh + setup.py + CMakeLists.txt + Dockerfile",
+      "value": [
+        "gcc/gcc-c++/make/cmake/git/python3/python3-pip（openEuler dnf）",
+        "ninja-build、dos2unix、python3-devel、openblas-devel、openssl-devel、protobuf-devel、ccache、time（openEuler dnf）",
+        "PyYAML、setuptools、wheel、numpy==1.23.2（pip，阿里源；清华源 pip 升级返回 403 后切换）",
+        "PyTorch：requirements.txt 固定 torch==2.13.0.dev20260416，但 PyTorch nightly 源已无该版本，使用可用的 torch==2.13.0.dev20260426+cpu 继续构建",
+        "CANN：README 指向 https://www.hiascend.com/cann，页面可达；未直接使用机器已有 CANN，仓库 stub 可部分构建但运行时符号不完整"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md 第146-180行、ci/build.sh",
+      "value": "bash ci/build.sh --python=3.11 --torch=2.13.0（并发 MAX_JOBS=153，约为 256 核的 60%）"
+    },
+    "ut_commands": {
+      "source": "test/README.md 第29行",
+      "value": "cd test && python run_test.py -i test_autocast"
+    },
+    "sample_commands": {
+      "source": "examples 目录与 README",
+      "value": "发现 examples/libtorch_hccl、examples/libtorch_npu、examples/libtorch_resnet、examples/libtorch_triton_ascend；均依赖 torch_npu/CANN runtime，因 smoke/UT 已在 CANN runtime 符号缺失处失败，未继续执行样例。"
+    },
+    "special_dependencies": {
+      "source": "README.md 第98行、第201-205行",
+      "value": [
+        "CANN 安装包来源：https://www.hiascend.com/cann",
+        "CANN 环境变量初始化：source /usr/local/Ascend/ascend-toolkit/set_env.sh"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-06-25T13:09:05",
+      "command": "uname -a; lscpu | sed -n '1,35p'; free -h; df -h /home/s30067059; docker --version",
+      "success": true,
+      "output": "Linux localhost.localdomain ... aarch64; CPU: Kunpeng-920; CPU(s): 256; Mem: 2.0Ti; /home available 5.6T; Docker version 18.09.0, build 4d60db4",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-06-25T13:09:10",
+      "command": "docker pull hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "success": true,
+      "output": "Status: Image is up to date for hub.oepkgs.net/openeuler/openeuler:24.03-lts; Digest sha256:ace677f48c79ae6bc17046cb8c2940b38f7050afc752c8463e1553b9e7b60974",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-06-25T13:09:19",
+      "command": "docker run -d --name ttfhw-pytorch-openeuler-env -v /home/s30067059/ttfhw_verify_pytorch_20260625/pytorch:/workspace -w /workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts tail -f /dev/null",
+      "success": true,
+      "output": "490dcc6444b076bdb9b584f539280947310545304dfaf22d7b20a542530304a9",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T13:09:24",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'cat /etc/os-release; uname -m; nproc; free -h; df -h /workspace'",
+      "success": true,
+      "output": "openEuler 24.03 (LTS); aarch64; nproc=256; Mem 2.0Ti; /workspace available 5.6T",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T13:09:30",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'dnf install -y gcc gcc-c++ make cmake git python3 python3-pip'",
+      "success": false,
+      "output": "",
+      "error": "Errors during downloading metadata for repository OS: Curl error (6): Couldn't resolve host name ... getaddrinfo() thread failed to start",
+      "returncode": 1,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-06-25T13:09:39",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'cat /etc/resolv.conf; getent hosts repo.openeuler.org || true; getent hosts mirrors.openeuler.org || true; curl -I --max-time 20 https://repo.openeuler.org/openEuler-24.03-LTS/OS/aarch64/repodata/repomd.xml || true'",
+      "success": true,
+      "output": "DNS could resolve repo.openeuler.org and mirrors.openeuler.org, but curl failed with getaddrinfo() thread failed to start.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-06-25T13:09:51",
+      "command": "ls -l /dev/davinci* /dev/hisi_hdc /dev/devmm_svm 2>/dev/null || true; docker rm -f ttfhw-pytorch-openeuler-env >/dev/null 2>&1 || true; docker run -d --security-opt seccomp=unconfined --name ttfhw-pytorch-openeuler-env -v /home/s30067059/ttfhw_verify_pytorch_20260625/pytorch:/workspace -w /workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts tail -f /dev/null",
+      "success": true,
+      "output": "Found /dev/davinci0-7, davinci_manager, devmm_svm, hisi_hdc on host; restarted container with seccomp=unconfined.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T13:09:59",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'curl -I --max-time 20 https://repo.openeuler.org/openEuler-24.03-LTS/OS/aarch64/repodata/repomd.xml | sed -n \"1,10p\"; dnf install -y gcc gcc-c++ make cmake git python3 python3-pip'",
+      "success": true,
+      "output": "Installed gcc-12.3.1, gcc-c++-12.3.1, make-4.4.1, cmake-3.27.9, git-2.43.0, python3, python3-pip and dependencies from openEuler repositories.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 87
+    },
+    {
+      "timestamp": "2026-06-25T13:11:32",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'dnf install -y ninja-build dos2unix vim-common findutils which patch tar gzip bzip2 xz unzip wget curl perl perl-CPAN perl-Digest-MD5 perl-Data-Dumper perl-FindBin python3-devel openblas-devel openssl-devel libffi-devel zlib-devel protobuf protobuf-devel ccache'",
+      "success": false,
+      "output": "",
+      "error": "No match for argument: perl-FindBin; Error: Unable to find a match: perl-FindBin",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T13:11:43",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'dnf install -y ninja-build dos2unix vim-common patch xz unzip wget perl-CPAN python3-devel openblas-devel openssl-devel libffi-devel zlib-devel protobuf protobuf-devel ccache'",
+      "success": true,
+      "output": "Installed mapped dependencies from openEuler repositories: python3-ninja, dos2unix, vim-common, patch, xz, unzip, wget, perl-CPAN, python3-devel, openblas-devel, openssl-devel, libffi-devel, zlib-devel, protobuf, protobuf-devel, ccache.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 41
+    },
+    {
+      "timestamp": "2026-06-25T13:12:29",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -m pip install --upgrade pip setuptools wheel -i https://pypi.tuna.tsinghua.edu.cn/simple && python3 -m pip install pyyaml numpy==1.23.2 -i https://pypi.tuna.tsinghua.edu.cn/simple'",
+      "success": false,
+      "output": "",
+      "error": "HTTP error 403 while getting pip wheel from Tsinghua PyPI mirror.",
+      "returncode": 1,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-06-25T13:12:39",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -m pip install setuptools wheel pyyaml numpy==1.23.2 -i https://mirrors.aliyun.com/pypi/simple/'",
+      "success": true,
+      "output": "Installed wheel-0.47.0, pyyaml-6.0.3, numpy-1.23.2, packaging-26.2 from Aliyun PyPI mirror.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-06-25T13:13:00",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'curl -I -L --max-time 60 https://www.hiascend.com/cann | sed -n \"1,30p\"; sh third_party/acl/libs/build_stub.sh; find third_party/acl/libs -maxdepth 1 -type f -name \"*.so\" -printf \"%f %s bytes\\n\"'",
+      "success": true,
+      "output": "CANN URL returned HTTP/1.1 200 OK. Stub build produced libascend_ml.so, libge_runner.so, libgraph.so, libhccl.so; compiler also reported missing acl/acl.h, acl_op_compiler.h, acl_tdt.cpp headers for other stubs.",
+      "error": "fatal error: acl/acl.h: No such file or directory; fatal error: acl/acl_op_compiler.h: No such file or directory",
+      "returncode": 0,
+      "duration_seconds": 6
+    },
+    {
+      "timestamp": "2026-06-25T13:13:19",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'find third_party/acl/inc -maxdepth 3 -type f | sort | sed -n \"1,120p\"; find /workspace -path \"*acl.h\" -o -path \"*acl_op_compiler.h\" | sed -n \"1,80p\"; find third_party/acl/libs -maxdepth 1 -type f -name \"*.so\" -printf \"%f %s bytes\\n\"'",
+      "success": true,
+      "output": "third_party/acl/inc contains graph/ge/op_proto/aml headers but no acl/acl.h or acl_op_compiler.h. Existing stub libs: libascend_ml.so, libge_runner.so, libgraph.so, libhccl.so.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T13:13:27",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -m pip install torch==2.13.0.dev20260416 --extra-index-url https://download.pytorch.org/whl/nightly/cpu -i https://mirrors.aliyun.com/pypi/simple/'",
+      "success": false,
+      "output": "",
+      "error": "No matching distribution found for torch==2.13.0.dev20260416. Available nightly versions start at 2.13.0.dev20260426+cpu.",
+      "returncode": 1,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-25T13:13:45",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -m pip install torch==2.13.0 --extra-index-url https://download.pytorch.org/whl/cpu -i https://mirrors.aliyun.com/pypi/simple/'",
+      "success": false,
+      "output": "",
+      "error": "No matching distribution found for torch==2.13.0; available CPU stable versions up to 2.12.1.",
+      "returncode": 1,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-25T13:14:03",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -m pip install torch==2.13.0.dev20260426+cpu --index-url https://download.pytorch.org/whl/nightly/cpu'",
+      "success": false,
+      "output": "Downloaded torch-2.13.0.dev20260426+cpu wheel metadata and 150.5 MB wheel.",
+      "error": "Dependency download timed out while downloading networkx from files.pythonhosted.org.",
+      "returncode": 2,
+      "duration_seconds": 269
+    },
+    {
+      "timestamp": "2026-06-25T13:18:42",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -m pip install filelock typing-extensions sympy networkx jinja2 fsspec mpmath MarkupSafe -i https://mirrors.aliyun.com/pypi/simple/ && python3 -m pip install torch==2.13.0.dev20260426+cpu --index-url https://download.pytorch.org/whl/nightly/cpu --timeout 120 --retries 5'",
+      "success": true,
+      "output": "Installed torch-2.13.0.dev20260426+cpu after installing dependencies from Aliyun mirror.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 38
+    },
+    {
+      "timestamp": "2026-06-25T13:19:27",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -c \"import torch; print(torch.__version__); print(torch.__file__)\"; j=153; [  -lt 1 ] && j=1; echo BUILD_JOBS=; rm -rf build dist torch_npu.egg-info; export MAX_JOBS=$j; export CMAKE_BUILD_PARALLEL_LEVEL=$j; /usr/bin/time -p bash ci/build.sh --python=3 --torch=2.13.0'",
+      "success": false,
+      "output": "torch 2.13.0.dev20260426+cpu detected.",
+      "error": "bash: line 1: [: -lt: unary operator expected; /usr/bin/time: No such file or directory",
+      "returncode": 127,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-06-25T13:19:37",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'dnf install -y time; rm -rf build dist torch_npu.egg-info; export MAX_JOBS=153; export CMAKE_BUILD_PARALLEL_LEVEL=153; /usr/bin/time -p bash ci/build.sh --python=3 --torch=2.13.0'",
+      "success": false,
+      "output": "Installed time-1.9 from openEuler repository.",
+      "error": "3 is an unsupported python version, we suggest 3.9 3.10 3.11 3.12 3.13",
+      "returncode": 1,
+      "duration_seconds": 6
+    },
+    {
+      "timestamp": "2026-06-25T13:19:49",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'rm -rf build dist torch_npu.egg-info; export MAX_JOBS=153; export CMAKE_BUILD_PARALLEL_LEVEL=153; /usr/bin/time -p bash ci/build.sh --python=3.11 --torch=2.13.0'",
+      "success": false,
+      "output": "Using PyTorch 2.13.0.dev20260426+cpu; Set package version to 2.13.0.",
+      "error": "Submodule initialization failed; fatal: detected dubious ownership in repository at /workspace",
+      "returncode": 1,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-06-25T13:20:07",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0=/workspace git submodule update --init --recursive'",
+      "success": true,
+      "output": "Submodules initialized: Tensorpipe, acl_src/ge, graph-autofusion, runtime, fmt, googletest, nlohmann, op-plugin, torchair, nested submodules.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 53
+    },
+    {
+      "timestamp": "2026-06-25T13:21:09",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'rm -rf build dist torch_npu.egg-info; export GIT_CONFIG_COUNT=1; export GIT_CONFIG_KEY_0=safe.directory; export GIT_CONFIG_VALUE_0=/workspace; export MAX_JOBS=153; export CMAKE_BUILD_PARALLEL_LEVEL=153; /usr/bin/time -p bash ci/build.sh --python=3.11 --torch=2.13.0'",
+      "success": false,
+      "output": "Ninja build started and reached torchair copy step.",
+      "error": "fatal: detected dubious ownership in repository at /workspace/third_party/torchair/torchair; ninja: build stopped: subcommand failed.",
+      "returncode": 1,
+      "duration_seconds": 95
+    },
+    {
+      "timestamp": "2026-06-25T13:23:20",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'rm -rf build dist torch_npu.egg-info; export GIT_CONFIG_COUNT=1; export GIT_CONFIG_KEY_0=safe.directory; export GIT_CONFIG_VALUE_0=*; export MAX_JOBS=153; export CMAKE_BUILD_PARALLEL_LEVEL=153; /usr/bin/time -p bash ci/build.sh --python=3.11 --torch=2.13.0'",
+      "success": true,
+      "output": "Build succeeded; wheel packaging completed and removed build/bdist.linux-aarch64/wheel.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1168
+    },
+    {
+      "timestamp": "2026-06-25T13:43:07",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'find dist build/packages -maxdepth 4 -type f \\( -name \"*.whl\" -o -name \"*.so\" \\) -printf \"%p %s bytes\\n\" | sort | sed -n \"1,200p\"'",
+      "success": true,
+      "output": "build/packages/torch_npu/_C.cpython-311-aarch64-linux-gnu.so 242144 bytes\nbuild/packages/torch_npu/lib/libnpu_profiler.so 160752 bytes\nbuild/packages/torch_npu/lib/libop_plugin_atb.so 1246408 bytes\nbuild/packages/torch_npu/lib/libtensorpipe.so 3522120 bytes\nbuild/packages/torch_npu/lib/libtorch_npu.so 102627136 bytes\ndist/torch_npu-2.13.0+git0b9ea92-cp311-cp311-linux_aarch64.whl 37363294 bytes",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-06-25T13:43:13",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -m pip install pytest expecttest hypothesis psutil pyyaml numpy -i https://mirrors.aliyun.com/pypi/simple/'",
+      "success": true,
+      "output": "Installed pytest-9.1.1, expecttest-0.3.0, hypothesis-6.155.7, psutil-7.2.2 and dependencies from Aliyun mirror.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 9
+    },
+    {
+      "timestamp": "2026-06-25T13:43:28",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'python3 -m pip install --force-reinstall --no-deps dist/torch_npu-2.13.0+git0b9ea92-cp311-cp311-linux_aarch64.whl && TORCH_DEVICE_BACKEND_AUTOLOAD=0 python3 - <<\"PY\" ... PY'",
+      "success": false,
+      "output": "Successfully installed torch-npu-2.13.0+git0b9ea92.",
+      "error": "ModuleNotFoundError: No module named 'torch_npu._C' because command ran from /workspace and source tree shadowed installed wheel.",
+      "returncode": 1,
+      "duration_seconds": 8
+    },
+    {
+      "timestamp": "2026-06-25T13:43:48",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'cd /tmp && TORCH_DEVICE_BACKEND_AUTOLOAD=0 python3 - <<\"PY\" ... PY'",
+      "success": false,
+      "output": "",
+      "error": "ImportError: libhccl.so: cannot open shared object file: No such file or directory",
+      "returncode": 1,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-06-25T13:44:06",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'cd /tmp; LD_LIBRARY_PATH=/usr/local/lib64/python3.11/site-packages/torch_npu/lib:/usr/local/lib/python3.11/site-packages/torch_npu/lib:$LD_LIBRARY_PATH TORCH_DEVICE_BACKEND_AUTOLOAD=0 python3 -c ...'",
+      "success": false,
+      "output": "",
+      "error": "ImportError: libhccl.so: cannot open shared object file: No such file or directory",
+      "returncode": 1,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-06-25T13:44:20",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'find /usr/local/lib* /workspace/build/packages /workspace/third_party -name \"libhccl.so\" -printf \"%p %s bytes\\n\" 2>/dev/null | sed -n \"1,80p\"; find /usr/local/lib64/python3.11/site-packages/torch_npu -maxdepth 3 -type f ...'",
+      "success": true,
+      "output": "/workspace/third_party/torchair/torchair/build/stubs/libhccl.so 67576 bytes\n/workspace/third_party/Tensorpipe/third_party/acl/libs/libhccl.so 70408 bytes\n/workspace/third_party/acl/libs/libhccl.so 70896 bytes\nInstalled wheel contains libtensorpipe_uv.a, libnpu_profiler.so, libtorch_npu.so, libtensorpipe.so, libop_plugin_atb.so, _C extension, but no libhccl.so.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-06-25T13:44:33",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'cd /tmp; export LD_LIBRARY_PATH=/workspace/third_party/acl/libs:/workspace/third_party/Tensorpipe/third_party/acl/libs:/workspace/third_party/torchair/torchair/build/stubs:/usr/local/lib64/python3.11/site-packages/torch_npu/lib:$LD_LIBRARY_PATH; TORCH_DEVICE_BACKEND_AUTOLOAD=0 python3 -c ...'",
+      "success": false,
+      "output": "",
+      "error": "ImportError: /usr/local/lib64/python3.11/site-packages/torch_npu/lib/libtensorpipe.so: undefined symbol: aclGetRecentErrMsg",
+      "returncode": 1,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-06-25T13:44:42",
+      "command": "docker exec ttfhw-pytorch-openeuler-env bash -lc 'cd /workspace/test; export LD_LIBRARY_PATH=/workspace/third_party/acl/libs:/workspace/third_party/Tensorpipe/third_party/acl/libs:/workspace/third_party/torchair/torchair/build/stubs:/usr/local/lib64/python3.11/site-packages/torch_npu/lib:$LD_LIBRARY_PATH; export DISABLED_TESTS_FILE=/workspace/test/unsupported_test_cases/.pytorch-disabled-tests.json; /usr/bin/time -p python3 run_test.py -i test_autocast'",
+      "success": false,
+      "output": "",
+      "error": "RuntimeError: Failed to load the backend extension: torch_npu; ImportError: libtensorpipe.so undefined symbol aclGetRecentErrMsg; real 2.13",
+      "returncode": 1,
+      "duration_seconds": 3
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-06-25T12:44:00",
+      "step": "document_reading",
+      "action": "读取 README、Dockerfile、ci/build.sh、test/README.md、.lintrunner.toml",
+      "result": "完成",
+      "details": {
+        "build": "ci/build.sh",
+        "ut": "test/run_test.py -i test_autocast"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T12:52:00",
+      "step": "static_analysis_execution",
+      "action": "执行 lint-runner --all-files",
+      "result": "失败",
+      "details": {
+        "failed": 98,
+        "main_linters": [
+          "CODESPELL",
+          "SPACES"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:09:05",
+      "step": "start",
+      "action": "开始 openEuler 原生构建验证",
+      "result": "已启动",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-25T13:09:19",
+      "step": "container_setup",
+      "action": "启动 openEuler 24.03 LTS 容器",
+      "result": "成功",
+      "details": {
+        "container": "ttfhw-pytorch-openeuler-env"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:09:30",
+      "step": "dependency_installation_layer1",
+      "action": "首次 dnf 安装系统工具链",
+      "result": "失败",
+      "details": {
+        "problem": "Docker 18.09 默认 seccomp 导致 curl/dnf getaddrinfo() thread failed to start"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:09:51",
+      "step": "problem_resolution",
+      "action": "使用 --security-opt seccomp=unconfined 重启 openEuler 容器",
+      "result": "已解决",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-25T13:09:59",
+      "step": "dependency_installation_layer1",
+      "action": "安装系统工具链",
+      "result": "成功",
+      "details": {
+        "source": "openEuler dnf"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:11:43",
+      "step": "dependency_installation_layer2",
+      "action": "安装 Dockerfile/构建配置映射依赖",
+      "result": "成功",
+      "details": {
+        "source": "openEuler dnf"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:12:39",
+      "step": "dependency_installation_layer3",
+      "action": "安装 Python 构建依赖",
+      "result": "成功",
+      "details": {
+        "source": "pip 阿里源"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:13:00",
+      "step": "cann_source_check",
+      "action": "检查 README 提供的 CANN 官网来源并构建仓库 ACL stub",
+      "result": "部分成功",
+      "details": {
+        "cann_url": "https://www.hiascend.com/cann",
+        "stub_issue": "缺 acl/acl.h，部分 stub .so 生成"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:18:42",
+      "step": "torch_install",
+      "action": "安装 PyTorch 构建依赖",
+      "result": "成功",
+      "details": {
+        "requested": "2.13.0.dev20260416",
+        "used": "2.13.0.dev20260426+cpu"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:19:27",
+      "step": "build_attempt",
+      "action": "首次执行 ci/build.sh",
+      "result": "失败",
+      "details": {
+        "problem": "/usr/bin/time 缺失和命令并发变量展开错误"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:20:07",
+      "step": "problem_resolution",
+      "action": "初始化 git submodule",
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-06-25T13:23:20",
+      "step": "build_retry",
+      "action": "设置 safe.directory=* 后清理重试构建",
+      "result": "成功",
+      "details": {
+        "duration_seconds": 1168
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:43:28",
+      "step": "smoke_test",
+      "action": "安装 wheel 并导入 torch_npu",
+      "result": "失败",
+      "details": {
+        "problem": "缺少真实 CANN runtime 库/符号"
+      }
+    },
+    {
+      "timestamp": "2026-06-25T13:44:42",
+      "step": "ut_execution",
+      "action": "执行 test/README.md 指定 UT",
+      "result": "失败",
+      "details": {
+        "command": "python3 run_test.py -i test_autocast",
+        "problem": "libtensorpipe.so undefined symbol: aclGetRecentErrMsg"
+      }
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "未检测到 pre-commit 配置；检测到 .lintrunner.toml，lintrunner --all-files 失败 98 项，主要为 CODESPELL/SPACES。",
+      "pre_commit": {
+        "configured": false,
+        "config_file": null,
+        "status": "未配置",
+        "duration_seconds": 0,
+        "total_hooks": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "failures": []
+      },
+      "lint_runner": {
+        "configured": true,
+        "config_file": ".lintrunner.toml",
+        "status": "失败",
+        "duration_seconds": 134,
+        "total_linters": 5,
+        "enabled_linters": [
+          "FLAKE8",
+          "NEWLINE",
+          "SPACES",
+          "TABS",
+          "CODESPELL"
+        ],
+        "failed": 98,
+        "failures": [
+          {
+            "hook_name": "CODESPELL",
+            "file": "setup.py",
+            "error": "lint-runner 检出拼写问题，详见远端 lintrunner_all.log"
+          },
+          {
+            "hook_name": "CODESPELL",
+            "file": "test/README.md",
+            "error": "lint-runner 检出拼写问题，详见远端 lintrunner_all.log"
+          },
+          {
+            "hook_name": "CODESPELL",
+            "file": "test/custom_ops/test_functionalization.py",
+            "error": "lint-runner 检出拼写问题，详见远端 lintrunner_all.log"
+          },
+          {
+            "hook_name": "CODESPELL",
+            "file": "test/custom_ops/test_npu_lstm.py",
+            "error": "lint-runner 检出拼写问题，详见远端 lintrunner_all.log"
+          },
+          {
+            "hook_name": "SPACES",
+            "file": "test/distributed/pipelining/test_schedule_multiproc.py",
+            "error": "lint-runner 检出格式问题，详见远端 lintrunner_all.log"
+          },
+          {
+            "hook_name": "SPACES",
+            "file": "test/dynamo/test_backends.py",
+            "error": "lint-runner 检出格式问题，详见远端 lintrunner_all.log"
+          }
+        ]
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "original_base_image": null,
+      "used_image": "openEuler 24.03 LTS",
+      "summary": "仓库未发现 .devcontainer 配置。"
+    },
+    "build": {
+      "status": "成功",
+      "duration_seconds": 1780,
+      "artifacts": [
+        {
+          "name": "_C.cpython-311-aarch64-linux-gnu.so",
+          "path": "build/packages/torch_npu/_C.cpython-311-aarch64-linux-gnu.so",
+          "size": "242144 bytes"
+        },
+        {
+          "name": "libnpu_profiler.so",
+          "path": "build/packages/torch_npu/lib/libnpu_profiler.so",
+          "size": "160752 bytes"
+        },
+        {
+          "name": "libop_plugin_atb.so",
+          "path": "build/packages/torch_npu/lib/libop_plugin_atb.so",
+          "size": "1246408 bytes"
+        },
+        {
+          "name": "libtensorpipe.so",
+          "path": "build/packages/torch_npu/lib/libtensorpipe.so",
+          "size": "3522120 bytes"
+        },
+        {
+          "name": "libtorch_npu.so",
+          "path": "build/packages/torch_npu/lib/libtorch_npu.so",
+          "size": "102627136 bytes"
+        },
+        {
+          "name": "torch_npu-2.13.0+git0b9ea92-cp311-cp311-linux_aarch64.whl",
+          "path": "dist/torch_npu-2.13.0+git0b9ea92-cp311-cp311-linux_aarch64.whl",
+          "size": "37363294 bytes"
+        }
+      ]
+    },
+    "ut": {
+      "status": "失败",
+      "duration_seconds": 92,
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "failures": [
+        {
+          "test_name": "test_autocast",
+          "error": "导入 torch_npu 时 libtensorpipe.so 缺少 CANN runtime 符号 aclGetRecentErrMsg，真实 CANN runtime 未按可下载安装包安装成功"
+        }
+      ]
+    },
+    "sample": {
+      "status": "未执行",
+      "duration_seconds": 0,
+      "results": [
+        {
+          "sample_name": "examples/libtorch_hccl、examples/libtorch_npu、examples/libtorch_resnet、examples/libtorch_triton_ascend",
+          "execution_status": "未执行",
+          "output_summary": "样例依赖 torch_npu/CANN runtime；wheel 冒烟和 UT 已在 CANN runtime 符号缺失处失败，继续执行样例会同类失败。",
+          "execution_time": "0秒"
+        }
+      ]
+    },
+    "environment_preparation": {
+      "status": "部分成功",
+      "duration_seconds": 268,
+      "summary": "完成 openEuler 容器启动、seccomp 排障、系统工具链/构建依赖/Python 依赖安装，并检查 CANN 官网来源；但未成功安装真实 CANN runtime。README 仅提供 https://www.hiascend.com/cann 泛入口，仓库内 ACL stub 只能部分生成且运行时缺少 aclGetRecentErrMsg 等符号，不能替代真实 CANN。",
+      "cann": {
+        "status": "未成功安装",
+        "source": "README.md 第98行 https://www.hiascend.com/cann",
+        "attempted": "访问 CANN 官网入口并执行仓库 third_party/acl/libs/build_stub.sh",
+        "result": "官网入口可达；stub 仅部分生成 libhccl.so 等库，缺 acl/acl.h、acl_op_compiler.h，运行时仍缺 aclGetRecentErrMsg 符号。",
+        "impact": "UT 和样例无法通过真实 torch_npu 导入/运行。"
+      }
+    }
+  },
+  "documentation_gaps": [
+    "requirements.txt 固定 torch==2.13.0.dev20260416，但 PyTorch nightly CPU 源当前不可下载该版本；可用版本从 2.13.0.dev20260426+cpu 起。",
+    "README 仅给出 CANN 官网入口，未在仓库内给出 openEuler 容器中可直接下载的具体 CANN run 包 URL、校验值和安装命令。",
+    "仓库 ACL stub 可用于部分编译，但未包含 acl/acl.h、acl_op_compiler.h 等头文件，且运行时缺少 aclGetRecentErrMsg 等符号，无法替代真实 CANN runtime。",
+    "Dockerfile 使用 manylinux/CANN 预构建镜像和 yum/CentOS gcc-toolset，按本次约束映射到 openEuler dnf 时需要额外处理 seccomp、包名和 GCC 版本差异。",
+    "构建脚本对子模块和 Git safe.directory 依赖未在 README 构建步骤中显式说明。"
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-06-25T13:09:30",
+      "problem": "openEuler 容器内 dnf 失败：getaddrinfo() thread failed to start",
+      "solution": "使用 --security-opt seccomp=unconfined 重启容器后 dnf 正常",
+      "source": "docker 18.09 + openEuler 24.03 glibc 线程创建限制"
+    },
+    {
+      "timestamp": "2026-06-25T13:11:32",
+      "problem": "openEuler 仓库无 perl-FindBin 独立包",
+      "solution": "确认 FindBin 为 Perl 核心模块，移除该包名并安装其余依赖",
+      "source": "dnf install 输出"
+    },
+    {
+      "timestamp": "2026-06-25T13:12:29",
+      "problem": "清华 PyPI 源升级 pip 返回 HTTP 403",
+      "solution": "切换到阿里云 PyPI 源安装 Python 构建依赖",
+      "source": "pip 输出"
+    },
+    {
+      "timestamp": "2026-06-25T13:13:27",
+      "problem": "requirements.txt 固定的 torch==2.13.0.dev20260416 在 PyTorch nightly 源不可用",
+      "solution": "记录文档/依赖缺口，使用同 2.13 系列可用的 torch==2.13.0.dev20260426+cpu 继续构建",
+      "source": "requirements.txt 第7行、pip 可用版本列表"
+    },
+    {
+      "timestamp": "2026-06-25T13:19:37",
+      "problem": "ci/build.sh 使用 --python=3 失败，支持值为 3.9/3.10/3.11/3.12/3.13",
+      "solution": "改用 openEuler 默认 Python 3.11 对应的 --python=3.11",
+      "source": "ci/build.sh SUPPORTED_PY_VERSION"
+    },
+    {
+      "timestamp": "2026-06-25T13:19:49",
+      "problem": "构建提示未初始化 submodule 且 Git dubious ownership",
+      "solution": "执行 git submodule update --init --recursive，并设置 GIT_CONFIG safe.directory",
+      "source": "构建输出"
+    },
+    {
+      "timestamp": "2026-06-25T13:21:09",
+      "problem": "torchair 子模块仍触发 Git dubious ownership",
+      "solution": "设置 GIT_CONFIG safe.directory=* 后清理重试构建成功",
+      "source": "ninja 输出"
+    },
+    {
+      "timestamp": "2026-06-25T13:44:33",
+      "problem": "wheel 冒烟/UT 导入 torch_npu 失败：libtensorpipe.so undefined symbol aclGetRecentErrMsg",
+      "solution": "尝试加入仓库 CANN stub 库路径后仍失败；判定需要真实 CANN runtime，stub 不能替代运行时",
+      "source": "smoke test 与 UT 输出"
+    }
+  ]
+}
