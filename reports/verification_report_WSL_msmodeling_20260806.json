@@ -4,7 +4,7 @@
     "branch": "master",
     "start_time": "2026-08-06T10:33:03",
     "end_time": "2026-08-06T11:44:50",
-    "duration_seconds": 0,
+    "duration_seconds": 4307,
     "total_steps": 7,
     "commit": "825706d",
     "environment": "remote_ssh",
@@ -543,11 +543,75 @@
     }
   ],
   "final_results": {
-    "overall_status": "PASS",
-    "build_status": "PASS",
-    "unit_test_status": "PASS",
-    "sample_execution_status": "PASS",
-    "summary": "msmodeling repository verified on openEuler 24.03 LTS-SP3 (aarch64) using script-built mindstudio-build:1.0.0-arm64 image (CANN 9.1.0, GCC 11.2.0). Build produced msmodeling-0.2.0 wheel. Unit tests passed (CI gate). CLI sample executed successfully (msmodeling --help). No blocking issues found.",
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（14个hooks），11通过1失败2跳过，未检测到 lint-runner 配置",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "部分通过",
+        "duration_seconds": 182,
+        "total_hooks": 14,
+        "passed": 11,
+        "failed": 1,
+        "skipped": 2,
+        "executed_in_verification": true,
+        "failures": [
+          {
+            "hook_name": "gitleaks-offline-scan",
+            "file": "N/A",
+            "error": "Executable ./gitleaks not found - 本地 gitleaks 二进制不在仓库中，需从构建镜像环境获取"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "original_base_image": "unknown",
+      "used_image": "openEuler 24.03 LTS SP3",
+      "summary": "仓库未配置 devcontainer",
+      "duration_seconds": 1
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 120,
+      "image_build_duration_seconds": 2155.9,
+      "artifacts": [
+        "artifacts/msmodeling-0.2.0-py3-none-any.whl"
+      ],
+      "image": "mindstudio-build:1.0.0-arm64 (5.7GB)",
+      "build_chain": [
+        "openEuler 24.03 LTS SP3 → gcc11-glibc217 → manylinux → mindstudio + CANN 9.1.0"
+      ],
+      "toolchain": "GCC 11.2.0, Python 3.11.15, CANN 9.1.0"
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 60,
+      "framework": "pytest (via build.py test CI gate)",
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "failures": [],
+      "note": "fresh clone 下 diff 为 0，CI gate 通过。测试映射已下载 (7.2MB)，无实际 pytest 目标触发。"
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 2,
+      "results": [
+        {
+          "name": "msmodeling --help",
+          "status": "success",
+          "output": "MindStudio Modeling CLI with subcommands: optix (service parameter optimizer), inference (inference simulation)"
+        }
+      ]
+    },
     "notes": [
       "CANN version.cfg not found at /usr/local/Ascend/ascend-toolkit/latest/ - installed via mindstudio-build image path",
       "msmodeling CLI installed to ~/.local/bin/ - not in default PATH (user pip install)",
