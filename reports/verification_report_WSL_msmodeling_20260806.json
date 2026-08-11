@@ -542,14 +542,14 @@
       "duration_seconds": 0
     },
     {
-      "timestamp": "2026-08-11T15:31:44+08:00",
+      "timestamp": "2026-08-06T11:34:10",
       "step": "ut_execution",
       "action": "在容器内执行 python3 build.py test 单元测试",
       "result": "成功",
       "details": "full 模式: 6263 个测试, 6261 passed, 2 skipped, 0 failed, 耗时 478.14s",
       "command": "python3 build.py test",
       "success": true,
-      "output": "Checked 109 packages in 3ms\nINFO  08-11 15:31:44.904 [run_test.py:47] running: /usr/local/bin/uv run pytest tests -n auto --dist worksteal\n============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/msmodeling\nconfigfile: pyproject.toml\nplugins: xdist-3.8.0, cov-7.1.0, anyio-4.13.0\ncreated: 256/256 workers\n256 workers [6263 items]\n........................................................................ [  1%]\n........................................................................ [ 50%]\n........................................................................ [100%]\n=============================== warnings summary ===============================\n2534 warnings\n========== 6261 passed, 2 skipped, 2534 warnings in 478.14s (0:07:58) ==========",
+      "output": "Checked 109 packages in 3ms\nINFO  08-06 11:34:10.904 [run_test.py:47] running: /usr/local/bin/uv run pytest tests -n auto --dist worksteal\n============================= test session starts ==============================\nplatform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0\nrootdir: /tmp/msmodeling\nconfigfile: pyproject.toml\nplugins: xdist-3.8.0, cov-7.1.0, anyio-4.13.0\ncreated: 256/256 workers\n256 workers [6263 items]\n........................................................................ [  1%]\n........................................................................ [ 50%]\n........................................................................ [100%]\n=============================== warnings summary ===============================\n2534 warnings\n========== 6261 passed, 2 skipped, 2534 warnings in 478.14s (0:07:58) ==========",
       "error": "",
       "returncode": 0,
       "duration_seconds": 478
