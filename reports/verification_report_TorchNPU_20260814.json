@@ -1,0 +1,351 @@
+{
+  "metadata": {
+    "repo_name": "pytorch",
+    "repo_url": "https://gitcode.com/Ascend/pytorch.git",
+    "branch": "master",
+    "commit_sha": "937c9cf37d51bd352644cdc70ee03ccc3d0a6827",
+    "verification_date": "2026-08-14",
+    "start_time": "2026-08-14T22:40:00",
+    "end_time": "2026-08-14T23:35:00",
+    "duration_seconds": 3300,
+    "total_steps": 8,
+    "verifier": "ttfhw-verify-smart",
+    "tool": "opencode"
+  },
+  "document_reading_summary": {
+    "readme_source": "README.md / README.zh.md",
+    "readme_summary": "TorchNPU 是昇腾为 PyTorch 打造的深度学习适配插件，使 PyTorch 框架能够直接调用昇腾 NPU。当前分支以单一源码适配多个 PyTorch 版本，支持的版本清单在 version.txt 中（2.13.0/2.14.0/2.15.0）。安装方式：二进制 pip install torch-npu 或源码编译。源码编译使用 docker/devel/Dockerfile 多阶段构建（base/builder/dev），编译命令为 bash ci/build.sh --python=3.10。",
+    "recommended_image": {
+      "source": "docker/devel/Dockerfile FROM",
+      "value": "quay.io/pypa/manylinux_2_28 (基础 OS 镜像，非业务预构建镜像)"
+    },
+    "architecture_requirement": {
+      "source": "宿主机 npu-smi + Dockerfile TARGETARCH",
+      "value": "aarch64 (ARM64) / x86_64 均支持，当前环境为 aarch64"
+    },
+    "build_dependencies": {
+      "source": "Dockerfile RUN + building_from_source.md",
+      "value": "gcc-toolset-13 (gcc 13.3.1)、cmake 3.18.4(x86)/4.3.2(arm)、ninja-build、mold、autoconf/automake/bison、patch、zlib-devel、pyyaml、setuptools、wheel、numpy 1.23.2(py3.10)、torch==2.13.0(CPU 版)、CANN 9.1.0(Toolkit+ops+可选NNAL)"
+    },
+    "build_commands": {
+      "source": "building_from_source.md + docker/devel/README.md",
+      "value": "镜像构建: cd pytorch/docker/devel && DOCKER_BUILDKIT=1 docker build -t manylinux-builder:v1 --target dev --build-arg PY_VERSION=3.10 --build-arg TORCH_VERSION=2.13.0 . ；TorchNPU 编译: cd /home/pytorch && bash ci/build.sh --python=3.10"
+    },
+    "ut_commands": {
+      "source": "test/ 目录 + 上游 PyTorch 测试框架",
+      "value": "python3 -m pytest test/ (torch_npu 子目录) ；安装后验证: python3 -c \"import torch;import torch_npu; a = torch.randn(3, 4).npu(); print(a + a);\""
+    },
+    "sample_commands": {
+      "source": "README.md Quick Start",
+      "value": "python3 -c \"import torch;import torch_npu; x = torch.randn(2,2).npu(); y = torch.randn(2,2).npu(); print(x.mm(y))\""
+    },
+    "special_dependency_downloads": {
+      "source": "Dockerfile dev 阶段",
+      "value": "CANN Toolkit/ops/NNAL 从 https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.0 下载 .run 安装包"
+    }
+  },
+  "npu_required": true,
+  "npu_scan_keywords_matched": ["CANN", "Ascend", "torch_npu", "npu", "davinci", "910", "昇腾"],
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "HUAWEI Kunpeng 920 7265",
+      "cpu_cores": 256,
+      "memory": "2.0 TiB",
+      "disk": "/home 804G (126G free)",
+      "docker_version": "26.1.4"
+    },
+    "container": {
+      "os": "manylinux_2_28 (基于 CentOS Stream 8)",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "2.0 TiB"
+    },
+    "npu": {
+      "available": true,
+      "card_count": 8,
+      "mounted_card_id": [0, 1, 2, 3, 4, 5, 6, 7],
+      "card_model": "Ascend 910B4",
+      "driver_version": "25.5.1"
+    },
+    "image_source": {
+      "type": "dockerfile_build",
+      "image_name": "torch-npu-ttfhw:dev",
+      "selection_reason": "Tier 2 Dockerfile 构建：Dockerfile FROM 为基础 OS 镜像 quay.io/pypa/manylinux_2_28，README/devcontainer 未提供业务预构建镜像，故按 Dockerfile 原样构建 dev 阶段（含 CANN 运行环境）"
+    },
+    "container_setup_verified": {
+      "container_os": "AlmaLinux 8.10 (manylinux_2_28)",
+      "torch_version_installed": "2.13.0+cpu (Dockerfile 修复后 --extra-index-url 生效，下载到 +cpu 后缀版本，与 torch_npu 兼容)",
+      "cann_installed": "9.1.0 (Toolkit + ops_910b)",
+      "gcc_version": "13.3.1",
+      "cmake_version": "4.4.2",
+      "ninja_version": "1.8.2",
+      "python_version": "3.10.20",
+      "npu_visible_in_container": true,
+      "npu_card_count_in_container": 8
+    }
+  },
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "仓库根目录无 .pre-commit-config.yaml（configured=false）；存在 .lintrunner.toml（configured=true），配置了 22 个 linter",
+      "pre_commit": {
+        "configured": false,
+        "config_file": ""
+      },
+      "lint_runner": {
+        "configured": true,
+        "config_file": ".lintrunner.toml",
+        "linters": ["FLAKE8", "CLANGFORMAT", "TYPEIGNORE", "TYPENOSKIP", "NATIVEFUNCTIONS", "NEWLINE", "SPACES", "TABS", "ERROR_PRONE_ISINSTANCE", "PYPIDEP", "CUBINCLUDE", "RAWCUDA", "RAWCUDADEVICE", "DEPLOY_DETECTION", "SHELLCHECK", "CODESPELL", "COPYRIGHT", "BAZEL_LINTER", "LINTRUNNER_VERSION", "MERGE_CONFLICTLESS_CSV", "META_NO_CREATE_UNBACKED", "ATEN_CPU_GPU_AGNOSTIC", "IMPORT_LINTER", "TEST_DEVICE_BIAS", "HEADER_ONLY_LINTER", "STABLE_SHIM_USAGE"]
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [".devcontainer/devcontainer.json"],
+      "original_base_image": "../docker/devel/Dockerfile (target=dev)",
+      "used_image": "torch-npu-ttfhw:dev (基于 Dockerfile 构建)",
+      "summary": "devcontainer.json 通过 build.dockerfile 引用 ../docker/devel/Dockerfile，构建 target=dev，挂载 /dev、Ascend driver、npu-smi、/var/log/npu，启用 privileged 模式以透传 NPU 设备"
+    },
+    "build": {
+      "status": "",
+      "duration_seconds": 0,
+      "artifacts": []
+    },
+    "ut": {
+      "status": "",
+      "duration_seconds": 0,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "",
+      "duration_seconds": 0,
+      "results": []
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-14T22:40:00",
+      "step": "document_reading",
+      "action": "读取 README.md / README.zh.md / version.txt / building_from_source.md / docker/devel/README.md 提取构建依赖和命令",
+      "result": "成功",
+      "details": {"readme_links_followed": ["README.md", "README.zh.md", "version.txt", "COMPATIBILITY.md (未深入)", "docs/zh/installation_guide/references/building_from_source.md", "docker/devel/README.md", "docker/devel/Dockerfile"]},
+      "command": "Read /home/s30067059/smart/pytorch/README.md 等",
+      "success": true,
+      "output": "TorchNPU 适配插件，源码编译需 builder/dev 镜像，构建命令 bash ci/build.sh --python=3.10",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-14T22:41:00",
+      "step": "static_analysis_scan",
+      "action": "检查 .pre-commit-config.yaml 与 .lintrunner.toml 配置",
+      "result": "成功",
+      "details": {"pre_commit_configured": false, "lint_runner_configured": true, "linter_count": 22},
+      "command": "ls /home/s30067059/smart/pytorch/.pre-commit-config.yaml /home/s30067059/smart/pytorch/.lintrunner.toml",
+      "success": true,
+      "output": ".lintrunner.toml 存在(56KB,22 个 linter)；.pre-commit-config.yaml 不存在",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-14T22:41:30",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer/ 目录及 devcontainer.json",
+      "result": "成功",
+      "details": {"config_exists": true, "build_target": "dev", "privileged": true, "mounts": ["/dev", "/usr/local/Ascend/driver", "/usr/local/Ascend/add-ons", "npu-smi", "/var/log/npu"]},
+      "command": "Read /home/s30067059/smart/pytorch/.devcontainer/devcontainer.json",
+      "success": true,
+      "output": "devcontainer.json 引用 Dockerfile 构建 dev 镜像，挂载 NPU 设备",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-14T22:42:00",
+      "step": "image_selection",
+      "action": "选择镜像 Tier：探测 Dockerfile FROM 为 quay.io/pypa/manylinux_2_28（基础 OS），README/devcontainer 无业务预构建镜像",
+      "result": "Tier 2 Dockerfile 构建",
+      "details": {"from_image": "quay.io/pypa/manylinux_2_28", "tier1_signals": "none", "tier2_reason": "Dockerfile 存在且 FROM 为基础 OS 镜像"},
+      "command": "分析 Dockerfile FROM 指令",
+      "success": true,
+      "output": "判定 Tier 2：按 Dockerfile 原样构建 dev 阶段",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-14T22:42:30",
+      "step": "container_setup",
+      "action": "Tier 2 docker build 构建 dev 镜像（含 base/builder/dev 三阶段，CANN 9.1.0 下载安装）",
+      "result": "成功",
+      "details": {"build_target": "dev", "image_tag": "torch-npu-ttfhw:dev", "torch_installed": "2.13.0+cpu (--extra-index-url 修复生效)", "cann_installed": "9.1.0 Toolkit + ops_910b"},
+      "command": "cd pytorch/docker/devel && DOCKER_BUILDKIT=1 docker build -t torch-npu-ttfhw:dev --target dev --build-arg PY_VERSION=3.10 --build-arg TORCH_VERSION=2.13.0 --build-arg CANN_VERSION=9.1.0 --build-arg CANN_PRODUCT=910b .",
+      "success": true,
+      "output": "镜像构建成功，torch 2.13.0+cpu 已安装，CANN 9.1.0 已安装",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1320
+    },
+    {
+      "timestamp": "2026-08-14T23:04:00",
+      "step": "container_setup",
+      "action": "docker run 启动容器并挂载 NPU 设备（--privileged + /dev + Ascend driver + npu-smi）",
+      "result": "成功",
+      "details": {"container_name": "torch-npu-ttfhw", "npu_visible": true, "npu_count": 8, "container_os": "AlmaLinux 8.10", "torch_version": "2.13.0+cpu", "gcc": "13.3.1", "cmake": "4.4.2"},
+      "command": "docker run -d --name torch-npu-ttfhw --privileged -v /dev:/dev -v /home/s30067059/smart/pytorch:/home/pytorch -v /usr/local/Ascend/driver:/usr/local/Ascend/driver ... torch-npu-ttfhw:dev",
+      "success": true,
+      "output": "容器启动成功，NPU 可见(8 卡 910B4)，torch 2.13.0+cpu 已安装",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-14T23:10:00",
+      "step": "build",
+      "action": "执行 bash ci/build.sh --python=3.10 编译 torch_npu C++ 扩展",
+      "result": "成功",
+      "details": {"wheel": "torch_npu-2.13.0+git937c9cf-cp310-cp310-manylinux_2_28_aarch64.whl", "wheel_size_mb": 42, "objects_compiled": "1369", "submodules_cloned": ["op-plugin", "torchair", "Tensorpipe", "acl_src/ge", "acl_src/runtime", "dvm", "fmt", "googletest", "nlohmann", "torch-mlir"]},
+      "command": "docker exec torch-npu-ttfhw bash -c 'source /usr/local/Ascend/cann/set_env.sh && cd /home/pytorch && bash ci/build.sh --python=3.10'",
+      "success": true,
+      "output": "wheel 生成成功，auditwheel 修复后 tag 为 manylinux_2_28_aarch64",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 572
+    },
+    {
+      "timestamp": "2026-08-14T23:20:00",
+      "step": "build",
+      "action": "安装源码构建的 wheel 并测试 import",
+      "result": "失败（运行时回归 P2）",
+      "details": {"error_type": "c10::ValueError", "error_msg": "Duplicated key 'pinned_reserve_segment_size_mb' found in device-specific configuration parser hook registration"},
+      "command": "docker exec torch-npu-ttfhw bash -c 'pip3.10 install --force-reinstall /home/pytorch/dist/torch_npu-2.13.0+git937c9cf-cp310-cp310-manylinux_2_28_aarch64.whl && python3 -c \"import torch_npu\"'",
+      "success": false,
+      "output": "源码构建的 torch_npu 2.13.0 与 torch 2.13.0+cpu 存在 config key 冲突，import 直接 SIGABRT (exit 134)",
+      "error": "Duplicated key 'pinned_reserve_segment_size_mb' found in device-specific configuration parser hook registration",
+      "returncode": 134,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-08-14T23:22:00",
+      "step": "build",
+      "action": "Workaround: 安装 PyPI 发布的 torch_npu==2.13.0rc1 替代源码构建版本",
+      "result": "成功",
+      "details": {"wheel_source": "PyPI", "torch_npu_version": "2.13.0.rc1", "torch_version": "2.13.0+cpu", "npu_available": true, "npu_count": 8},
+      "command": "docker exec torch-npu-ttfhw bash -c 'pip3.10 uninstall torch_npu -y && pip3.10 install torch_npu==2.13.0rc1'",
+      "success": true,
+      "output": "PyPI rc1 wheel import 成功，NPU 可用 (8 卡 910B4)，tensor add 在 NPU 上执行成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-14T23:25:00",
+      "step": "unit_tests",
+      "action": "运行 NPU 单元测试 (pytest, 需安装 pytest + expecttest 依赖)",
+      "result": "成功",
+      "details": {"tests_passed": 45, "tests_skipped": 2, "tests_failed": 0, "test_files": ["test/npu/test_device.py", "test/npu/test_cann_version.py", "test/npu/test_copy.py", "test/npu/test_combine_tensors.py"]},
+      "command": "docker exec torch-npu-ttfhw bash -c 'source /usr/local/Ascend/cann/set_env.sh && cd /tmp && python3 -m pytest /home/pytorch/test/npu/test_device.py /home/pytorch/test/npu/test_cann_version.py /home/pytorch/test/npu/test_copy.py /home/pytorch/test/npu/test_combine_tensors.py'",
+      "success": true,
+      "output": "45 passed, 2 skipped, 0 failed",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 28
+    },
+    {
+      "timestamp": "2026-08-14T23:29:00",
+      "step": "samples",
+      "action": "执行 README 快速开始样例 + 端到端线性回归训练样例",
+      "result": "成功",
+      "details": {"sample_1_tensor_add": "passed", "sample_2_matmul_softmax": "passed (sum=1.0)", "sample_3_linear_regression": "passed (final_loss=9.2e-5, learned_weights=[0.9999, 2.0021, -2.9998] vs true [1.0, 2.0, -3.0])"},
+      "command": "docker exec torch-npu-ttfhw bash -c 'source /usr/local/Ascend/cann/set_env.sh && python3 sample_quickstart.py sample_linear_regression.py'",
+      "success": true,
+      "output": "所有样例通过：NPU tensor 操作、matmul+softmax、端到端训练收敛到正确权重",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    }
+  ],
+  "problems_encountered": [
+    {
+      "id": "P1-torch-install-aarch64",
+      "severity": "medium",
+      "category": "build-config",
+      "title": "Dockerfile pip install torch 使用 --index-url 导致 aarch64 找不到 wheel",
+      "description": "pytorch/docker/devel/Dockerfile 第 92 行原使用 `pip install torch==${TORCH_VERSION} --index-url https://download.pytorch.org/whl/cpu`，在 aarch64 架构下 --index-url 覆盖默认 PyPI 源，导致找不到匹配架构的 torch wheel。",
+      "fix_applied": "已将 --index-url 改为 --extra-index-url，保留默认 PyPI 源，成功安装 torch 2.13.0+cpu（aarch64 manylinux_2_28）。",
+      "file": "pytorch/docker/devel/Dockerfile",
+      "line": 92,
+      "status": "fixed"
+    },
+    {
+      "id": "P2-config-key-conflict",
+      "severity": "high",
+      "category": "runtime-regression",
+      "title": "源码构建的 torch_npu 2.13.0 与 torch 2.13.0+cpu 存在 config key 冲突，import 崩溃",
+      "description": "源码树 torch_npu/csrc/core/npu/NPUAllocatorConfig.h:139 的 getKeys() 注册了 `pinned_reserve_segment_size_mb`，而 torch 2.13.0 的 c10/core/AllocatorConfig.h:273 也注册了同名 key。torch_npu 动态库加载时调用 registerDeviceConfigParserHook 触发 `Duplicated key` ValueError，import 直接 SIGABRT (exit 134)。",
+      "evidence": "源码构建 wheel: import 失败 exit 134；PyPI 发布的 torch_npu==2.13.0rc1: import 成功且 NPU 操作正常。说明冲突是源码树相对 rc1 的回归（rc1 的 getKeys() 未含此 key 或 torch 2.13.0 后续新增了此 key）。",
+      "root_cause": "torch_npu 源码 getKeys() 包含 `pinned_reserve_segment_size_mb`，与 torch 2.13.0 libc10.so 中已注册的同名 key 冲突",
+      "workaround": "使用 PyPI 发布的 torch_npu==2.13.0rc1 可正常 import 和运行；或从 getKeys() 移除该 key（需源码修改，超出验证范围）",
+      "file": "torch_npu/csrc/core/npu/NPUAllocatorConfig.h",
+      "line": 139,
+      "status": "open"
+    }
+  ],
+  "documentation_gaps": [
+    {
+      "id": "G1-version-mismatch",
+      "severity": "medium",
+      "description": "COMPATIBILITY.md 推荐版本为 TorchNPU 2.12.0 + PyTorch 2.12.0，但 Dockerfile 默认 TORCH_VERSION=2.13.0 且 version.txt 列出 2.13.0/2.14.0/2.15.0。PyPI 上 torch_npu 2.13.0 尚未正式发布（仅有 rc1），2.14.0/2.15.0 的 torch wheel 也不存在。源码树构建 2.13.0 存在运行时回归。",
+      "recommendation": "Dockerfile 默认应使用已发布的稳定组合（torch 2.12.0 + torch_npu 2.12.0），或将 2.13.0 源码回归修复后再作为默认"
+    },
+    {
+      "id": "G2-no-prebuilt-image",
+      "severity": "low",
+      "description": "README 和 devcontainer 均未提供业务预构建镜像，开发者必须从 Dockerfile 构建（含 CANN 下载安装，约 22 分钟）",
+      "recommendation": "建议提供 CI 预构建镜像并推送到镜像仓库，加速开发者环境搭建"
+    },
+    {
+      "id": "G3-missing-test-deps",
+      "severity": "low",
+      "description": "Dockerfile 未预装 pytest 和 expecttest，运行单元测试需要手动安装；测试文档未说明需从 /tmp 运行 pytest 以避免源码目录 shadow 已安装的 torch_npu wheel",
+      "recommendation": "在 dev 阶段预装 pytest/expecttest，或在 README 测试章节补充说明"
+    }
+  ],
+  "verification_summary": {
+    "overall_result": "部分成功",
+    "overall_status": "PASS_WITH_BLOCKERS",
+    "tier_selected": "Tier 2 (Dockerfile build)",
+    "steps_completed": ["step0_skeleton", "step1_readme", "step2_static_analysis", "step3_devcontainer_scan", "step4_container_setup", "step5_build", "step6_unit_tests", "step7_samples"],
+    "build_result": "成功 - 源码编译生成 torch_npu 2.13.0 wheel（1369 个对象，9m32s）",
+    "source_build_import": "失败 - 源码构建 wheel 因 config key 冲突无法 import（P2 高严重度回归）",
+    "workaround": "使用 PyPI 发布的 torch_npu==2.13.0rc1 替代源码构建版本",
+    "unit_tests_result": "成功 - 45 passed, 2 skipped, 0 failed (使用 rc1 wheel)",
+    "samples_result": "成功 - README 快速开始样例 + 端到端线性回归训练均通过",
+    "key_findings": [
+      "P1 (已修复): Dockerfile 使用 --index-url 导致 aarch64 找不到 torch wheel，改为 --extra-index-url 修复",
+      "P2 (未修复): 源码树 getKeys() 注册的 pinned_reserve_segment_size_mb 与 torch 2.13.0 libc10.so 冲突，import 崩溃",
+      "G1: 版本配套不一致 - COMPATIBILITY.md 推荐 2.12.0 但 Dockerfile 默认 2.13.0",
+      "环境本身正常 - 使用 PyPI rc1 wheel 时 NPU 可见(8 卡 910B4)，所有测试和样例通过"
+    ],
+    "recommendations": [
+      "修复 P2 config key 冲突后重新构建源码 wheel 并验证 import",
+      "将 Dockerfile 默认 TORCH_VERSION 改为 2.12.0（与 COMPATIBILITY.md 推荐一致）或在源码回归修复后再用 2.13.0",
+      "提供 CI 预构建镜像以加速开发者环境搭建",
+      "在 dev 阶段预装 pytest/expecttest 测试依赖"
+    ]
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "GLM-5.2",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  }
+}

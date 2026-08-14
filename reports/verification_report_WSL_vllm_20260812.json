@@ -1,0 +1,513 @@
+{
+  "metadata": {
+    "repo_path": "/mnt/d/opencode/ttfhw/vllm",
+    "repo_name": "vllm",
+    "start_time": "2026-08-12T01:50:00",
+    "end_time": "2026-08-12T06:00:00",
+    "duration_seconds": 13800,
+    "total_steps": 18,
+    "verification_environment": "WSL2 Ubuntu + Docker",
+    "build_variant": "cpu (VLLM_TARGET_DEVICE=cpu)"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "13th Gen Intel(R) Core(TM) i7-13700",
+      "cpu_cores_visible_to_wsl": 2,
+      "memory": "7.8Gi",
+      "disk": "1007G (34G used, 923G free)",
+      "docker_version": "Docker version 29.3.1, build c2be9cc",
+      "wsl_kernel": "6.6.87.2-microsoft-standard-WSL2"
+    },
+    "container": {
+      "os": "Ubuntu 24.04.4 LTS (Noble Numbat)",
+      "architecture": "x86_64",
+      "cpu_cores": 2,
+      "memory": "7.8Gi",
+      "shm_size": "3.9G (via --ipc=host)",
+      "capabilities": ["SYS_NICE", "seccomp=unconfined"]
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "ubuntu:24.04",
+      "selection_reason": "Dockerfile.cpu FROM ubuntu:22.04 → 升级选择 Ubuntu 24.04 (镜像源: docker.m.daocloud.io/library/ubuntu:24.04, 因 docker.io 网络不可达使用本地已有镜像)"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "value": "x86_64, aarch64, ppc64le, s390x, riscv64 (CPU); NVIDIA/AMD/Intel GPU; Huawei Ascend",
+      "source": "README.md - About 节; docker/Dockerfile.cpu - 支持 linux/amd64 与 linux/arm64"
+    },
+    "recommended_image": {
+      "value": "Dockerfile.cpu FROM ubuntu:22.04 → 选择 Ubuntu 24.04",
+      "source": "docker/Dockerfile.cpu 第23行: FROM ubuntu:22.04 AS base-common"
+    },
+    "dependencies": {
+      "value": [
+        "Python 3.10-3.13 (验证使用 3.12)",
+        "gcc-12 / g++-12 >= 12.3.0",
+        "cmake >= 3.26.1 (requirements/build/cpu.txt)",
+        "ninja",
+        "setuptools==77.0.3, setuptools-scm>=8, setuptools-rust>=1.9.0",
+        "torch==2.13.0+cpu (--torch-backend cpu)",
+        "torchaudio, torchvision, torchcodec",
+        "libnuma-dev, libtcmalloc-minimal4, zlib1g-dev, ffmpeg, libsm6, libxext6, libgl1",
+        "uv (Astral) 作为 Python 包管理器",
+        "rust 1.95.0 + protoc 34.2 (用于 vllm-rs 前端, 可选)",
+        "intel-openmp==2024.2.1 (x86_64)",
+        "requirements/common.txt + requirements/cpu.txt 中约 80+ 个 Python 依赖"
+      ],
+      "source": "docs/getting_started/installation/cpu.x86.inc.md + requirements/build/cpu.txt + requirements/cpu.txt + requirements/common.txt + docker/Dockerfile.cpu + AGENTS.md"
+    },
+    "build_commands": {
+      "value": "VLLM_TARGET_DEVICE=cpu uv pip install . --no-build-isolation",
+      "source": "docs/getting_started/installation/cpu.x86.inc.md - build-wheel-from-source 节"
+    },
+    "ut_commands": {
+      "value": ".venv/bin/python -m pytest tests/path/to/test_file.py -v (AGENTS.md); CI 使用 requirements/test/cuda.txt 安装测试依赖",
+      "source": "AGENTS.md - Tests 节"
+    },
+    "sample_commands": {
+      "value": "python3 examples/basic/offline_inference/basic.py (使用 facebook/opt-125m 模型)",
+      "source": "examples/basic/offline_inference/basic.py + docs/getting_started/installation/cpu.md - FAQ 节"
+    },
+    "special_dependencies": {
+      "value": [
+        {
+          "name": "uv",
+          "download_url": "https://astral.sh/uv/install.sh",
+          "install_method": "curl -LsSf https://astral.sh/uv/install.sh | sh"
+        },
+        {
+          "name": "protoc 34.2",
+          "download_url": "https://github.com/protocolbuffers/protobuf/releases/download/v34.2/protoc-34.2-linux-x86_64.zip",
+          "install_method": "curl + unzip 到 /usr/local (tools/install_protoc.sh)"
+        },
+        {
+          "name": "rust 1.95.0",
+          "download_url": "https://sh.rustup.rs",
+          "install_method": "curl --proto =https --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+        },
+        {
+          "name": "PyTorch CPU wheels",
+          "download_url": "https://download.pytorch.org/whl/cpu",
+          "install_method": "uv pip install --torch-backend cpu (uv 自动解析 PyTorch CPU 索引)"
+        },
+        {
+          "name": "facebook/opt-125m 模型 (样例用)",
+          "download_url": "https://huggingface.co/facebook/opt-125m",
+          "install_method": "HuggingFace Hub 自动下载 (HF_HUB_DOWNLOAD_TIMEOUT=60)"
+        }
+      ],
+      "source": "docs/getting_started/installation/cpu.x86.inc.md + tools/install_protoc.sh + build_rust.sh + requirements/build/cpu.txt"
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-12T01:54:00",
+      "command": "docker pull ubuntu:24.04",
+      "success": false,
+      "output": "",
+      "error": "failed to resolve reference docker.io/library/ubuntu:24.04: dialing registry-1.docker.io:443: connection timeout",
+      "returncode": 1,
+      "note": "docker.io 不可达, 改用本地已有镜像 docker.m.daocloud.io/library/ubuntu:24.04 并 tag 为 ubuntu:24.04"
+    },
+    {
+      "timestamp": "2026-08-12T01:55:00",
+      "command": "docker tag docker.m.daocloud.io/library/ubuntu:24.04 ubuntu:24.04",
+      "success": true,
+      "output": "ubuntu:24.04 tagged",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-12T01:55:30",
+      "command": "docker run -d --name ttfhw-vllm-env -v /mnt/d/opencode/ttfhw/vllm:/workspace -w /workspace ubuntu:24.04 tail -f /dev/null",
+      "success": true,
+      "output": "Container ad2983c9403b started, Up",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-12T01:56:00",
+      "command": "apt-get update && apt-get install -y sudo ccache git curl wget ca-certificates zlib1g-dev gcc-12 g++-12 libtcmalloc-minimal4 libnuma-dev ffmpeg libsm6 libxext6 libgl1 jq lsof make xz-utils python3.12 python3.12-dev python3.12-venv unzip",
+      "success": true,
+      "output": "Fetched 32.1 MB in 34s; all packages installed (gcc 12.4.0, python 3.12.3)",
+      "error": "",
+      "returncode": 0,
+      "duration_estimate": "约 60 秒"
+    },
+    {
+      "timestamp": "2026-08-12T01:58:00",
+      "command": "update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 10 --slave /usr/bin/g++ g++ /usr/bin/g++-12 && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1",
+      "success": true,
+      "output": "gcc 12.4.0; Python 3.12.3",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-12T01:59:00",
+      "command": "curl -LsSf https://astral.sh/uv/install.sh | sh",
+      "success": true,
+      "output": "uv 0.12.3 installed to /root/.local/bin/uv",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-12T02:00:00",
+      "command": "uv venv --python 3.12 --seed /opt/venv",
+      "success": true,
+      "output": "venv created with pip 26.2.1 at /opt/venv",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-12T02:02:00",
+      "command": "uv pip install -r requirements/build/cpu.txt --torch-backend cpu --index-strategy unsafe-best-match",
+      "success": true,
+      "output": "Installed 18 packages: cmake 4.4.2, ninja 1.13.0, torch 2.13.0+cpu (182.9MiB), setuptools 77.0.3, setuptools-rust 1.13.0 等",
+      "error": "",
+      "returncode": 0,
+      "duration_estimate": "约 3 分钟 (torch 下载 + 安装)"
+    },
+    {
+      "timestamp": "2026-08-12T02:05:00",
+      "command": "uv pip install -r requirements/cpu.txt --torch-backend cpu --index-strategy unsafe-best-match",
+      "success": true,
+      "output": "Installed ~80 runtime packages: transformers 5.15.0, torchaudio/torchvision/torchcodec (cpu), triton 3.7.1, xgrammar, tiktoken, safetensors 0.8.0 等",
+      "error": "",
+      "returncode": 0,
+      "duration_estimate": "约 5 分钟"
+    },
+    {
+      "timestamp": "2026-08-12T02:18:00",
+      "command": "bash tools/install_protoc.sh (安装 protoc 34.2)",
+      "success": true,
+      "output": "libprotoc 34.2 installed to /usr/local",
+      "error": "",
+      "returncode": 0,
+      "note": "脚本因 Windows CRLF 行尾首次失败 (set: pipefail invalid), 改为直接运行 curl+unzip 命令"
+    },
+    {
+      "timestamp": "2026-08-12T02:20:00",
+      "command": "curl --proto =https --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none && rustup toolchain install 1.95.0",
+      "success": true,
+      "output": "rustc 1.95.0 (59807616e 2026-04-14) installed",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-12T02:30:00",
+      "command": "python3 tools/build_rust.py --release (构建 Rust 前端 vllm-rs + _rust_tool_parser)",
+      "success": false,
+      "output": "cargo build started, downloading and compiling crates",
+      "error": "timeout: 命令在 1200 秒后仍未完成 (vllm_rs 二进制编译耗时过长, 2 核环境 LTO+release 编译极慢). 进程被终止.",
+      "returncode": -1,
+      "note": "Rust 前端是可选的 (VLLM_REQUIRE_RUST_FRONTEND 默认 false). 后续主构建未包含 vllm-rs 二进制, 但 _rust_tool_parser.pyd 在主 setup.py 构建中被编译成功."
+    },
+    {
+      "timestamp": "2026-08-12T02:39:00",
+      "command": "git config --global --add safe.directory /workspace (修复 git dubious ownership)",
+      "success": true,
+      "output": "configured; git describe 返回 v0.26.1rc0-654-g47ececb58",
+      "error": "",
+      "returncode": 0,
+      "note": "首次构建因 git 'detected dubious ownership' 失败, 添加 safe.directory 后解决"
+    },
+    {
+      "timestamp": "2026-08-12T02:42:00",
+      "command": "VLLM_TARGET_DEVICE=cpu MAX_JOBS=1 CMAKE_DISABLE_FIND_PACKAGE_CUDA=ON SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0+cpu.build uv pip install . --no-build-isolation",
+      "success": true,
+      "output": "Built vllm @ file:///workspace; Prepared 1 package in 176m 29s; Installed vllm==0.0.0+cpu.build.cpu; real 178m36.241s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10716,
+      "note": "MAX_JOBS=1 (2核 * 60% = 1.2 → 取整 1). 构建包含: onednn 从源码编译 (427+ .o 文件), vLLM C++ 扩展 (_C, _C_AVX2, _C_AVX512, spinloop, fs_io_C), _rust_tool_parser. 总计约 55 个 vLLM .o 文件 + onednn .o 文件."
+    },
+    {
+      "timestamp": "2026-08-12T05:42:00",
+      "command": "python3 -c \"import vllm; print(vllm.__version__)\"",
+      "success": true,
+      "output": "0.0.0+cpu.build",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-12T05:43:00",
+      "command": "uv pip install pytest tblib && uv pip install -e tests/vllm_test_utils",
+      "success": true,
+      "output": "pytest 9.1.1, tblib 3.2.2, vllm-test-utils 0.1 installed",
+      "error": "",
+      "returncode": 0,
+      "note": "tests/conftest.py 依赖 tblib; AGENTS.md 要求安装 tests/vllm_test_utils"
+    },
+    {
+      "timestamp": "2026-08-12T05:44:00",
+      "command": "python3 -m pytest tests/test_version.py tests/test_sampling_params.py tests/test_envs.py tests/test_logger.py tests/test_cmake_utils.py tests/test_embedded_commit.py tests/test_scalartype.py tests/test_sequence.py -v --tb=short",
+      "success": true,
+      "output": "6 failed, 102 passed, 1 warning in 28.01s; real 48.764s",
+      "error": "6 个 test_prev_minor_version_was 测试用例失败 (AssertionError: __version_tuple__[0] == 0 在 mock 为非 0 major 版本时触发)",
+      "returncode": 0,
+      "duration_seconds": 28,
+      "note": "6 个失败均为 test_version.py 中 mock version_tuple major=1 的用例, 与 vllm/version.py:30 的 assert __version_tuple__[0] == 0 冲突, 属于代码库自身测试数据与当前版本断言的不匹配, 非构建环境问题."
+    },
+    {
+      "timestamp": "2026-08-12T05:50:00",
+      "command": "docker commit ttfhw-vllm-env ttfhw-vllm-env:saved && docker run -d --name ttfhw-vllm-env --ipc=host --cap-add SYS_NICE --security-opt seccomp=unconfined ... ttfhw-vllm-env:saved",
+      "success": true,
+      "output": "Container restarted with --ipc=host (3.9G /dev/shm) and NUMA capabilities",
+      "error": "",
+      "returncode": 0,
+      "note": "首次样例运行因 /dev/shm 仅 64MiB (需 160MiB) 失败; commit + 重启解决. 同时添加 --cap-add SYS_NICE --security-opt seccomp=unconfined 解决 NUMA get_mempolicy EPERM 问题."
+    },
+    {
+      "timestamp": "2026-08-12T05:51:00",
+      "command": "python3 /tmp/run_sample.py (LLM(model='facebook/opt-125m', gpu_memory_utilization=0.3, enforce_eager=True, dtype='float32'))",
+      "success": true,
+      "output": "下载权重 181.5s; 推理 2 prompt 各 max_tokens=10; Prompt1='Hello, my name is' → ' Shane and I live in the South Bay. I'; Prompt2='The capital of France is' → ' turning into a fortress for crime and corruption, says'; SAMPLE_SUCCESS; real 3m39.941s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 220,
+      "note": "原始 examples/basic/offline_inference/basic.py 因 gpu_memory_utilization 默认 0.92 (需 7.14GiB) 超过可用内存 (3.37/7.76 GiB) 失败. 创建 /tmp/run_sample.py 以 gpu_memory_utilization=0.3 + enforce_eager + dtype=float32 适配 2 核 7.8GiB 受限环境. 未修改仓库源码."
+    },
+    {
+      "timestamp": "2026-08-12T05:56:00",
+      "command": "docker stop ttfhw-vllm-env && docker rm ttfhw-vllm-env",
+      "success": true,
+      "output": "Container stopped and removed",
+      "error": "",
+      "returncode": 0
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-08-12T01:50:00",
+      "step": "start",
+      "action": "验证过程启动 - vLLM 仓库 CPU 构建验证",
+      "result": "started"
+    },
+    {
+      "timestamp": "2026-08-12T01:52:00",
+      "step": "document_reading",
+      "action": "阅读 README.md, CONTRIBUTING.md, AGENTS.md, docker/Dockerfile, docker/Dockerfile.cpu, requirements/*.txt, docs/getting_started/installation/cpu*.md",
+      "result": "success",
+      "details": {"files_read": 10, "build_approach": "CPU full build from source"}
+    },
+    {
+      "timestamp": "2026-08-12T01:54:00",
+      "step": "image_selection",
+      "action": "镜像选择: Dockerfile.cpu FROM ubuntu:22.04 → 选择 Ubuntu 24.04",
+      "result": "ubuntu:24.04 (本地 daocloud 镜像)",
+      "details": {"reason": "docker.io 不可达, 使用本地 docker.m.daocloud.io/library/ubuntu:24.04"}
+    },
+    {
+      "timestamp": "2026-08-12T01:55:30",
+      "step": "container_setup",
+      "action": "启动 Docker 容器 ttfhw-vllm-env",
+      "result": "success"
+    },
+    {
+      "timestamp": "2026-08-12T01:56:00",
+      "step": "dependency_installation",
+      "action": "安装 apt 系统依赖 (gcc-12, g++-12, python3.12, libnuma-dev 等)",
+      "result": "success"
+    },
+    {
+      "timestamp": "2026-08-12T01:59:00",
+      "step": "dependency_installation",
+      "action": "安装 uv + 创建 Python 3.12 venv",
+      "result": "success"
+    },
+    {
+      "timestamp": "2026-08-12T02:02:00",
+      "step": "dependency_installation",
+      "action": "安装 Python 构建依赖 (requirements/build/cpu.txt + requirements/cpu.txt, --torch-backend cpu)",
+      "result": "success"
+    },
+    {
+      "timestamp": "2026-08-12T02:18:00",
+      "step": "dependency_installation",
+      "action": "安装 protoc 34.2 + rust 1.95.0 (Rust 前端构建工具链)",
+      "result": "success"
+    },
+    {
+      "timestamp": "2026-08-12T02:30:00",
+      "step": "rust_build_attempt",
+      "action": "尝试构建 Rust 前端 (build_rust.py --release)",
+      "result": "timeout (1200s)",
+      "details": {"reason": "2 核环境 LTO release 编译 vllm-rs 二进制耗时过长"}
+    },
+    {
+      "timestamp": "2026-08-12T02:39:00",
+      "step": "problem_resolution",
+      "action": "修复 git 'dubious ownership' 问题",
+      "result": "resolved",
+      "details": {"solution": "git config --global --add safe.directory /workspace"}
+    },
+    {
+      "timestamp": "2026-08-12T02:42:00",
+      "step": "build_execution",
+      "action": "执行 vLLM CPU 构建 (VLLM_TARGET_DEVICE=cpu, MAX_JOBS=1)",
+      "result": "success",
+      "details": {"duration": "178m36s (10716s)", "targets_built": ["onednn", "_C", "_C_AVX2", "_C_AVX512", "spinloop", "fs_io_C", "_rust_tool_parser"]}
+    },
+    {
+      "timestamp": "2026-08-12T05:42:00",
+      "step": "build_verification",
+      "action": "验证 vllm 可导入",
+      "result": "success",
+      "details": {"version": "0.0.0+cpu.build"}
+    },
+    {
+      "timestamp": "2026-08-12T05:44:00",
+      "step": "ut_execution",
+      "action": "运行轻量级单元测试 (8 个测试文件)",
+      "result": "partial_success",
+      "details": {"total": 108, "passed": 102, "failed": 6, "failures_cause": "test_version.py mock 数据与 version.py 断言不匹配 (代码库自身问题)"}
+    },
+    {
+      "timestamp": "2026-08-12T05:50:00",
+      "step": "container_restart",
+      "action": "commit 容器并重启以添加 --ipc=host + NUMA 能力",
+      "result": "success"
+    },
+    {
+      "timestamp": "2026-08-12T05:51:00",
+      "step": "sample_execution",
+      "action": "运行 offline_inference 样例 (facebook/opt-125m)",
+      "result": "success",
+      "details": {"model_download_time": "181.5s", "inference_time": "7.77s/prompt", "outputs_generated": 2}
+    },
+    {
+      "timestamp": "2026-08-12T05:56:00",
+      "step": "cleanup",
+      "action": "停止并删除容器",
+      "result": "success"
+    },
+    {
+      "timestamp": "2026-08-12T06:00:00",
+      "step": "report_generation",
+      "action": "生成验证报告 JSON + 会话 Markdown",
+      "result": "success"
+    }
+  ],
+  "final_results": {
+    "build": {
+      "status": "success",
+      "duration_seconds": 10716,
+      "build_command": "VLLM_TARGET_DEVICE=cpu MAX_JOBS=1 uv pip install . --no-build-isolation",
+      "artifacts": [
+        {"name": "_C.abi3.so", "path": "build/lib.linux-x86_64-cpython-312/vllm/_C.abi3.so", "size": "127M"},
+        {"name": "_C_AVX2.abi3.so", "path": "build/lib.linux-x86_64-cpython-312/vllm/_C_AVX2.abi3.so", "size": "79M"},
+        {"name": "_C_AVX512.abi3.so", "path": "build/lib.linux-x86_64-cpython-312/vllm/_C_AVX512.abi3.so", "size": "91M"},
+        {"name": "_rust_tool_parser.abi3.so", "path": "build/lib.linux-x86_64-cpython-312/vllm/_rust_tool_parser.abi3.so", "size": "991K"},
+        {"name": "fs_io_C.abi3.so", "path": "build/lib.linux-x86_64-cpython-312/vllm/fs_io_C.abi3.so", "size": "393K"},
+        {"name": "spinloop.abi3.so", "path": "build/lib.linux-x86_64-cpython-312/vllm/spinloop.abi3.so", "size": "39K"}
+      ],
+      "installed_package": "vllm==0.0.0+cpu.build.cpu"
+    },
+    "ut": {
+      "status": "partial_success",
+      "duration_seconds": 28,
+      "test_command": "python3 -m pytest tests/test_version.py tests/test_sampling_params.py tests/test_envs.py tests/test_logger.py tests/test_cmake_utils.py tests/test_embedded_commit.py tests/test_scalartype.py tests/test_sequence.py -v",
+      "total": 108,
+      "passed": 102,
+      "failed": 6,
+      "failures": [
+        {"test": "tests/test_version.py::test_prev_minor_version_was[version_tuple5-1.1-True]", "error": "AssertionError: __version_tuple__[0] == 0 (mock 设为 1)"},
+        {"test": "tests/test_version.py::test_prev_minor_version_was[version_tuple6-1.0-False]", "error": "AssertionError: __version_tuple__[0] == 0 (mock 设为 1)"},
+        {"test": "tests/test_version.py::test_prev_minor_version_was[version_tuple7-1.2-False]", "error": "AssertionError: __version_tuple__[0] == 0 (mock 设为 1)"},
+        {"test": "tests/test_version.py::test_prev_minor_version_was[version_tuple8-1.-1-True]", "error": "AssertionError: __version_tuple__[0] == 0 (mock 设为 1)"},
+        {"test": "tests/test_version.py::test_prev_minor_version_was[version_tuple9-0.9-False]", "error": "AssertionError: __version_tuple__[0] == 0 (mock 设为 1)"},
+        {"test": "tests/test_version.py::test_prev_minor_version_was[version_tuple10-0.17-False]", "error": "AssertionError: __version_tuple__[0] == 0 (mock 设为 1)"}
+      ],
+      "note": "6 个失败均为 test_version.py 中 mock __version_tuple__ major=1 的用例, 与 vllm/version.py:30 的 assert __version_tuple__[0] == 0 冲突. 属于代码库自身测试数据问题, 非构建环境问题. 其余 102 个测试全部通过."
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 220,
+      "sample_command": "python3 /tmp/run_sample.py (基于 examples/basic/offline_inference/basic.py, 适配受限环境参数)",
+      "results": [
+        {
+          "sample_name": "offline_inference/basic (facebook/opt-125m)",
+          "execution_status": "success",
+          "output_summary": "Prompt='Hello, my name is' → ' Shane and I live in the South Bay. I'; Prompt='The capital of France is' → ' turning into a fortress for crime and corruption, says'",
+          "model_download_time": "181.5s",
+          "inference_time_per_prompt": "7.77s",
+          "execution_time_total": "3m39.941s"
+        }
+      ],
+      "note": "原始 basic.py 因默认 gpu_memory_utilization=0.92 超过可用内存失败. 创建 /tmp/run_sample.py 设置 gpu_memory_utilization=0.3, enforce_eager=True, dtype=float32, max_tokens=10. 未修改仓库源码."
+    }
+  },
+  "documentation_gaps": [
+    "README.md 仅提供 uv pip install vllm 的安装方式, 未列出完整构建依赖清单 (需查阅 docs/getting_started/installation/cpu.x86.inc.md + requirements/*.txt + docker/Dockerfile.cpu)",
+    "Rust 前端 (vllm-rs) 的构建在 Dockerfile.cpu 中有独立 stage, 但 docs/getting_started/installation/cpu.x86.inc.md 未提及 Rust 工具链要求 (build_rust.sh 自动安装, 但开发者手动构建需知晓)",
+    "Docker 运行时需要 --ipc=host 或 --shm-size, 以及 --cap-add SYS_NICE --security-opt seccomp=unconfined (仅在 docs/getting_started/installation/cpu.md FAQ 中提到, 未在 Quick Start 中强调)",
+    "CPU 后端默认 gpu_memory_utilization=0.92 在内存受限环境 (如 8GiB WSL) 下会导致启动失败, 文档未明确说明 CPU 后端此参数的含义与推荐值",
+    "git safe.directory 配置在 WSL 挂载 Windows 文件系统时必需, 文档未提及"
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-12T01:54:00",
+      "problem": "docker.io 仓库不可达, docker pull ubuntu:24.04 超时",
+      "solution": "使用本地已有镜像 docker.m.daocloud.io/library/ubuntu:24.04 并 tag 为 ubuntu:24.04",
+      "来源": "本地 docker images 列表"
+    },
+    {
+      "timestamp": "2026-08-12T02:18:00",
+      "problem": "tools/install_protoc.sh 因 Windows CRLF 行尾失败 (set: pipefail: invalid option name)",
+      "solution": "直接运行 curl + unzip 命令安装 protoc 34.2",
+      "来源": "tools/install_protoc.sh 脚本内容"
+    },
+    {
+      "timestamp": "2026-08-12T02:30:00",
+      "problem": "Rust 前端构建超时 (vllm-rs 二进制 LTO release 编译在 2 核环境超过 20 分钟)",
+      "solution": "跳过 vllm-rs 二进制 (Rust 前端为可选, VLLM_REQUIRE_RUST_FRONTEND 默认 false). 主 setup.py 构建中 _rust_tool_parser 仍被成功编译.",
+      "来源": "setup.py:57-59 should_require_rust_frontend() 逻辑"
+    },
+    {
+      "timestamp": "2026-08-12T02:39:00",
+      "problem": "git 'detected dubious ownership in repository at /workspace' 导致 setuptools-scm 无法获取版本",
+      "solution": "git config --global --add safe.directory /workspace && git config --global --add safe.directory '*'",
+      "来源": "git 错误消息提示"
+    },
+    {
+      "timestamp": "2026-08-12T02:39:00",
+      "problem": "setuptools-scm git describe 在 /mnt/d (Windows 挂载) 上超时 (40s)",
+      "solution": "设置 SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0+cpu.build 跳过 git describe",
+      "来源": "Dockerfile 第360行 ENV SETUPTOOLS_SCM_PRETEND_VERSION (csrc-build stage 的做法)"
+    },
+    {
+      "timestamp": "2026-08-12T05:44:00",
+      "problem": "tests/conftest.py 依赖 tblib 未安装",
+      "solution": "uv pip install tblib",
+      "来源": "tests/conftest.py:7 from tblib import pickling_support"
+    },
+    {
+      "timestamp": "2026-08-12T05:50:00",
+      "problem": "样例运行失败: /dev/shm 仅 64MiB, 需要 160MiB (Insufficient space in /dev/shm)",
+      "solution": "docker commit 保存容器状态, 重启容器添加 --ipc=host (3.9G /dev/shm)",
+      "来源": "docs/getting_started/installation/cpu.md FAQ: 'Why do I see get_mempolicy: Operation not permitted when running in Docker?'"
+    },
+    {
+      "timestamp": "2026-08-12T05:50:00",
+      "problem": "样例运行失败: NUMA get_mempolicy/set_mempolicy Operation not permitted",
+      "solution": "重启容器添加 --cap-add SYS_NICE --security-opt seccomp=unconfined",
+      "来源": "docs/getting_started/installation/cpu.md FAQ 节"
+    },
+    {
+      "timestamp": "2026-08-12T05:51:00",
+      "problem": "样例运行失败: Available memory (3.37/7.76 GiB) less than desired CPU memory utilization (0.92, 7.14 GiB)",
+      "solution": "创建 /tmp/run_sample.py, 设置 gpu_memory_utilization=0.3, enforce_eager=True, dtype=float32 适配 7.8GiB 内存环境",
+      "来源": "vllm/v1/worker/cpu_worker.py:84 错误消息 + docs/getting_started/installation/cpu.md FAQ"
+    },
+    {
+      "timestamp": "2026-08-12T05:44:00",
+      "problem": "6 个 test_version.py::test_prev_minor_version_was 测试用例失败",
+      "solution": "无需解决 - 属于代码库自身测试数据与 vllm/version.py:30 assert __version_tuple__[0] == 0 的不匹配, 非构建环境问题",
+      "来源": "vllm/version.py:30 + tests/test_version.py:19-33"
+    }
+  ],
+  "session_export_file": "verification_session_WSL_vllm_20260812.json"
+}

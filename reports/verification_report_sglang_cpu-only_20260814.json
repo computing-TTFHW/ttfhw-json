@@ -1,0 +1,613 @@
+{
+  "metadata": {
+    "repo_url": "https://github.com/sgl-project/sglang",
+    "branch": "main",
+    "start_time": "2026-08-14T14:44:19",
+    "end_time": "2026-08-14T15:36:37+08:00",
+    "duration_seconds": 3138,
+    "total_steps": 17,
+    "commit": "a2e88279c28c16945c7c7eacb27f1e066b670a41",
+    "environment": "Ubuntu 22.04.4 LTS 宿主等价 CPU-only 环境；宿主无 Docker/root；未使用 GPU/NPU",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "GPT-5",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "Intel(R) Xeon(R) Gold 6430",
+      "cpu_cores": 128,
+      "memory": "1.0TiB",
+      "disk": "61T available (/public)；459G available (/tmp)",
+      "docker_version": "未安装（docker/podman/nerdctl 均不存在）",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "Ubuntu 22.04.4 LTS 宿主等价环境（无 Docker 容器）",
+      "architecture": "x86_64",
+      "cpu_cores": 128,
+      "memory": "1.0TiB（共享宿主）"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "ubuntu:22.04（宿主系统等价环境，未实际启动容器）",
+      "selection_reason": "Tier 1 业务预构建镜像 lmsysorg/sglang:v0.5.17-xeon pull 失败（宿主无 docker）；Tier 2 docker/xeon.Dockerfile build 失败（宿主无 docker）；按 SKILL 回退 Tier 3，使用 Ubuntu 22.04 宿主等价环境执行 CPU-only 源码路径。CPU Dockerfile 原始 FROM 为 Ubuntu 24.04，因无容器能力无法启动，宿主 Ubuntu 22.04 作为等价回退并在报告中标注。",
+      "dependency_mapping": {
+        "from_dockerfile": "docker/xeon.Dockerfile",
+        "from_readme": "docs/docs/hardware-platforms/cpu_server.mdx",
+        "mappings": [
+          {
+            "original": "apt-get install ca-certificates git curl wget vim gcc g++ make libsqlite3-dev google-perftools libtbb-dev libnuma-dev numactl",
+            "target": "宿主已有 gcc/g++、git、curl、uv；google-perftools/libtbb 运行库按无 root 规则在工作区解包 .deb，其他系统库沿用宿主",
+            "source": "docker/xeon.Dockerfile 与 CPU Server 文档"
+          },
+          {
+            "original": "uv pip install .；cd sglang/kernels/aot；uv pip install .",
+            "target": "宿主等价 venv 中按官方源码命令安装主包与 CPU AOT kernel",
+            "source": "docs/docs/hardware-platforms/cpu_server.mdx"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "docs/docs/hardware-platforms/cpu_server.mdx；宿主 lscpu",
+      "value": "x86_64 Intel Xeon，CPU 文档要求 Intel AMX，适用于第 4 代及更新 Xeon Scalable"
+    },
+    "recommended_image": {
+      "source": "docs/docs/hardware-platforms/cpu_server.mdx Pull from Docker Hub；docker/xeon.Dockerfile",
+      "value": "Tier 1 业务预构建镜像 lmsysorg/sglang:<版本>-xeon；无 Docker 时回退 Ubuntu 22.04 宿主等价环境（Dockerfile 的 Ubuntu 24.04 仅作依赖参考）"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/xeon.Dockerfile",
+      "value": [
+        {
+          "original": "FROM ubuntu:24.04；apt-get install ca-certificates git curl wget vim gcc g++ make libsqlite3-dev google-perftools libtbb-dev libnuma-dev numactl",
+          "target_equivalent": "Ubuntu 22.04 宿主等价安装/解包：ca-certificates git curl wget vim gcc g++ make libsqlite3-dev google-perftools libtbb-dev libnuma-dev numactl；缺少 root 时按文档依赖使用工作区 .deb 解包"
+        },
+        {
+          "original": "uv pip install .；cd sglang/kernels/aot；uv pip install .",
+          "target_equivalent": "uv pip install .；CPU AOT kernel 包 uv pip install ."
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md、docs/docs/hardware-platforms/cpu_server.mdx、python/pyproject_cpu.toml、python/sglang/kernels/aot/pyproject_cpu.toml",
+      "value": [
+        "uv",
+        "Python 3.12",
+        "CPU PyTorch/torchvision/torchaudio 索引",
+        "gcc/g++（文档推荐 13）",
+        "google-perftools/libtcmalloc.so.4",
+        "libtbbmalloc.so.2",
+        "libiomp5.so",
+        "libnuma-dev",
+        "numactl",
+        "SGLANG_USE_CPU_ENGINE=1"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/docs/hardware-platforms/cpu_server.mdx Install From Source",
+      "value": "cd python && cp pyproject_cpu.toml pyproject.toml && uv pip install --upgrade pip setuptools && uv pip install .；cd sglang/kernels/aot && cp pyproject_cpu.toml pyproject.toml && uv pip install ."
+    },
+    "build_entry": {
+      "source": "docs/docs/hardware-platforms/cpu_server.mdx",
+      "value": "主包安装与 CPU AOT kernel 安装均包含构建，按两个独立命令计时。"
+    },
+    "ut_commands": {
+      "source": "test/README.md；.github/workflows/pr-test-xeon.yml",
+      "value": "python3 test/run_suite.py --hw cpu --suite base-a-test-cpu（Xeon CI 另有 base-b-test-cpu；本次按轻量 CPU suite 入口执行/记录）"
+    },
+    "ut_entry": {
+      "source": "test/README.md",
+      "value": "测试框架支持 unittest/pytest；CPU CI suite 由 test/run_suite.py 按 --hw cpu 选择。"
+    },
+    "sample_commands": {
+      "source": "docs/docs/hardware-platforms/cpu_server.mdx Launch of the Serving Engine；docs/docs/basic_usage/send_request.mdx",
+      "value": "SGLANG_USE_CPU_ENGINE=1 sglang serve --model-path Qwen/Qwen2.5-0.5B-Instruct --device cpu；本次以官方 frontend language 的 sgl.Runtime 离线最小样例等价验证"
+    },
+    "special_dependencies": {
+      "source": "docs/docs/hardware-platforms/cpu_server.mdx",
+      "value": [
+        "uv.toml 将 torch/torchvision/torchaudio/triton 指向 download.pytorch.org CPU 索引",
+        "LD_LIBRARY_PATH 指向系统库目录",
+        "LD_PRELOAD 加载 libiomp5.so、libtcmalloc.so.4、libtbbmalloc.so.2",
+        "SGLANG_USE_CPU_ENGINE=1 必须设置",
+        "模型下载依赖 Hugging Face"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-14T06:46:39",
+      "step": "document_reading",
+      "action": "读取 README.md 并跟进 CPU Server、Quick Start、测试 README 与仓库内相关链接",
+      "result": "成功",
+      "details": {
+        "repo": "sglang",
+        "read_files": [
+          "README.md",
+          "docs/README.md",
+          "docs/docs/hardware-platforms/cpu_server.mdx",
+          "docs/docs/basic_usage/send_request.mdx",
+          "test/README.md",
+          "python/pyproject_cpu.toml",
+          "python/sglang/kernels/aot/pyproject_cpu.toml"
+        ],
+        "links_followed": "仓库内安装/测试/样例链接递归查看两层；外链仅查看 CPU 镜像、模型与 PyTorch 索引相关内容"
+      },
+      "command": "rg/sed 读取上述仓库文档并提取 CPU 依赖、构建、UT、样例命令",
+      "success": true,
+      "output": "确认 CPU Xeon Docker 优先、源码安装备选、CPU AOT kernel、CPU suite 与 Qwen 样例",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-14T06:46:39",
+      "step": "dockerfile_analysis",
+      "action": "分析 docker/xeon.Dockerfile 与 .devcontainer/Dockerfile",
+      "result": "成功",
+      "details": {
+        "from": [
+          "ubuntu:24.04",
+          "lmsysorg/sglang:dev"
+        ],
+        "dependency_groups": [
+          "系统库",
+          "uv 与 Python 3.12",
+          "SGLang 主包与 AOT kernel"
+        ]
+      },
+      "command": "rg -n '^FROM|apt-get install|uv pip install|SGLANG_USE_CPU|LD_PRELOAD' docker/xeon.Dockerfile .devcontainer/Dockerfile",
+      "success": true,
+      "output": "CPU Dockerfile 为 Ubuntu 24.04；devcontainer 继承 lmsysorg/sglang:dev 并请求 GPU",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-14T06:46:39",
+      "step": "document_reading",
+      "action": "检查 README 中的预构建镜像、CPU 架构与 NPU 信号",
+      "result": "成功",
+      "details": {
+        "prebuilt_image": "lmsysorg/sglang:<版本>-xeon",
+        "architecture": "x86_64 Intel AMX",
+        "npu_required": false
+      },
+      "command": "rg -n -i 'cpu|xeon|docker|AMX|SGLANG_USE_CPU_ENGINE|CANN|torch_npu|NPU' README.md docs/docs/hardware-platforms/cpu_server.mdx",
+      "success": true,
+      "output": "命中 lmsysorg/sglang xeon 镜像及 CPU 环境变量；本 CPU-only 路径不启用 GPU/NPU",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-14T12:45:00",
+      "step": "static_analysis_scan",
+      "action": "扫描 .pre-commit-config.yaml 与 lint-runner 配置",
+      "result": "成功",
+      "details": {
+        "pre_commit": true,
+        "hook_groups": [
+          "pre-commit-hooks",
+          "isort",
+          "ruff",
+          "black-jupyter",
+          "codespell",
+          "clang-format",
+          "nbstripout",
+          "Rust checks",
+          "CI checks",
+          "mint/lychee"
+        ],
+        "lint_runner": false,
+        "execution": "按 SKILL 未执行 hook"
+      },
+      "command": "test -f .pre-commit-config.yaml; rg -n '^\\s+- id:|^\\s+repo:' .pre-commit-config.yaml; find . -maxdepth 3 -iname '*lint*' -o -iname '.lint*'",
+      "success": true,
+      "output": "发现 .pre-commit-config.yaml；未发现 lint-runner 配置；未执行静态检查工具",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-14T12:45:00",
+      "step": "devcontainer_scan",
+      "action": "读取 SGLang .devcontainer/devcontainer.json 与 Dockerfile",
+      "result": "成功",
+      "details": {
+        "exists": true,
+        "config_files": [
+          ".devcontainer/devcontainer.json",
+          ".devcontainer/Dockerfile"
+        ],
+        "base_image": "lmsysorg/sglang:dev",
+        "run_args": [
+          "--gpus",
+          "all"
+        ],
+        "cpu_validation": "不使用 GPU/NPU"
+      },
+      "command": "find .devcontainer -maxdepth 2 -type f -exec sed -n '1,180p' {} \\;",
+      "success": true,
+      "output": "发现 devcontainer，基础镜像 lmsysorg/sglang:dev，配置含 --gpus all；CPU-only 验证不使用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-14T13:05:00",
+      "step": "image_selection",
+      "action": "尝试 Tier 1 拉取 SGLang Xeon CPU 预构建镜像",
+      "result": "失败",
+      "details": {
+        "tier": "Tier 1 业务预构建镜像",
+        "image": "lmsysorg/sglang:v0.5.17-xeon",
+        "fallback": "降级 Tier 2"
+      },
+      "command": "docker pull lmsysorg/sglang:v0.5.17-xeon",
+      "success": false,
+      "output": "docker: command not found",
+      "error": "宿主未安装 Docker",
+      "returncode": 127,
+      "duration_seconds": 0.1
+    },
+    {
+      "timestamp": "2026-08-14T13:05:00",
+      "step": "image_selection",
+      "action": "尝试 Tier 2 基于 SGLang Xeon Dockerfile 构建",
+      "result": "失败",
+      "details": {
+        "tier": "Tier 2 Dockerfile 构建",
+        "dockerfile": "docker/xeon.Dockerfile",
+        "fallback": "降级 Tier 3"
+      },
+      "command": "docker build -f docker/xeon.Dockerfile -t sglang-ttfhw .",
+      "success": false,
+      "output": "docker: command not found",
+      "error": "宿主未安装 Docker",
+      "returncode": 127,
+      "duration_seconds": 0.1
+    },
+    {
+      "timestamp": "2026-08-14T13:05:00",
+      "step": "container_setup",
+      "action": "按 Tier 3 回退并收集宿主等价环境规格",
+      "result": "部分成功",
+      "details": {
+        "container_started": false,
+        "host_equivalent": true,
+        "os": "Ubuntu 22.04.4 LTS",
+        "npu_required": false,
+        "npu_mounted": false
+      },
+      "command": "uname -m; nproc; grep -m1 '^model name' /proc/cpuinfo; free -h; df -h /public /tmp; command -v docker",
+      "success": true,
+      "output": "x86_64；128 核；Intel Xeon Gold 6430；1.0TiB；Docker 不存在；无 NPU",
+      "error": "无 Docker/root，未启动容器",
+      "returncode": 0,
+      "duration_seconds": 0.1
+    },
+    {
+      "timestamp": "2026-08-14T13:05:00",
+      "step": "dependency_installation",
+      "action": "验证 SGLang CPU 源码路径的宿主基础工具与 Python 环境入口",
+      "result": "成功",
+      "details": {
+        "tools": [
+          "python3",
+          "gcc",
+          "g++",
+          "cmake",
+          "git",
+          "curl",
+          "uv"
+        ],
+        "python": "3.13.12（官方源码命令另建 Python 3.12 venv）",
+        "system_lib_strategy": "无 root 时在工作区解包 google-perftools/libtbb .deb"
+      },
+      "command": "python3 --version; gcc --version; g++ --version; cmake --version; git --version; command -v uv",
+      "success": true,
+      "output": "Python 3.13.12；gcc/g++ 11.4；cmake 3.22.1；uv 可用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-14T13:05:00",
+      "step": "dependency_verification",
+      "action": "核对 SGLang CPU-only 限制与 NPU 设备状态",
+      "result": "成功",
+      "details": {
+        "gpu_npu_usage": "不使用",
+        "npu_devices": [],
+        "required_env": [
+          "SGLANG_USE_CPU_ENGINE=1",
+          "LD_LIBRARY_PATH",
+          "LD_PRELOAD"
+        ]
+      },
+      "command": "test ! -e /dev/davinci0; test ! -e /dev/davinci_manager; env | grep -E '^(CUDA|ASCEND|NPU)' || true",
+      "success": true,
+      "output": "未发现 NPU 设备；后续运行只设置 SGLANG CPU engine 环境变量",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-14T15:03:07",
+      "step": "build_attempt",
+      "action": "按 SGLang CPU 文档安装主包与 AOT CPU kernel 包",
+      "result": "主包和 CPU kernel 包均安装成功",
+      "details": {
+        "source": "docker/xeon.Dockerfile、docs/docs/hardware-platforms/cpu_server.mdx",
+        "main_duration_seconds": 74.832,
+        "kernel_duration_seconds": 36.302,
+        "artifacts": [
+          "sglang-cpu-0.5.17",
+          "sglang-kernel-cpu-0.4.5"
+        ]
+      },
+      "command": "cp pyproject_cpu.toml pyproject.toml && uv pip install . && cp sglang/kernels/aot/pyproject_cpu.toml sglang/kernels/aot/pyproject.toml && uv pip install .",
+      "success": true,
+      "output": "Installed sglang-cpu 0.5.17 and sglang-kernel-cpu 0.4.5 in the CPU venv.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 111.134
+    },
+    {
+      "timestamp": "2026-08-14T15:04:20",
+      "step": "sample_execution",
+      "action": "执行 SGLang CPU 文档对应的最小模型下载样例",
+      "result": "模型下载成功",
+      "details": {
+        "model": "Qwen/Qwen2.5-0.5B-Instruct",
+        "log": "/public/home/chens/hw/ttfhw-comparison/logs/sglang/smart-cold1-S6a-model-download.log"
+      },
+      "command": "/public/home/chens/hw/ttfhw-comparison/workspace/sglang/.venv/bin/python /public/home/chens/hw/ttfhw-comparison/workspace/sglang/probe_download.py",
+      "success": true,
+      "output": "Model download completed; elapsed about 34.236 seconds.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 34.236
+    },
+    {
+      "timestamp": "2026-08-14T15:05:00",
+      "step": "sample_execution",
+      "action": "执行 SGLang CPU hello_world.py 最小推理样例",
+      "result": "CPU engine 推理成功并生成回答",
+      "details": {
+        "log": "/public/home/chens/hw/ttfhw-comparison/logs/sglang/smart-cold1-S6-hello-world.log",
+        "device": "cpu",
+        "peak_rss": "850676 KB"
+      },
+      "command": "SGLANG_USE_CPU_ENGINE=1 LD_LIBRARY_PATH=/public/home/chens/hw/ttfhw-comparison/workspace/sglang/syslibs/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu LD_PRELOAD=/public/home/chens/hw/ttfhw-comparison/workspace/sglang/syslibs/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4:/usr/lib/libiomp5.so /public/home/chens/hw/ttfhw-comparison/workspace/sglang/.venv/bin/python /public/home/chens/hw/ttfhw-comparison/workspace/sglang/hello_world.py",
+      "success": true,
+      "output": "platform.device_name: cpu; answer: The capital of France is Paris.; HELLO WORLD OK (SGLang CPU engine); Exit status 0.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 80.393
+    },
+    {
+      "timestamp": "2026-08-14T15:15:00+08:00",
+      "step": "ut_execution",
+      "action": "首次执行 SGLang CPU 文档测试套件命令",
+      "result": "runner 未能导入 SGLang，首个文件前退出",
+      "details": {
+        "command_role": "官方命令；子 runner 内部调用 bare python3",
+        "error_type": "ModuleNotFoundError",
+        "error": "No module named sglang"
+      },
+      "command": "SGLANG_USE_CPU_ENGINE=1 LD_LIBRARY_PATH=/public/home/chens/hw/ttfhw-comparison/workspace/sglang/syslibs/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu LD_PRELOAD=/public/home/chens/hw/ttfhw-comparison/workspace/sglang/syslibs/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4:/usr/lib/libiomp5.so /public/home/chens/hw/ttfhw-comparison/workspace/sglang/.venv/bin/python test/run_suite.py --hw cpu --suite base-a-test-cpu",
+      "success": false,
+      "output": "ModuleNotFoundError: No module named sglang; run_suite.py 子进程使用系统 python3。",
+      "error": "ModuleNotFoundError: No module named sglang",
+      "returncode": 255,
+      "duration_seconds": 9.05
+    },
+    {
+      "timestamp": "2026-08-14T15:16:00+08:00",
+      "step": "dependency_verification",
+      "action": "修正 SGLang 官方 runner 的 Python 入口解析",
+      "result": "确认 venv 可导入 sglang，并将 venv/bin 放到 PATH 首位；未修改测试代码",
+      "details": {
+        "venv": "/public/home/chens/hw/ttfhw-comparison/workspace/sglang/.venv",
+        "python": "3.12.13",
+        "package": "sglang 0.5.17",
+        "reason": "test/run_suite.py 内部固定调用 python3"
+      },
+      "command": "PATH=/public/home/chens/hw/ttfhw-comparison/workspace/sglang/.venv/bin:$PATH python3 -c \"import sglang; print(sglang.__version__)\"",
+      "success": true,
+      "output": "sglang 0.5.17 可导入；PATH 修复用于官方 runner 子进程。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.1
+    },
+    {
+      "timestamp": "2026-08-14T15:27:25+08:00",
+      "step": "ut_execution",
+      "action": "使用 venv 优先 PATH 重跑官方 SGLang CPU 测试套件",
+      "result": "部分通过后遇到官方单文件超时；套件未继续后续文件",
+      "details": {
+        "suite": "base-a-test-cpu",
+        "enabled_files": 350,
+        "skipped_helper_files": 2,
+        "passed_files": 24,
+        "failed_files": 1,
+        "timeout_seconds": 1200,
+        "failed_test": "test/registered/unit/observability/test_request_metrics_exporter.py",
+        "summary": "Test Summary: 24/350 passed",
+        "log_source": "官方 runner stdout"
+      },
+      "command": "PATH=/public/home/chens/hw/ttfhw-comparison/workspace/sglang/.venv/bin:$PATH SGLANG_USE_CPU_ENGINE=1 LD_LIBRARY_PATH=/public/home/chens/hw/ttfhw-comparison/workspace/sglang/syslibs/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu LD_PRELOAD=/public/home/chens/hw/ttfhw-comparison/workspace/sglang/syslibs/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4:/usr/lib/libiomp5.so /usr/bin/time -v python3 test/run_suite.py --hw cpu --suite base-a-test-cpu",
+      "success": false,
+      "output": "Test Summary: 24/350 passed; test_request_metrics_exporter.py timeout after 1200s; exit status 255.",
+      "error": "官方 runner 单文件超时",
+      "returncode": 255,
+      "duration_seconds": 1442.99
+    },
+    {
+      "timestamp": "2026-08-14T15:36:37+08:00",
+      "step": "container_setup",
+      "action": "执行最终进程与容器清理检查",
+      "result": "官方 runner 已清理超时子进程；未发现残留 SGLang CPU 推理/测试进程；宿主无 Docker/Podman，未有远程容器需要停止",
+      "details": {
+        "process_check": "无匹配任务（排除检查命令自身）",
+        "docker": "未安装",
+        "podman": "未安装"
+      },
+      "command": "pgrep -af run_suite.py|test_request_metrics_exporter|hello_world.py|vllm.*offline|sglang.*serve；command -v docker；command -v podman",
+      "success": true,
+      "output": "未发现残留测试/样例进程；docker 与 podman 均不可用。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.1
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "已检测到根目录 .pre-commit-config.yaml，扫描出 pre-commit-hooks、isort、ruff、black、codespell、clang-format、nbstripout、Rust 格式/检查、CI 配置检查、文档链接检查等 hook；按 SKILL 仅扫描配置，未安装或执行。未检测到 .lint-runner.yaml、.lintrunner.toml 等 lint-runner 配置。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置；仅扫描，未执行",
+        "duration_seconds": 0
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        ".devcontainer/devcontainer.json",
+        ".devcontainer/Dockerfile"
+      ],
+      "original_base_image": "lmsysorg/sglang:dev（.devcontainer/Dockerfile）；CPU 专用 Dockerfile 为 ubuntu:24.04",
+      "used_image": "未使用（宿主无 Docker）",
+      "summary": "发现 devcontainer，引用 lmsysorg/sglang:dev 且 runArgs 请求 --gpus all；CPU-only 验证不启用 GPU，因无 Docker 也未启动。CPU 文档对应的 docker/xeon.Dockerfile FROM ubuntu:24.04。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 111.134,
+      "artifacts": [
+        {
+          "name": "sglang-cpu-0.5.17",
+          "path": "/public/home/chens/hw/ttfhw-comparison/workspace/sglang/.venv/lib/python3.12/site-packages/sglang",
+          "size": "85M",
+          "type": "已安装 Python CPU 包"
+        },
+        {
+          "name": "sglang-kernel-cpu-0.4.5 / sgl_kernel",
+          "path": "/public/home/chens/hw/ttfhw-comparison/workspace/sglang/.venv/lib/python3.12/site-packages/sgl_kernel",
+          "size": "4.2M",
+          "type": "已安装 AOT CPU kernel 包"
+        }
+      ],
+      "cmake": "3.22.1（CPU Dockerfile 未实际启动；宿主等价环境）",
+      "compiler": "gcc/g++ 11.4.0（官方 CPU Dockerfile 推荐 gcc-13/g++-13；本次实测通过）",
+      "concurrency": 25,
+      "concurrency_ratio": "宿主 128 核的 20%，向下取整为 25",
+      "notes": "按 CPU 文档复制 pyproject_cpu.toml 后分别安装 sglang 主包与 AOT CPU kernel 包；S4a 主包 74.832 秒、S4b kernel 包 36.302 秒，构建/安装不可分离。"
+    },
+    "ut": {
+      "status": "partial_success",
+      "duration_seconds": 1442.99,
+      "total": 350,
+      "passed": 24,
+      "failed": 1,
+      "skipped": 2,
+      "cpp": {
+        "status": "not_run",
+        "total": 0,
+        "passed": 0,
+        "failed": 0,
+        "note": "base-a-test-cpu 为 Python 注册文件套件，未执行独立 C/C++ 测试。"
+      },
+      "python": {
+        "status": "partial_success",
+        "total": 350,
+        "passed": 24,
+        "failed": 1,
+        "modules": [
+          {
+            "module": "test/run_suite.py --hw cpu --suite base-a-test-cpu",
+            "enabled_files": 350,
+            "passed_files": 24,
+            "failed_files": 1,
+            "skipped_helper_files": 2
+          }
+        ]
+      },
+      "failures": [
+        {
+          "test_name": "test/registered/unit/observability/test_request_metrics_exporter.py",
+          "error": "官方 runner 单文件运行 1200 秒后超时；suite 汇总为 24/350 passed，runner exit status 255。"
+        }
+      ]
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 114.629,
+      "results": [
+        {
+          "sample_name": "Qwen/Qwen2.5-0.5B-Instruct 模型下载",
+          "execution_status": "success",
+          "output_summary": "模型下载完成；日志记录下载约 34.236 秒。",
+          "execution_time": "34.236s"
+        },
+        {
+          "sample_name": "SGLang CPU hello_world.py",
+          "execution_status": "success",
+          "output_summary": "日志出现 platform.device_name: cpu、runtime_init_seconds: 56.9、answer 输出与 HELLO WORLD OK (SGLang CPU engine)；进程退出码 0。",
+          "execution_time": "80.393s"
+        }
+      ],
+      "reason": "官方 CPU 最小样例成功；包含模型下载与 SGLang CPU engine 推理。"
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-14T15:03:07+08:00",
+      "title": "CPU 文档依赖与 Ubuntu 22.04 系统库名称存在可执行性差异",
+      "body": "CPU 文档/Dockerfile 说明需要 libtbbmalloc.so.2、libtcmalloc.so.4 与 libiomp5.so；实际 Ubuntu 22.04 宿主未提供 libtbbmalloc.so.2，且 CPU Dockerfile 使用 Ubuntu 24.04。文档未说明在 Ubuntu 22.04 宿主等价回退时的库版本差异与替代提取方法。",
+      "source": "docs/docs/hardware-platforms/cpu_server.mdx；docker/xeon.Dockerfile；本次宿主环境验证"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-14T15:03:07+08:00",
+      "problem": "宿主无 Docker，Tier 1 预构建镜像拉取与 Tier 2 Dockerfile 构建均无法执行；同时 CPU 文档要求的 libtbbmalloc.so.2 在 Ubuntu 22.04 宿主中不存在。",
+      "solution": "按 SKILL 降级到 Tier 3 宿主等价环境；从 Ubuntu 包仓库提取可用的 libtcmalloc.so.4/libtbb.so.2，并在 LD_LIBRARY_PATH/LD_PRELOAD 中使用实际可用库。",
+      "source": "docker/xeon.Dockerfile；docs/docs/hardware-platforms/cpu_server.mdx；logs/sglang/smart-cold1-S2-syslibs.log"
+    },
+    {
+      "timestamp": "2026-08-14T15:16:00+08:00",
+      "problem": "首次按文档命令运行 test/run_suite.py 时，runner 子进程使用系统 python3，报 ModuleNotFoundError: No module named sglang。",
+      "solution": "保留文档命令和官方 runner，仅将 CPU venv 的 bin 目录置于 PATH 首位，使 runner 的 python3 解析到已安装 SGLang 的 Python 3.12 环境；随后套件正常开始执行。",
+      "source": "test/run_suite.py；首次 UT 命令返回 255；PATH 修复后的命令日志"
+    },
+    {
+      "timestamp": "2026-08-14T15:27:25+08:00",
+      "problem": "test_request_metrics_exporter.py 在官方 runner 中运行超过 1200 秒，最终被 runner 清理并记为超时；此前输出出现 metrics file handler 的 disk/permission 日志。",
+      "solution": "按官方 runner 默认单文件超时等待并记录为真实失败；未修改测试代码或绕过该文件。",
+      "source": "test/run_suite.py；官方套件最终输出 Test Summary: 24/350 passed"
+    }
+  ]
+}

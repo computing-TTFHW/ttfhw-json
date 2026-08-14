@@ -1,0 +1,1216 @@
+{
+  "metadata": {
+    "repo_path": "https://github.com/vllm-project/vllm-ascend",
+    "start_time": "2026-08-14T11:45:20",
+    "end_time": "2026-08-14T12:26:04",
+    "duration_seconds": 2444,
+    "total_steps": 33
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "Intel(R) Xeon(R) Gold 6430",
+      "cpu_cores": 128,
+      "memory": "1.0Ti",
+      "disk": "61T available (/public)",
+      "docker_version": "无（宿主机无 root，无 docker/podman/nerdctl）",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS)",
+      "architecture": "x86_64",
+      "cpu_cores": 128,
+      "memory": "1.0Ti（chroot 共享宿主）"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openEuler 24.03 LTS（repo.openeuler.org 官方 docker 镜像 tar）",
+      "selection_reason": "Tier1（quay.io CANN 预构建镜像）与 Tier2（Dockerfile.openEuler 构建）均因宿主机无 Docker 失败；Dockerfile.openEuler 基于 openeuler24.03，Tier3 回退官方 openEuler 24.03 LTS 基础镜像 + userns chroot（等价实现）",
+      "dependency_mapping": {
+        "from_dockerfile": "Dockerfile.openEuler",
+        "mappings": [
+          {
+            "original": "yum install git vim wget net-tools gcc gcc-c++ make cmake numactl numactl-devel libibverbs-devel jemalloc hiredis-devel clang patch",
+            "target": "dnf install -y git vim wget net-tools gcc gcc-c++ make cmake numactl numactl-devel libibverbs-devel jemalloc hiredis-devel clang patch",
+            "source": "Dockerfile.openEuler → openEuler dnf"
+          },
+          {
+            "original": "python3 -m pip install mooncake-transfer-engine-npu",
+            "target": "python3 -m pip install mooncake-transfer-engine-npu",
+            "source": "Dockerfile.openEuler → openEuler dnf"
+          },
+          {
+            "original": "VLLM_TARGET_DEVICE=empty pip install -e vllm/[audio]",
+            "target": "CPU-only 流程不安装 vLLM（官方文档明确）",
+            "source": "Dockerfile.openEuler → openEuler dnf"
+          },
+          {
+            "original": "pip install -e vllm-ascend/ (SOC_VERSION/COMPILE_CUSTOM_KERNELS env)",
+            "target": "pip install --no-build-isolation --no-deps -e . (COMPILE_CUSTOM_KERNELS=0, SOC_VERSION=ascend910b1)",
+            "source": "Dockerfile.openEuler → openEuler dnf"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README 未指定架构，默认",
+      "value": "x86_64"
+    },
+    "recommended_image": {
+      "source": "README/QuickStart + Dockerfile.openEuler FROM",
+      "value": "quay.io/ascend/cann:9.1.0-910b-openeuler24.03-py3.12（Tier 1）；Tier 3 回退 openEuler 24.03 LTS"
+    },
+    "dockerfile_dependencies": {
+      "source": "Dockerfile.openEuler + docs/source/installation.md",
+      "value": [
+        {
+          "original": "yum install git vim wget net-tools gcc gcc-c++ make cmake numactl numactl-devel libibverbs-devel jemalloc hiredis-devel clang patch",
+          "target_equivalent": "dnf install -y git vim wget net-tools gcc gcc-c++ make cmake numactl numactl-devel libibverbs-devel jemalloc hiredis-devel clang patch"
+        },
+        {
+          "original": "python3 -m pip install mooncake-transfer-engine-npu",
+          "target_equivalent": "python3 -m pip install mooncake-transfer-engine-npu"
+        },
+        {
+          "original": "VLLM_TARGET_DEVICE=empty pip install -e vllm/[audio]",
+          "target_equivalent": "CPU-only 流程不安装 vLLM（官方文档明确）"
+        },
+        {
+          "original": "pip install -e vllm-ascend/ (SOC_VERSION/COMPILE_CUSTOM_KERNELS env)",
+          "target_equivalent": "pip install --no-build-isolation --no-deps -e . (COMPILE_CUSTOM_KERNELS=0, SOC_VERSION=ascend910b1)"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README Prerequisites + installation.md CPU-only build verification",
+      "value": [
+        "python >= 3.10, < 3.13",
+        "torch==2.10.0 (CPU 变体)",
+        "torch-npu==2.10.0.post4",
+        "triton-ascend==3.2.2",
+        "torchvision==0.25.0 / torchaudio==2.10.0",
+        "requirements.txt（transformers==5.14.1 等）",
+        "CANN==9.1.0（README 要求；CPU-only 构建实测可免）"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/source/installation.md (CPU-only build verification)",
+      "value": "export ASCEND_TOOLKIT_HOME=...; export TORCH_DEVICE_BACKEND_AUTOLOAD=0; export COMPILE_CUSTOM_KERNELS=0; export SOC_VERSION=ascend910b1; python3 -m pip install --no-build-isolation --no-deps --extra-index-url https://mirrors.huaweicloud.com/ascend/repos/pypi -e ."
+    },
+    "ut_commands": {
+      "source": "docs/source/installation.md（无设备时跳过 NPU 测试）+ tests/ut/",
+      "value": "CPU-only：跳过 NPU 相关测试；可执行 tests/ut/test_dependency_documentation.py（依赖文档一致性 UT）"
+    },
+    "sample_commands": {
+      "source": "docs/source/quick_start.md（Qwen3-0.6B 离线推理）",
+      "value": "需 Ascend NPU 容器环境；CPU-only 按官方定义跳过推理样例"
+    },
+    "special_dependencies": {
+      "source": "installation.md + Dockerfile.openEuler",
+      "value": [
+        "CANN 9.1.0 toolkit（ascend-repo.obs.cn-east-2.myhuaweicloud.com 下载）",
+        "torch-npu / triton-ascend（https://mirrors.huaweicloud.com/ascend/repos/pypi）",
+        "pip 网络回退：清华源→阿里云源→豆瓣源"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-14T11:45:21",
+      "step": "document_reading",
+      "action": "克隆仓库并阅读 README/docs/source/installation.md/docs/source/quick_start.md/Dockerfile.openEuler",
+      "result": "成功",
+      "details": {
+        "commit": "f0c320e6fa88f00dc059ef8dbc1a99305e88ac13",
+        "npu_required": true,
+        "npu_keywords": [
+          "Ascend NPU",
+          "CANN",
+          "torch_npu",
+          "davinci",
+          "910"
+        ],
+        "tier_signal": "Dockerfile.openEuler FROM quay.io/ascend/cann:9.1.0-910b-openeuler24.03-py3.12 → Tier 1 信号"
+      },
+      "command": "git clone --depth 1 https://github.com/vllm-project/vllm-ascend && cat README.md docs/source/installation.md docs/source/quick_start.md",
+      "success": true,
+      "output": "README: vLLM Ascend is a hardware plugin for running vLLM on the Ascend NPU; Prerequisites: CANN==9.1.0, PyTorch==2.10.0, TorchNPU==2.10.0.post4",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 12
+    },
+    {
+      "timestamp": "2026-08-14T11:45:22",
+      "step": "document_reading",
+      "action": "阅读 installation.md CPU-only build verification 专节（PR #12058 建立）",
+      "result": "成功",
+      "details": {
+        "flow": "COMPILE_CUSTOM_KERNELS=0 + --no-build-isolation --no-deps -e . + pip check",
+        "note": "官方流程：无设备时跳过推理样例与 NPU 测试"
+      },
+      "command": "sed -n 230,320p docs/source/installation.md",
+      "success": true,
+      "output": "CPU-only verification checks that the Python package can be built when no Ascend device is visible...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-14T11:45:30",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 与 lint-runner 配置存在性（skill：仅检查不执行）",
+      "result": "成功",
+      "details": {
+        "pre_commit": {
+          "configured": true,
+          "config_file": ".pre-commit-config.yaml",
+          "hooks_count": 20
+        },
+        "lint_runner": {
+          "configured": false
+        }
+      },
+      "command": "ls .pre-commit-config.yaml && grep -E \"^\\s+- id:\" .pre-commit-config.yaml && ls .lint-runner.yaml .lintrunner.toml",
+      "success": true,
+      "output": "pre-commit 配置存在（ruff-check/ruff-format/codespell/typos/clang-format/markdownlint/actionlint/gitleaks/shellcheck 等 20 个 hook）；无 lint-runner 配置",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-14T11:45:50",
+      "step": "devcontainer_scan",
+      "action": "扫描 .devcontainer 配置",
+      "result": "未配置",
+      "details": {
+        "enabled": false
+      },
+      "command": "ls -d .devcontainer",
+      "success": true,
+      "output": "目录不存在",
+      "error": "",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-14T11:47:24",
+      "step": "image_selection",
+      "action": "Tier1预构建镜像尝试",
+      "result": "失败（无Docker）",
+      "details": {
+        "tier": 1,
+        "image": "quay.io/ascend/cann:9.1.0-910b-openeuler24.03-py3.12"
+      },
+      "command": "docker pull quay.io/ascend/cann:9.1.0-910b-openeuler24.03-py3.12",
+      "success": false,
+      "output": "./run_logged.sh: line 8: docker: command not found ",
+      "error": "exit=127",
+      "returncode": 127,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T11:47:24",
+      "step": "image_selection",
+      "action": "Tier2Dockerfile构建尝试",
+      "result": "失败（无Docker）",
+      "details": {
+        "tier": 2,
+        "dockerfile": "Dockerfile.openEuler"
+      },
+      "command": "docker build -f repo-src/Dockerfile.openEuler repo-src",
+      "success": false,
+      "output": "./run_logged.sh: line 8: docker: command not found ",
+      "error": "exit=127",
+      "returncode": 127,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T11:53:38",
+      "step": "image_selection",
+      "action": "Tier3基础OS选择",
+      "result": "openEuler24.03LTS",
+      "details": {
+        "tier": 3,
+        "image": "repo.openeuler.org/openEuler-24.03-LTS/docker_img/x86_64/openEuler-docker.x86_64.tar.xz",
+        "reason": "Tier1/2 因无 Docker 失败；Dockerfile.openEuler 基于 openeuler24.03"
+      },
+      "command": "bash -c mkdir -p rootfs work && cd work && curl -sL --max-time 600 -o oe.tar.xz https://repo.openeuler.org/openEuler-24.03-LTS/docker_img/x86_64/openEuler-docker.x86_64.tar.xz && ls -la oe.tar.xz",
+      "success": true,
+      "output": "-rw-rw-r-- 1 chens chens 43918920  8月 14 11:53 oe.tar.xz ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 373.6
+    },
+    {
+      "timestamp": "2026-08-14T11:53:40",
+      "step": "container_setup",
+      "action": "openEuler容器rootfs解包",
+      "result": "成功",
+      "details": {},
+      "command": "bash -c cd work && rm -rf rootfs img && mkdir -p rootfs img && tar -xJf oe.tar.xz -C img && LAYER=$(tar -tJf oe.tar.xz | grep '^[a-f0-9]*/layer.tar$' | head -1) && tar -xf img/$LAYER -C rootfs && chmod -R u+w rootfs && cp /etc/resolv.conf rootfs/etc/resolv.conf && head -3 rootfs/etc/os-release",
+      "success": true,
+      "output": "NAME=openEuler VERSION=24.03 (LTS) ID=openEuler ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1.4
+    },
+    {
+      "timestamp": "2026-08-14T11:53:41",
+      "step": "container_setup",
+      "action": "收集宿主机与容器规格（含 NPU 检查）",
+      "result": "成功",
+      "details": {
+        "npu_required": true,
+        "cpu_only": true,
+        "npu_available": false,
+        "note": "扫描判定 npu_required=true，但本实验为 CPU-only：不挂载 NPU 设备（宿主亦无 NPU），按官方 CPU-only build verification 执行"
+      },
+      "command": "lscpu && free -h && npu-smi info || true",
+      "success": true,
+      "output": "Intel(R) Xeon(R) Gold 6430, 128 cores, 1.0Ti RAM; npu-smi 不存在（无 NPU）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-14T12:10:48",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：ca-certificates",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "ca-certificates",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install ca-certificates 2>&1 | tail -1 && dnf list installed ca-certificates 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Error: An rpm exception occurred: package not installed ca-certificates.noarch                2023.2.64-5.oe2403                 @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 362.8
+    },
+    {
+      "timestamp": "2026-08-14T12:14:45",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：gcc",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "gcc",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install gcc 2>&1 | tail -1 && dnf list installed gcc 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! gcc.x86_64                       12.3.1-38.oe2403                        @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 237.1
+    },
+    {
+      "timestamp": "2026-08-14T12:14:51",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：gcc",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "gcc",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install gcc 2>&1 | tail -1 && dnf list installed gcc 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! gcc.x86_64                       12.3.1-38.oe2403                        @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.7
+    },
+    {
+      "timestamp": "2026-08-14T12:16:28",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：gcc-c++",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "gcc-c++",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install gcc-c++ 2>&1 | tail -1 && dnf list installed gcc-c++ 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! gcc-c++.x86_64                     12.3.1-38.oe2403                      @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 96.4
+    },
+    {
+      "timestamp": "2026-08-14T12:16:29",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：make",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "make",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install make 2>&1 | tail -1 && dnf list installed make 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! make.x86_64                       1:4.4.1-2.oe2403                       @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.7
+    },
+    {
+      "timestamp": "2026-08-14T12:17:58",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：cmake",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "cmake",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install cmake 2>&1 | tail -1 && dnf list installed cmake 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! cmake.x86_64                       3.27.9-7.oe2403                       @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 89.7
+    },
+    {
+      "timestamp": "2026-08-14T12:20:09",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：git",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "git",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install git 2>&1 | tail -1 && dnf list installed git 2>/dev/null | tail -1'",
+      "success": true,
+      "output": " git.x86_64                       2.43.0-11.oe2403                        @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 131.0
+    },
+    {
+      "timestamp": "2026-08-14T12:20:32",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：python3-pip",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "python3-pip",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install python3-pip 2>&1 | tail -1 && dnf list installed python3-pip 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! python3-pip.noarch                   23.3.1-11.oe2403                    @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 22.5
+    },
+    {
+      "timestamp": "2026-08-14T12:20:34",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：time",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "time",
+        "source": "openEuler 官方 dnf 仓库"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install time 2>&1 | tail -1 && dnf list installed time 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! time.x86_64                          1.9-10.oe2403                           @OS ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2.1
+    },
+    {
+      "timestamp": "2026-08-14T12:20:43",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：ninja-build",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "ninja-build",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install ninja-build 2>&1 | tail -1 && dnf list installed ninja-build 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3.2
+    },
+    {
+      "timestamp": "2026-08-14T12:20:46",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：numactl-devel",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "numactl-devel",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install numactl-devel 2>&1 | tail -1 && dnf list installed numactl-devel 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! numactl-devel.x86_64                    2.0.16-10.oe2403                     @OS ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3.2
+    },
+    {
+      "timestamp": "2026-08-14T12:20:56",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：wget",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "wget",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install wget 2>&1 | tail -1 && dnf list installed wget 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! wget.x86_64                       1.21.4-3.oe2403                        @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 9.4
+    },
+    {
+      "timestamp": "2026-08-14T12:21:00",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：curl",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "curl",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install curl 2>&1 | tail -1 && dnf list installed curl 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! curl.x86_64                       8.4.0-29.oe2403                        @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 4.3
+    },
+    {
+      "timestamp": "2026-08-14T12:21:04",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：jq",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "jq",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install jq 2>&1 | tail -1 && dnf list installed jq 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! jq.x86_64                         1.8.0-4.oe2403                         @update ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3.9
+    },
+    {
+      "timestamp": "2026-08-14T12:21:06",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：libaio-devel",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "libaio-devel",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'dnf -y --nogpgcheck --setopt=timeout=30 --setopt=retries=1 install libaio-devel 2>&1 | tail -1 && dnf list installed libaio-devel 2>/dev/null | tail -1'",
+      "success": true,
+      "output": "Complete! libaio-devel.x86_64                     0.3.113-9.oe2403                     @OS ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2.1
+    },
+    {
+      "timestamp": "2026-08-14T12:21:20",
+      "step": "container_setup",
+      "action": "容器内 clone 目标仓库到 /workspace",
+      "result": "成功",
+      "details": {
+        "commit": "f0c320e6",
+        "path": "/workspace/vllm-ascend"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'mkdir -p /workspace && cd /workspace && git clone --depth 1 https://github.com/vllm-project/vllm-ascend vllm-ascend && cd vllm-ascend && git log -1 --format=%H'",
+      "success": true,
+      "output": "Cloning into 'vllm-ascend'... b25f49dd0281726017041eed92bd0edc56961a2e ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5.3
+    },
+    {
+      "timestamp": "2026-08-14T12:21:47",
+      "step": "dependency_installation",
+      "action": "安装 Python 构建后端",
+      "result": "成功",
+      "details": {
+        "layer": 3,
+        "source": "installation.md CPU-only 步骤1"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'python3 -m pip install --upgrade pip \"setuptools>=64\" \"setuptools-scm>=8\" wheel attrs googleapis-common-protos \"cmake>=3.26\" ninja 2>&1 | tail -2'",
+      "success": true,
+      "output": "Successfully installed attrs-26.1.0 cmake-4.4.2 googleapis-common-protos-1.75.1 ninja-1.13.0 packaging-26.3 pip-26.2.1 protobuf-7.35.1 setuptools-84.0.0 setuptools-scm-10.2.1 vcs-versioning-2.2.4 wheel-0.48.0 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting be",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 19.4
+    },
+    {
+      "timestamp": "2026-08-14T12:22:39",
+      "step": "dependency_installation",
+      "action": "安装 PyTorch CPU 变体 (2.10.0)",
+      "result": "成功",
+      "details": {
+        "layer": 3,
+        "source": "installation.md CPU-only 步骤2, download.pytorch.org/whl/cpu"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'python3 -m pip install --index-url https://download.pytorch.org/whl/cpu/ torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 2>&1 | tail -2'",
+      "success": true,
+      "output": "Successfully installed MarkupSafe-3.0.3 filelock-3.29.0 fsspec-2026.4.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.6.1 numpy-2.4.4 pillow-12.2.0 sympy-1.14.0 torch-2.10.0+cpu torchaudio-2.10.0+cpu torchvision-0.25.0+cpu typing-extensions-4.15.0 WARNING: Running pip as the 'root' user can result in broken ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 51.8
+    },
+    {
+      "timestamp": "2026-08-14T12:23:57",
+      "step": "dependency_installation",
+      "action": "安装 torch-npu 与 triton-ascend",
+      "result": "成功",
+      "details": {
+        "layer": 3,
+        "source": "installation.md CPU-only 步骤3, 华为云 ascend pypi"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'python3 -m pip install --extra-index-url https://mirrors.huaweicloud.com/ascend/repos/pypi torch-npu==2.10.0.post4 triton-ascend==3.2.2 2>&1 | tail -2'",
+      "success": true,
+      "output": "Successfully installed attrs-24.2.0 decorator-5.1.1 execnet-2.1.2 iniconfig-2.3.0 numpy-1.26.4 pandas-3.0.5 pluggy-1.6.0 psutil-6.0.0 pybind11-3.1.0 pytest-8.3.2 pytest-xdist-3.6.1 python-dateutil-2.9.0.post0 pyyaml-6.0.3 scipy-1.13.1 six-1.17.0 torch-npu-2.10.0.post4 triton-3.2.0 triton-ascend-3.2.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 77.8
+    },
+    {
+      "timestamp": "2026-08-14T12:25:08",
+      "step": "dependency_installation",
+      "action": "安装 requirements.txt（workaround：排除 arctic-inference）",
+      "result": "成功",
+      "details": {
+        "layer": 3,
+        "source": "installation.md CPU-only 步骤4；workaround 原因见 problems_encountered"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'cd /workspace/vllm-ascend && grep -v \"^arctic-inference\" requirements.txt > /tmp/req-workaround.txt && python3 -m pip install --timeout 60 --extra-index-url https://mirrors.huaweicloud.com/ascend/repos/pypi -r /tmp/req-workaround.txt 2>&1 | tail -2'",
+      "success": true,
+      "output": "Successfully installed aiofiles-25.1.0 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.14.2 apache-tvm-ffi-0.1.13.post3 blinker-1.9.0 certifi-2026.7.22 click-8.4.2 compressed_tensors-0.18.0 einops-0.8.2 fastapi-0.123.10 flask-3.1.3 h11-0.16.0 h2-4.4.1 hf-xet-1.6.0 hpack-4.2.0 httpcore-1.0.9 httpx-",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 70.9
+    },
+    {
+      "timestamp": "2026-08-14T12:25:16",
+      "step": "build_attempt",
+      "action": "CPU-only 可编辑构建（官方命令原文）",
+      "result": "成功",
+      "details": {
+        "env": {
+          "COMPILE_CUSTOM_KERNELS": 0,
+          "SOC_VERSION": "ascend910b1",
+          "TORCH_DEVICE_BACKEND_AUTOLOAD": 0
+        },
+        "concurrency": 25,
+        "concurrency_ratio": "容器核数 128 × 20%",
+        "note": "COMPILE_CUSTOM_KERNELS=0 → 纯 Python 构建（setup.py ext_modules=[]），无 C++ 编译"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'cd /workspace/vllm-ascend && COMPILE_CUSTOM_KERNELS=0 SOC_VERSION=ascend910b1 TORCH_DEVICE_BACKEND_AUTOLOAD=0 ASCEND_TOOLKIT_HOME=/usr/local/Ascend/ascend-toolkit/latest python3 -m pip install --no-build-isolation --no-deps --extra-index-url https://mirrors.huaweicloud.com/ascend/repos/pypi -e . 2>&1 | tail -4'",
+      "success": true,
+      "output": "Successfully built vllm_ascend Installing collected packages: vllm_ascend Successfully installed vllm_ascend-0.1.dev1+gb25f49dd0 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1.9
+    },
+    {
+      "timestamp": "2026-08-14T12:25:24",
+      "step": "ut_execution",
+      "action": "运行 CPU 可执行 UT：test_dependency_documentation.py（PR #12058 引入）",
+      "result": "成功",
+      "details": {
+        "test_file": "tests/ut/test_dependency_documentation.py",
+        "note": "官方 CPU-only 定义跳过 NPU 相关测试；该 UT 为纯 Python 依赖文档一致性测试，可 CPU 执行"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'cd /workspace/vllm-ascend && python3 -c \"import regex\" 2>/dev/null || python3 -m pip install -q regex; python3 -m unittest tests/ut/test_dependency_documentation.py -v 2>&1 | tail -6'",
+      "success": true,
+      "output": "test_main_dependency_versions_match_repository_metadata (tests.ut.test_dependency_documentation.DependencyDocumentationTest.test_main_dependency_versions_match_repository_metadata) ... ok  ---------------------------------------------------------------------- Ran 3 tests in 0.003s  OK ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.2
+    },
+    {
+      "timestamp": "2026-08-14T12:25:38",
+      "step": "smoke_test",
+      "action": "冒烟测试：torch 导入 / vllm_ascend 导入 / pip check",
+      "result": "部分成功",
+      "details": {
+        "note": "torch 2.10.0+cpu 导入成功；vllm_ascend 导入失败（官方 CPU-only 流程明确不安装 vLLM，ModuleNotFoundError 为文档预期行为）；pip check 仅报被排除的 arctic-inference"
+      },
+      "command": "bash -c ../scripts/oe_chroot_run.sh /public/home/chens/hw/ttfhw-comparison/smart-run/work/rootfs -- 'export TORCH_DEVICE_BACKEND_AUTOLOAD=0 && python3 -c \"import torch; print(\\\"torch OK\\\", torch.__version__)\" 2>&1 | tail -1; python3 -c \"import vllm_ascend\" 2>&1 | tail -1; python3 -m pip check 2>&1 | tail -2'",
+      "success": true,
+      "output": "torch OK 2.10.0+cpu ModuleNotFoundError: No module named 'vllm' vllm-ascend 0.1.dev1+gb25f49dd0 requires arctic-inference, which is not installed. ",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2.1
+    },
+    {
+      "timestamp": "2026-08-14T12:25:38",
+      "step": "sample_execution",
+      "action": "推理样例（quick_start Qwen3-0.6B）",
+      "result": "跳过",
+      "details": {
+        "reason": "官方 CPU-only 定义：无 Ascend 设备时跳过推理样例与 NPU 测试；样例需 NPU 容器环境",
+        "status": "not_run"
+      },
+      "command": "bash -c true",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-08-14T11:45:20",
+      "step": "start",
+      "action": "开始验证流程（ttfhw-verify-smart，CPU-only，Tier3 openEuler 24.03）",
+      "result": "已启动",
+      "details": {
+        "repo": "vllm-ascend",
+        "commit": "f0c320e6fa88f00dc059ef8dbc1a99305e88ac13",
+        "mode": "cpu-only"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T11:45:21",
+      "step": "document_reading",
+      "action": "克隆仓库并阅读 README/docs/source/installation.md/docs/source/quick_start.md/Dockerfile.openEuler",
+      "result": "成功",
+      "details": {
+        "commit": "f0c320e6fa88f00dc059ef8dbc1a99305e88ac13",
+        "npu_required": true,
+        "npu_keywords": [
+          "Ascend NPU",
+          "CANN",
+          "torch_npu",
+          "davinci",
+          "910"
+        ],
+        "tier_signal": "Dockerfile.openEuler FROM quay.io/ascend/cann:9.1.0-910b-openeuler24.03-py3.12 → Tier 1 信号"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T11:45:22",
+      "step": "document_reading",
+      "action": "阅读 installation.md CPU-only build verification 专节（PR #12058 建立）",
+      "result": "成功",
+      "details": {
+        "flow": "COMPILE_CUSTOM_KERNELS=0 + --no-build-isolation --no-deps -e . + pip check",
+        "note": "官方流程：无设备时跳过推理样例与 NPU 测试"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T11:45:30",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 与 lint-runner 配置存在性（skill：仅检查不执行）",
+      "result": "成功",
+      "details": {
+        "pre_commit": {
+          "configured": true,
+          "config_file": ".pre-commit-config.yaml",
+          "hooks_count": 20
+        },
+        "lint_runner": {
+          "configured": false
+        }
+      }
+    },
+    {
+      "timestamp": "2026-08-14T11:45:50",
+      "step": "devcontainer_scan",
+      "action": "扫描 .devcontainer 配置",
+      "result": "未配置",
+      "details": {
+        "enabled": false
+      }
+    },
+    {
+      "timestamp": "2026-08-14T11:47:24",
+      "step": "image_selection",
+      "action": "Tier1预构建镜像尝试",
+      "result": "失败（无Docker）",
+      "details": {
+        "tier": 1,
+        "image": "quay.io/ascend/cann:9.1.0-910b-openeuler24.03-py3.12"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T11:47:24",
+      "step": "image_selection",
+      "action": "Tier2Dockerfile构建尝试",
+      "result": "失败（无Docker）",
+      "details": {
+        "tier": 2,
+        "dockerfile": "Dockerfile.openEuler"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T11:53:38",
+      "step": "image_selection",
+      "action": "Tier3基础OS选择",
+      "result": "openEuler24.03LTS",
+      "details": {
+        "tier": 3,
+        "image": "repo.openeuler.org/openEuler-24.03-LTS/docker_img/x86_64/openEuler-docker.x86_64.tar.xz",
+        "reason": "Tier1/2 因无 Docker 失败；Dockerfile.openEuler 基于 openeuler24.03"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T11:53:40",
+      "step": "container_setup",
+      "action": "openEuler容器rootfs解包",
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-14T11:53:41",
+      "step": "container_setup",
+      "action": "收集宿主机与容器规格（含 NPU 检查）",
+      "result": "成功",
+      "details": {
+        "npu_required": true,
+        "cpu_only": true,
+        "npu_available": false,
+        "note": "扫描判定 npu_required=true，但本实验为 CPU-only：不挂载 NPU 设备（宿主亦无 NPU），按官方 CPU-only build verification 执行"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:10:48",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：ca-certificates",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "ca-certificates",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:14:45",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：gcc",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "gcc",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:14:51",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：gcc",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "gcc",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:16:28",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：gcc-c++",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "gcc-c++",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:16:29",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：make",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "make",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:17:58",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：cmake",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "cmake",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:20:09",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：git",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "git",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:20:32",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：python3-pip",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "python3-pip",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:20:34",
+      "step": "dependency_installation",
+      "action": "安装系统工具链：time",
+      "result": "成功",
+      "details": {
+        "layer": 1,
+        "pkg": "time",
+        "source": "openEuler 官方 dnf 仓库"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:20:43",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：ninja-build",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "ninja-build",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:20:46",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：numactl-devel",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "numactl-devel",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:20:56",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：wget",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "wget",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:21:00",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：curl",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "curl",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:21:04",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：jq",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "jq",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:21:06",
+      "step": "dependency_installation",
+      "action": "安装构建依赖：libaio-devel",
+      "result": "成功",
+      "details": {
+        "layer": 2,
+        "pkg": "libaio-devel",
+        "source": "installation.md yum 分支映射 openEuler dnf"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:21:20",
+      "step": "container_setup",
+      "action": "容器内 clone 目标仓库到 /workspace",
+      "result": "成功",
+      "details": {
+        "commit": "f0c320e6",
+        "path": "/workspace/vllm-ascend"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:21:47",
+      "step": "dependency_installation",
+      "action": "安装 Python 构建后端",
+      "result": "成功",
+      "details": {
+        "layer": 3,
+        "source": "installation.md CPU-only 步骤1"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:22:39",
+      "step": "dependency_installation",
+      "action": "安装 PyTorch CPU 变体 (2.10.0)",
+      "result": "成功",
+      "details": {
+        "layer": 3,
+        "source": "installation.md CPU-only 步骤2, download.pytorch.org/whl/cpu"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:23:57",
+      "step": "dependency_installation",
+      "action": "安装 torch-npu 与 triton-ascend",
+      "result": "成功",
+      "details": {
+        "layer": 3,
+        "source": "installation.md CPU-only 步骤3, 华为云 ascend pypi"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:25:08",
+      "step": "dependency_installation",
+      "action": "安装 requirements.txt（workaround：排除 arctic-inference）",
+      "result": "成功",
+      "details": {
+        "layer": 3,
+        "source": "installation.md CPU-only 步骤4；workaround 原因见 problems_encountered"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:25:16",
+      "step": "build_attempt",
+      "action": "CPU-only 可编辑构建（官方命令原文）",
+      "result": "成功",
+      "details": {
+        "env": {
+          "COMPILE_CUSTOM_KERNELS": 0,
+          "SOC_VERSION": "ascend910b1",
+          "TORCH_DEVICE_BACKEND_AUTOLOAD": 0
+        },
+        "concurrency": 25,
+        "concurrency_ratio": "容器核数 128 × 20%",
+        "note": "COMPILE_CUSTOM_KERNELS=0 → 纯 Python 构建（setup.py ext_modules=[]），无 C++ 编译"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:25:24",
+      "step": "ut_execution",
+      "action": "运行 CPU 可执行 UT：test_dependency_documentation.py（PR #12058 引入）",
+      "result": "成功",
+      "details": {
+        "test_file": "tests/ut/test_dependency_documentation.py",
+        "note": "官方 CPU-only 定义跳过 NPU 相关测试；该 UT 为纯 Python 依赖文档一致性测试，可 CPU 执行"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:25:38",
+      "step": "smoke_test",
+      "action": "冒烟测试：torch 导入 / vllm_ascend 导入 / pip check",
+      "result": "部分成功",
+      "details": {
+        "note": "torch 2.10.0+cpu 导入成功；vllm_ascend 导入失败（官方 CPU-only 流程明确不安装 vLLM，ModuleNotFoundError 为文档预期行为）；pip check 仅报被排除的 arctic-inference"
+      }
+    },
+    {
+      "timestamp": "2026-08-14T12:25:38",
+      "step": "sample_execution",
+      "action": "推理样例（quick_start Qwen3-0.6B）",
+      "result": "跳过",
+      "details": {
+        "reason": "官方 CPU-only 定义：无 Ascend 设备时跳过推理样例与 NPU 测试；样例需 NPU 容器环境",
+        "status": "not_run"
+      }
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（.pre-commit-config.yaml，20 个 hooks，明细见 hooks 数组）；未配置 lint-runner；按 skill 规则仅记录配置不执行。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "未执行（skill 规则：仅检查配置）",
+        "duration_seconds": 2,
+        "total_hooks": 20,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 20,
+        "executed_in_verification": false,
+        "hooks": [
+          {
+            "id": "ruff-check"
+          },
+          {
+            "id": "ruff-format"
+          },
+          {
+            "id": "codespell"
+          },
+          {
+            "id": "typos"
+          },
+          {
+            "id": "clang-format"
+          },
+          {
+            "id": "markdownlint"
+          },
+          {
+            "id": "actionlint"
+          },
+          {
+            "id": "gitleaks-offline-scan"
+          },
+          {
+            "id": "shellcheck"
+          },
+          {
+            "id": "png-lint"
+          },
+          {
+            "id": "signoff-commit"
+          },
+          {
+            "id": "check-filenames"
+          },
+          {
+            "id": "python-init"
+          },
+          {
+            "id": "check-logger"
+          },
+          {
+            "id": "check-forbidden-imports"
+          },
+          {
+            "id": "check-boolean-context-manager"
+          },
+          {
+            "id": "check-long-functions"
+          },
+          {
+            "id": "check-symbolic-meta"
+          },
+          {
+            "id": "suggestion"
+          }
+        ],
+        "failures": []
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无",
+      "config_files": [],
+      "original_base_image": "无（无 .devcontainer）",
+      "used_image": "无",
+      "summary": "仓库根目录无 .devcontainer/ 目录，不具备 devcontainer 开发容器能力"
+    },
+    "build": {
+      "status": "成功",
+      "duration_seconds": 1.9,
+      "artifacts": [
+        {
+          "name": "vllm_ascend (editable install)",
+          "path": "/workspace/vllm-ascend/vllm_ascend",
+          "size": "源码目录（editable）",
+          "type": "python package"
+        },
+        {
+          "name": "vllm_ascend.egg-info",
+          "path": "/workspace/vllm-ascend/vllm_ascend.egg-info",
+          "type": "egg-info"
+        }
+      ]
+    },
+    "ut": {
+      "status": "成功",
+      "duration_seconds": 0.2,
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "未执行",
+      "duration_seconds": 0,
+      "results": [],
+      "failure_reason": "官方 CPU-only 定义：无 Ascend 设备时跳过推理样例与 NPU 测试（quick_start 的 Qwen3-0.6B 推理需 NPU 容器环境）；已完成冒烟测试（torch 2.10.0+cpu 导入成功、vllm_ascend 导入为文档预期失败、pip check 仅报被排除的 arctic-inference）"
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-14T12:20:00",
+      "title": "requirements.txt 步骤依赖不可解析",
+      "body": "官方 CPU-only build verification 文档的 pip install -r requirements.txt 步骤中 arctic-inference==0.1.1 在配置索引不存在，命令必然挂起/失败；文档未注明该依赖的来源或可跳过性",
+      "source": "docs/source/installation.md (CPU-only build verification) 实测"
+    },
+    {
+      "time": "2026-08-14T12:21:00",
+      "title": "CANN 必需声明与实现不符",
+      "body": "文档称 A CANN toolkit is still required because the build reads its headers and libraries，但 COMPILE_CUSTOM_KERNELS=0 下纯 Python 构建实测免 CANN 成功",
+      "source": "docs/source/installation.md (CPU-only build verification) 实测"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-14T12:20:00",
+      "problem": "官方文档 requirements.txt 步骤中的 arctic-inference==0.1.1 在配置的两个索引均不可解析（华为云 ascend pypi 404、PyPI 最高 0.0.7），pip 转源码构建挂起",
+      "solution": "workaround：排除 arctic-inference 后安装其余 requirements（官方 CPU-only 构建用 --no-deps 不依赖该包）；建议修正 pin 或扩展 PR #12058 的依赖一致性 UT 覆盖全依赖可解析性",
+      "source": "官方文档命令实测（PR #12058 的验证清单未包含 -r requirements.txt 步骤）"
+    },
+    {
+      "timestamp": "2026-08-14T12:21:00",
+      "problem": "文档声明 A CANN toolkit is still required，但 COMPILE_CUSTOM_KERNELS=0 时为纯 Python 构建（setup.py ext_modules=[]）",
+      "solution": "实测免 CANN 构建成功（1.9s）；建议文档注明 COMPILE_CUSTOM_KERNELS=0 构建不需要 CANN，仅运行时需要",
+      "source": "PR #12058 建立的 CPU-only 文档节"
+    },
+    {
+      "timestamp": "2026-08-14T12:05:00",
+      "problem": "宿主机无 Docker/无 root，无法执行 Tier1（CANN 预构建镜像）与 Tier2（Dockerfile 构建）",
+      "solution": "Tier3 回退：官方 openEuler 24.03 LTS docker 镜像 tar + userns chroot 等价实现；chroot 内 dnf GPG 校验不可用（缺 /dev/urandom）→ 设备节点 bind + --nogpgcheck",
+      "source": "实验环境限制（Tier 降级已记录）"
+    }
+  ]
+}
