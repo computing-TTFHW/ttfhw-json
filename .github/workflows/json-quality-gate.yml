@@ -23,19 +23,24 @@ jobs:
       # Step 1: Checkout base branch (main) to get TRUSTED validation scripts.
       # Scripts from base are safe — we never execute code from the PR.
       - name: Checkout base (trusted scripts)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.base_ref }}
           path: base
 
       # Step 2: Checkout PR head to get JSON files for validation.
       # Only JSON data is read from here; no scripts from PR are executed.
+      # allow-unsafe-pr-checkout is required because this workflow runs on
+      # pull_request_target; it is safe here since we only execute scripts
+      # from the base branch and read PR content as JSON data (never execute
+      # any code from the PR).
       - name: Checkout PR (JSON data)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           path: pr
+          allow-unsafe-pr-checkout: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
