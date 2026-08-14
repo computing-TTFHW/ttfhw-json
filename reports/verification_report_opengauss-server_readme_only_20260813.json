@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/opengauss/openGauss-server",
+    "branch": "master",
+    "commit": "7a39d3ac",
+    "version": "openGauss 7.0.0-RC3",
+    "start_time": "2026-08-13T14:20:00",
+    "end_time": "2026-08-13T14:33:00",
+    "duration_seconds": 780,
+    "total_steps": 4,
+    "environment": "openEuler 24.03 LTS-SP2 容器（aarch64），系统 cmake 3.19.5 + binarylibs gcc10.3.1，build.sh --cmake 方式",
+    "verifier": "opencode + ttfhw-verify-openeuler skill（纯 README 流程，不依赖任何过去经验）"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "1.0Ti",
+      "disk": "3.4T"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS-SP2",
+      "architecture": "aarch64"
+    }
+  },
+  "document_reading_summary": {
+    "entry_file": "README.md",
+    "sections_read": [
+      "操作系统和软件依赖要求（line 366-428）：列出支持 OS + 依赖表 + 安装命令",
+      "下载openGauss（line 430-561）：binarylibs 下载地址表",
+      "使用build.sh编译代码（line 581-623）：build.sh 用法和参数",
+      "使用命令编译代码 - make编译方式（line 629-707）",
+      "使用命令编译代码 - cmake编译方式（line 708-763）"
+    ],
+    "key_findings_from_readme": {
+      "line_384": "PS：在openEuler-24.03上编译openGauss 建议使用cmake版本为3.19",
+      "line_418": "yum install libaio-devel flex bison ...（系统依赖安装命令）",
+      "line_608": "sh build.sh -m [debug|release|memcheck] -3rd [binarylibs path]（build.sh 用法）",
+      "line_616": "sh build.sh -m debug -3rd /sda/binarylibs --cmake（加 --cmake 用 cmake 方式编译）",
+      "line_747": "cmake .. -DENABLE_MULTIPLE_NODES=OFF -DENABLE_THREAD_SAFETY=ON -DENABLE_READLINE=ON -DENABLE_MOT=ON -DENABLE_OPENEULER_MAJOR=ON（openEuler 24.03 的 cmake 命令）"
+    }
+  },
+  "build_process": {
+    "method": "build.sh --cmake（README line 608/616 推荐方式）",
+    "step_1_dependencies": {
+      "source": "README line 418",
+      "command": "dnf install -y libaio-devel flex bison ncurses-devel glibc-devel patch readline-devel libedit-devel libxml2-devel lz4-devel numactl-devel unixODBC-devel java-1.8.0-openjdk-devel openblas-devel which python3 binutils",
+      "result": "全部已安装"
+    },
+    "step_2_cmake_319": {
+      "source": "README line 384（建议 cmake 3.19）",
+      "version": "cmake 3.19.5（Kitware 二进制，已安装）"
+    },
+    "step_3_binarylibs": {
+      "source": "README line 436（下载后解压缩并重命名为 binarylibs）",
+      "path": "/tmp/opencode/ttfhw-og-latest/binarylibs",
+      "gcc_version": "10.3.1"
+    },
+    "step_4_build": {
+      "command": "sh build.sh -m release -3rd /tmp/opencode/ttfhw-og-latest/binarylibs --cmake",
+      "source": "README line 608 + line 616",
+      "result": "成功，输出 'now, all build has finished!'",
+      "install_dir": "mppdb_temp_install/（build.sh 内部安装目录）",
+      "build_dir_size": "1.6G"
+    },
+    "note_on_cmake_command_method": {
+      "description": "README 的 cmake 编译方式（line 708-763）手动设置环境变量时，LD_LIBRARY_PATH 包含 $GCCFOLDER/gcc/lib64（line 728），该路径下的 libstdc++.so.6 版本低于 cmake 3.19.5 所需的 GLIBCXX_3.4.30，导致 cmake 无法运行。这是 README 环境变量设置与 cmake 3.19 建议之间的矛盾。改用 README 推荐的 build.sh 方式（line 581-623），build.sh 内部自行管理环境变量，避免了此问题。"
+    }
+  },
+  "verification": {
+    "binary_check": {
+      "command": "gaussdb --version",
+      "output": "gaussdb (openGauss 7.0.0-RC3 build 7a39d3ac) compiled at 2026-08-13 14:29:21 ... compiled by g++ (GCC) 10.3.1, 64-bit"
+    },
+    "initialize": {
+      "command": "gs_initdb -D /tmp/opencode/og_data2 --pwfile=<(echo 'OpenGauss@123') --nodename=og_single",
+      "result": "成功"
+    },
+    "start": {
+      "command": "gs_ctl start -D /tmp/opencode/og_data2 -Z single_node",
+      "result": "成功，server started"
+    },
+    "functional_test": {
+      "commands": [
+        "SELECT version(); → openGauss 7.0.0-RC3",
+        "CREATE TABLE test_t1 (id int, name varchar(50)); → CREATE TABLE",
+        "INSERT INTO test_t1 VALUES (1, 'hello'), (2, 'opengauss'); → INSERT 0 2",
+        "SELECT * FROM test_t1; → 2 rows returned",
+        "DROP TABLE test_t1; → DROP TABLE"
+      ],
+      "result": "全部通过"
+    },
+    "shutdown": {
+      "command": "gs_ctl stop -D /tmp/opencode/og_data2 -Z single_node",
+      "result": "正常关闭"
+    }
+  },
+  "issues_encountered": [
+    {
+      "issue": "README cmake 编译方式的环境变量导致 cmake 3.19 无法运行",
+      "cause": "README line 728 设置 LD_LIBRARY_PATH=$GCCFOLDER/gcc/lib64:...，binarylibs gcc10.3 的 libstdc++.so.6 缺少 GLIBCXX_3.4.30（cmake 3.19.5 需要），导致 cmake 启动即报错",
+      "resolution": "改用 README 推荐的 build.sh 方式（line 581-623），build.sh 内部自行管理环境变量，不依赖用户手动设置的 LD_LIBRARY_PATH",
+      "documentation_gap": "README line 384 建议 cmake 3.19，但 line 728 的环境变量与 cmake 3.19 不兼容；README 未说明此矛盾"
+    },
+    {
+      "issue": "端口 5432 被占用",
+      "cause": "环境中有之前的 openGauss 实例仍在运行",
+      "resolution": "kill 旧进程释放端口",
+      "documentation_gap": "非 README 问题，环境残留"
+    }
+  ],
+  "summary": {
+    "status": "PASS",
+    "version": "openGauss 7.0.0-RC3",
+    "build_method": "sh build.sh -m release -3rd [binarylibs] --cmake（README line 608/616）",
+    "compiler": "gcc 10.3.1（binarylibs）",
+    "cmake": "3.19.5（README line 384 建议）",
+    "platform": "aarch64 / openEuler 24.03 LTS-SP2",
+    "total_time": "~13 分钟（build.sh 约 11 分钟 + 初始化验证约 2 分钟）",
+    "key_takeaway": "README 的 build.sh 方式是最可靠的构建路径——它内部自动处理了环境变量、cmake 选项（包括 README cmake 命令行中未提及的 -DENABLE_OPENSSL3=ON）、以及 libstdc++ 兼容性问题。README 的手动 cmake 编译方式存在环境变量与 cmake 3.19 不兼容的矛盾，build.sh 避免了这个问题。"
+  }
+}
