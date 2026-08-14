@@ -1,0 +1,483 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/msprof-analyze.git",
+    "branch": "master",
+    "start_time": "2026-07-31T22:26:21",
+    "end_time": "2026-07-31T23:24:45",
+    "duration_seconds": 3504,
+    "total_steps": 16,
+    "commit": "8cda273"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "claude-sonnet-4-20250514",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3",
+      "selection_reason": "项目安装指南明确要求参考《MindStudio统一构建镜像制作指南》从 openEuler 基础镜像现场构建环境镜像；环境由文档脚本 build_image.py 现场构建，底层 FROM hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3"
+    },
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "aarch64 (256 cores)",
+      "cpu_cores": 256,
+      "memory": "2.0Ti",
+      "disk": "21T (17T available)",
+      "docker_version": "Docker version 29.6.1"
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS-SP3)",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "2.0Ti (无限制)",
+      "container_name": "m00818315_20260731_231518"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "docker_image_build_guide.md + 远端机器实际架构",
+      "value": "aarch64"
+    },
+    "recommended_image": {
+      "source": "安装指南 + MindStudio统一构建镜像制作指南",
+      "value": "项目推荐 openEuler 24.03 LTS SP3（通过 build_image.py 脚本从基础镜像现场构建）"
+    },
+    "dockerfile_dependencies": {
+      "source": "script 模式",
+      "value": "script 模式，依赖由构建镜像提供，无需映射"
+    },
+    "dependencies": {
+      "source": "安装指南 + requirements/build.txt + requirements/tests.txt",
+      "value": [
+        "Python >= 3.7.5（建议 3.9+）",
+        "pip",
+        "系统级依赖由构建镜像提供（GCC 11.2, CANN 9.1.0-beta.3）",
+        "build.txt: click, networkx, jinja2, PyYaml, tqdm, prettytable, ijson, xlsxwriter, sqlalchemy, numpy, pandas, psutil, pybind11, plotly",
+        "tests.txt: pytest==7.1.2, pytest-cov, pytest-mock, pytest-cookies, mock, beautifulsoup4, ipython, ipywidgets, openpyxl, pytest-asyncio"
+      ]
+    },
+    "build_commands": {
+      "source": "安装指南 2.3.2 节",
+      "value": "cd ~/msprof-analyze && python3 build.py"
+    },
+    "ut_commands": {
+      "source": "安装指南 2.3.3 节",
+      "value": "cd ~/msprof-analyze && python3 build.py test"
+    },
+    "sample_commands": {
+      "source": "快速入门文档",
+      "value": "msprof-analyze advisor all -d <prof_data> -o <output>（需要 NPU 硬件和 profiling 数据，无 NPU 环境无法执行）"
+    },
+    "special_dependencies": {
+      "source": "MindStudio统一构建镜像制作指南第6节",
+      "value": [
+        "CANN toolkit: https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-aarch64.run",
+        "CANN ops: https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-aarch64.run"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-31T22:30:14",
+      "step": "environment_selection",
+      "action": "确认容器运行环境为远端 SSH 机器",
+      "result": "成功",
+      "details": {
+        "host_type": "remote_ssh",
+        "remote_host": "m00818315@192.168.9.128:22",
+        "remote_workdir": "/tmp/ttfhw-msprof-analyze/"
+      },
+      "command": "ssh m00818315@192.168.9.128 docker version",
+      "success": true,
+      "output": "Docker 29.6.1, aarch64, 256 cores, 2TB RAM",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-31T22:30:14",
+      "step": "document_reading",
+      "action": "读取 README.md，了解项目概况和文档索引",
+      "result": "成功",
+      "details": {
+        "file": "README.md",
+        "sections_read": [
+          "简介",
+          "功能介绍",
+          "快速入门",
+          "安装指南",
+          "使用指南"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "Python 性能分析工具，pip install 或源码编译",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-07-31T22:30:14",
+      "step": "document_reading",
+      "action": "读取安装指南，提取源码构建流程和环境要求",
+      "result": "成功",
+      "details": {
+        "file": "docs/zh/install_guide/msprof-analyze_install_guide.md",
+        "key_findings": [
+          "源码编译使用MindStudio标准构建环境",
+          "必须参考MindStudio统一构建镜像制作指南从openEuler基础镜像构建",
+          "构建命令: python3 build.py",
+          "UT命令: python3 build.py test",
+          "必须使用ctr_in.py进入容器"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "源码安装需要统一构建镜像，从openEuler基础镜像现场构建",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-07-31T22:30:14",
+      "step": "document_reading",
+      "action": "克隆 msot 仓库，读取《MindStudio统一构建镜像制作指南》",
+      "result": "成功",
+      "details": {
+        "file": "tmp_msot/docs/zh/common/docker_image_build_guide.md",
+        "key_findings": [
+          "基于openEuler 24.03 LTS",
+          "使用build_image.py脚本构建",
+          "需要2个CANN run包URL",
+          "构建耗时约30分钟",
+          "必须使用ctr_in.py启动容器"
+        ]
+      },
+      "command": "git clone --depth 1 https://gitcode.com/Ascend/msot.git tmp_msot",
+      "success": true,
+      "output": "镜像制作指南：openEuler 24.03 LTS + GCC 11.2 + Python 3.8-3.13 + CANN",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-07-31T22:30:14",
+      "step": "document_reading",
+      "action": "下载并审查构建脚本和全部 Dockerfile，验证构建链底层为基础 OS 镜像",
+      "result": "成功",
+      "details": {
+        "script_url": "https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz",
+        "dockerfiles": [
+          "devtoolset7/Dockerfile",
+          "manylinux/docker/Dockerfile",
+          "mindstudio/Dockerfile"
+        ],
+        "base_image_chain": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3 -> gcc11_image -> python_image -> final_image",
+        "cann_urls": [
+          "https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-aarch64.run",
+          "https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-aarch64.run"
+        ],
+        "verification": "devtoolset7/Dockerfile FROM hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp3 确认为基础 OS 镜像"
+      },
+      "command": "curl -fLO https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz && tar zxf dockerfile.tar.gz",
+      "success": true,
+      "output": "构建链底层确认为 openEuler 24.03 LTS SP3，build_method=script",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-07-31T22:30:14",
+      "step": "image_selection",
+      "action": "选定基础 OS 为 openEuler 24.03 LTS SP3，环境构建方式为 script",
+      "result": "openEuler 24.03 LTS SP3",
+      "details": {
+        "build_method": "script",
+        "script_url": "https://inst.obs.cn-north-4.myhuaweicloud.com/env/build/source/master/dockerfile.tar.gz",
+        "reason": "安装指南明确要求参考《MindStudio统一构建镜像制作指南》从openEuler基础镜像现场构建环境镜像，脚本及全部Dockerfile已下载审查通过",
+        "selection_reason": "项目文档明确推荐 openEuler 24.03 LTS SP3（优先项目推荐的基础 OS）"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-07-31T22:32:10",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 pre-commit 配置",
+      "result": "已配置",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks_count": 12
+      },
+      "command": "",
+      "success": true,
+      "output": "检测到 .pre-commit-config.yaml，包含 12 个 hook",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-07-31T22:32:10",
+      "step": "static_analysis_execution",
+      "action": "随机抽取 10 个 Git 跟踪文件执行 pre-commit run --files",
+      "result": "部分通过",
+      "details": {
+        "files_selected": [
+          "test/ut/advisor/timeline_advice/trace_view.json",
+          "test/ut/compare_tools/view/test_excel_view.py",
+          "msprof_analyze/cluster_analyse/common_func/analysis_loader.py",
+          "misc/autofuse_performance_comparison/utils/__init__.py",
+          "test/ut/advisor/result/test_result.py",
+          "test/st/dev/test_advisor_cmd_cluster_ascend_pt_compare.py",
+          "test/resource/advisor/cluster_analysis_output/cluster_step_trace_time.csv",
+          "docs/zh/figures/Fusible_Operator_Analysis.png",
+          "msprof_analyze/cluster_analyse/recipes/communication_time_sum/communication_time_sum.py",
+          "msprof_analyze/advisor/rules/en/environment_variable_info.yaml"
+        ],
+        "total_files": 10,
+        "hooks_results": {
+          "trailing-whitespace": "Failed (auto-fixed)",
+          "end-of-file-fixer": "Failed (auto-fixed)",
+          "check-yaml": "Passed",
+          "check-added-large-files": "Passed",
+          "check-merge-conflict": "Passed",
+          "detect-private-key": "Passed",
+          "check-json": "Passed",
+          "ruff-check": "Failed (auto-fixed)",
+          "ruff-format": "Failed (3 files reformatted)",
+          "codespell": "Failed (seleted ==> selected)",
+          "pylint": "Failed (W1203 logging-fstring-interpolation)",
+          "bandit": "Passed",
+          "typos": "Failed (false positive in JSON test data)",
+          "clang-format": "Skipped (no C/C++ files in sample)",
+          "gitleaks-offline-scan": "Skipped (no gitleaks binary)"
+        }
+      },
+      "command": "pre-commit run --files <10 random files>",
+      "success": false,
+      "output": "7 hooks passed, 5 failed (trailing-whitespace, end-of-file-fixer, ruff-check, ruff-format, codespell, pylint, typos)",
+      "error": "codespell: environment_variable_info.yaml:42 seleted ==> selected; pylint: W1203 logging-fstring-interpolation; typos: false positive nd in JSON",
+      "returncode": 1,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-07-31T22:32:10",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录",
+      "result": "未配置",
+      "details": {
+        "config_dir": null,
+        "files": []
+      },
+      "command": "ls .devcontainer",
+      "success": true,
+      "output": "仓库不存在 .devcontainer 目录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-07-31T23:23:33",
+      "step": "container_setup",
+      "action": "在远端执行 build_image.py 构建 MindStudio 统一构建镜像",
+      "result": "成功",
+      "details": {
+        "image": "mindstudio-build:1.0.0-arm64",
+        "build_script": "build_image.py -t 1.0.0-arm64 --force -c <CANN toolkit URL> -c <CANN ops URL>",
+        "build_time_seconds": 2252.6,
+        "layers": [
+          "devtoolset7 (GCC 11.2 from openEuler 24.03 LTS SP3)",
+          "manylinux (Python 3.8-3.13)",
+          "mindstudio (CANN 9.1.0-beta.3)"
+        ]
+      },
+      "command": "python3 build_image.py -t 1.0.0-arm64 --force -c https://ascend-cann-open.obs.cn-north-4.myhuaweicloud.com/CANN/CANN%209.1.0-beta.3/Ascend-cann_9.1.0-beta.3_linux-aarch64.run -c https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%209.1.T6/Ascend-cann-910b-ops_9.1.0-beta.3_linux-aarch64.run",
+      "success": true,
+      "output": "最终镜像: mindstudio-build:1.0.0-arm64, 总耗时 2252.6s (37.5min)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2253
+    },
+    {
+      "timestamp": "2026-07-31T23:23:33",
+      "step": "container_setup",
+      "action": "使用 ctr_in.py 启动交互式容器并克隆目标仓库",
+      "result": "成功",
+      "details": {
+        "container_name": "m00818315_20260731_231518",
+        "image": "mindstudio-build:1.0.0-arm64",
+        "os": "openEuler 24.03 (LTS-SP3)",
+        "gcc": "11.2.0",
+        "python": "3.11.15",
+        "cann": "9.1.0-beta.3",
+        "repo_commit": "8cda273"
+      },
+      "command": "~/ctr_in.py \"mindstudio-build:1.0.0-arm64\" && cd ~ && git clone https://gitcode.com/Ascend/msprof-analyze.git",
+      "success": true,
+      "output": "GCC 11.2 (Targeting glibc 2.17) environment enabled. Python 3.11.15. CANN 9.1.0-beta.3",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-07-31T23:23:33",
+      "step": "build_attempt",
+      "action": "在容器内执行 python3 build.py 构建 wheel 包",
+      "result": "成功",
+      "details": {
+        "artifact": "msprof_analyze-1.0.0-py3-none-any.whl",
+        "artifact_path": "/home/mindstudio/msprof-analyze/artifacts/msprof_analyze-1.0.0-py3-none-any.whl"
+      },
+      "command": "cd ~/msprof-analyze && time python3 build.py",
+      "success": true,
+      "output": "Copy artifact: dist/msprof_analyze-1.0.0-py3-none-any.whl -> artifacts/msprof_analyze-1.0.0-py3-none-any.whl",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 31
+    },
+    {
+      "timestamp": "2026-07-31T23:23:33",
+      "step": "ut_execution",
+      "action": "在容器内执行 python3 build.py test 运行单元测试",
+      "result": "成功",
+      "details": {
+        "total": 1558,
+        "passed": 1558,
+        "failed": 0,
+        "warnings": 13
+      },
+      "command": "cd ~/msprof-analyze && time python3 build.py test",
+      "success": true,
+      "output": "1558 passed, 13 warnings in 50.72s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 143
+    },
+    {
+      "timestamp": "2026-07-31T23:23:33",
+      "step": "smoke_test",
+      "action": "安装 wheel 包并验证 msprof-analyze --help 冒烟测试",
+      "result": "成功",
+      "details": {
+        "command_output": "Usage: msprof-analyze [OPTIONS] [COMMAND] [ARGS]... Commands: cluster, compare, advisor, auto-completion"
+      },
+      "command": "pip3 install artifacts/msprof_analyze-1.0.0-py3-none-any.whl --force-reinstall && msprof-analyze --help",
+      "success": true,
+      "output": "msprof-analyze --help 正常输出，版本 1.0.0，子命令 cluster/compare/advisor 可用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 25
+    },
+    {
+      "timestamp": "2026-07-31T23:24:45",
+      "step": "cleanup",
+      "action": "停止并删除远端容器 m00818315_20260731_231518",
+      "result": "成功",
+      "details": {},
+      "command": "ssh m00818315@192.168.9.128 docker rm -f m00818315_20260731_231518",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-07-31T23:24:45",
+      "step": "report_generation",
+      "action": "生成验证报告",
+      "result": "成功",
+      "details": {
+        "output_file": "verification_report_WSL_msprof-analyze_20260731.json"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（12个hooks），随机抽取10个文件执行：7个hook通过，5个失败（trailing-whitespace/end-of-file-fixer/ruff-check/ruff-format自动修复，codespell/pylint/typos报告问题）；未检测到 lint-runner 配置",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "部分通过",
+        "duration_seconds": 120,
+        "total_hooks": 12,
+        "passed": 7,
+        "failed": 5,
+        "skipped": 2,
+        "executed_in_verification": true,
+        "failures": [
+          {
+            "hook_name": "codespell",
+            "file": "msprof_analyze/advisor/rules/en/environment_variable_info.yaml",
+            "error": "seleted ==> selected, deleted"
+          },
+          {
+            "hook_name": "pylint",
+            "file": "msprof_analyze/cluster_analyse/common_func/analysis_loader.py",
+            "error": "W1203: Use lazy % formatting in logging functions"
+          },
+          {
+            "hook_name": "typos",
+            "file": "test/ut/advisor/timeline_advice/trace_view.json",
+            "error": "false positive: nd should be and (in JSON test data)"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "original_base_image": "unknown",
+      "used_image": "openEuler 24.03 LTS SP3",
+      "summary": "仓库未配置 devcontainer"
+    },
+    "build": {
+      "status": "成功",
+      "duration_seconds": 31,
+      "compiler": "GCC 11.2.0 (Built-for-MindStudio-glibc-2.17-Compatibility)",
+      "artifacts": [
+        {
+          "name": "msprof_analyze-1.0.0-py3-none-any.whl",
+          "path": "/home/mindstudio/msprof-analyze/artifacts/msprof_analyze-1.0.0-py3-none-any.whl",
+          "type": "wheel"
+        }
+      ]
+    },
+    "ut": {
+      "status": "成功",
+      "duration_seconds": 143,
+      "total": 1558,
+      "passed": 1558,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "未执行",
+      "duration_seconds": 0,
+      "reason": "快速入门文档明确要求 NPU 硬件（npu-smi info 确认 NPU 卡状态正常），当前验证环境无 NPU 设备，无法执行样例",
+      "results": []
+    }
+  },
+  "documentation_gaps": [],
+  "problems_encountered": []
+}

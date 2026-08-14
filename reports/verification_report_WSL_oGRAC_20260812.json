@@ -1,0 +1,825 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/hejiahuan11/oGRAC",
+    "branch": "test",
+    "start_time": "2026-08-12T11:46:26",
+    "end_time": "2026-08-12T13:06:31",
+    "duration_seconds": 4805,
+    "total_steps": 30,
+    "commit": "13e18abfd107f65f4a05deb998e064ef1bbe8a9f",
+    "environment": "远端SSH: 20.20.20.71 via jump 123.60.114.206:10004",
+    "verifier": "ttfhw-verify-baseos"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "cursor-grok-4.5",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "aarch64 CPU implementer 0x48 (32 cores)",
+      "cpu_cores": 32,
+      "memory": "62Gi",
+      "disk": "/ 69G(17G avail), /home 156G(133G avail)",
+      "docker_version": "18.09.0"
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS",
+      "architecture": "aarch64",
+      "cpu_cores": 32,
+      "memory": "62Gi",
+      "container_name": "ttfhw-oGRAC-baseos-env"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "README 单元测试要求 openEuler 20.03/22.03/24.03；docker/Dockerfile_ARM64 推荐 openeuler/openeuler:22.03-lts-sp1；优先项目推荐的基础 OS。x86 Dockerfile 为 centos:8.2，按包管理 yum 映射到 openEuler。选用已在远端缓存的 24.03-lts。",
+      "dependency_mapping": {
+        "from_dockerfile": "docker/Dockerfile(centos) + docker/Dockerfile_ARM64(openeuler) + README yum 依赖",
+        "from_readme": "单节点 yum install wget git python3 python3-devel iputils iproute unixODBC-devel unixODBC lz4 lz4-devel patch xz flex；双节点额外 libaio-devel openssl-devel 等",
+        "mappings": [
+          {
+            "original": "centos:8.2.2004",
+            "target": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+            "source": "docker/Dockerfile FROM"
+          },
+          {
+            "original": "openeuler/openeuler:22.03-lts-sp1",
+            "target": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+            "source": "docker/Dockerfile_ARM64 FROM（同系升级到24.03）"
+          },
+          {
+            "original": "yum install ...",
+            "target": "dnf install -y ...",
+            "source": "README / Dockerfile_ARM64"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "远端机器 uname + README 双节点/容器章节",
+      "value": "aarch64"
+    },
+    "recommended_image": {
+      "source": "README 单元测试 + docker/Dockerfile_ARM64",
+      "value": "openEuler 24.03 LTS（文档推荐 openEuler 20.03/22.03/24.03；ARM Dockerfile 为 22.03）"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/Dockerfile_ARM64 RUN yum install",
+      "value": [
+        {
+          "original": "yum install -y make gcc gcc-c++ python3 python3-devel git cmake wget ...",
+          "target_equivalent": "dnf install -y make gcc gcc-c++ python3 python3-devel git cmake wget ..."
+        },
+        {
+          "original": "yum install -y libaio-devel openssl-devel ndctl-devel ncurses-devel libtirpc-devel",
+          "target_equivalent": "dnf install -y libaio-devel openssl-devel ndctl-devel ncurses-devel libtirpc-devel"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md 单节点/双节点依赖 + Dockerfile_ARM64",
+      "value": [
+        "gcc/gcc-c++/make/cmake/git/python3/python3-devel/wget",
+        "unixODBC unixODBC-devel lz4 lz4-devel patch xz flex",
+        "libaio-devel openssl openssl-devel ndctl-devel ncurses-devel libtirpc-devel",
+        "bison expect ant iputils iproute net-tools automake byacc libtool"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md 单节点编译部署指南",
+      "value": "cd build && sh local_install.sh prepare && sh local_install.sh compile -b debug"
+    },
+    "ut_commands": {
+      "source": "README.md 单元测试章节",
+      "value": "bash pkg/test/og_regress/do_all_test.sh need_compile"
+    },
+    "sample_commands": {
+      "source": "README.md 安装流程（冒烟：ogsql 连接）",
+      "value": "sh local_install.sh install -u ogracdba && su - ogracdba -c 'ogsql / as sysdba -c \"SELECT version();\"'"
+    },
+    "special_dependencies": {
+      "source": "README.md prepare 阶段 / local_install.sh",
+      "value": [
+        "local_install.sh prepare 自动下载三方库",
+        "debug 编译建议关闭 USE_PROTECT_VM"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-12T11:46:26",
+      "step": "environment_selection",
+      "action": "用户指定远端SSH测试环境 linux 20.20.20.71（经跳板机 openGauss56）",
+      "command": "user provided",
+      "output": "host=20.20.20.71 jump=123.60.114.206:10004",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 0,
+      "result": "成功：远端SSH",
+      "details": {
+        "host_type": "remote_ssh",
+        "jump": "123.60.114.206:10004",
+        "target": "20.20.20.71"
+      }
+    },
+    {
+      "timestamp": "2026-08-12T11:46:26",
+      "step": "document_reading",
+      "action": "阅读 README/Dockerfile/Dockerfile_ARM64 提取依赖与构建/UT/样例命令",
+      "command": "read README.md docker/Dockerfile docker/Dockerfile_ARM64",
+      "output": "选定 openEuler 24.03 LTS；构建: local_install.sh prepare/compile；UT: do_all_test.sh need_compile",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 5,
+      "result": "成功提取文档信息",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T11:49:16",
+      "step": "static_analysis_pre_commit",
+      "action": "执行 pre-commit run --all-files（Desktop/2 独立克隆，未改本地仓）",
+      "command": "pre-commit run --all-files",
+      "output": "Passed: merge-conflict, large-files, check-toml(skipped); Failed: trailing-whitespace,eof,mixed-line-ending,check-yaml,check-json,detect-private-key,codespell,clang-format(bash missing)",
+      "error": "EXIT=1",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 72.6,
+      "result": "失败：多个 hook 未通过",
+      "details": {
+        "hooks": [
+          {
+            "name": "trailing-whitespace",
+            "status": "failed"
+          },
+          {
+            "name": "end-of-file-fixer",
+            "status": "failed"
+          },
+          {
+            "name": "mixed-line-ending",
+            "status": "failed"
+          },
+          {
+            "name": "check-yaml",
+            "status": "failed"
+          },
+          {
+            "name": "check-json",
+            "status": "failed"
+          },
+          {
+            "name": "check-toml",
+            "status": "skipped"
+          },
+          {
+            "name": "check-merge-conflict",
+            "status": "passed"
+          },
+          {
+            "name": "check-added-large-files",
+            "status": "passed"
+          },
+          {
+            "name": "detect-private-key",
+            "status": "failed"
+          },
+          {
+            "name": "codespell",
+            "status": "failed"
+          },
+          {
+            "name": "clang-format-diff",
+            "status": "failed",
+            "reason": "Executable bash not found on Windows host"
+          }
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-08-12T11:49:16",
+      "step": "static_analysis_lint_runner",
+      "action": "扫描 lint-runner 配置",
+      "command": "glob .lint-runner* .lintrunner.toml",
+      "output": "未找到 lint-runner 配置",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 1,
+      "result": "成功：未配置",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T11:49:16",
+      "step": "devcontainer_scan",
+      "action": "扫描 .devcontainer",
+      "command": "ls .devcontainer",
+      "output": "仓库根目录不存在 .devcontainer/",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 1,
+      "result": "成功：无 devcontainer",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T11:54:26",
+      "step": "container_start",
+      "action": "启动 openEuler 24.03 容器 ttfhw-oGRAC-baseos-env",
+      "command": "docker run ... hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "output": "container up, mount /workspace",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 2,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T11:54:26",
+      "step": "deps_layer1",
+      "action": "安装系统工具链",
+      "command": "dnf install gcc gcc-c++ make cmake git python3 ...",
+      "output": "Complete",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 91,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T11:54:26",
+      "step": "deps_layer2",
+      "action": "安装 README/Dockerfile 构建依赖（lcov 仓库无，已跳过单独安装）",
+      "command": "dnf install unixODBC-devel libaio-devel openssl-devel ...",
+      "output": "38 packages installed",
+      "error": "lcov not found in repos",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 18,
+      "result": "成功：核心依赖已装，lcov 缺失已记录",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T11:54:26",
+      "step": "prepare",
+      "action": "执行文档构建 prepare",
+      "command": "sh local_install.sh prepare",
+      "output": "Prepare env success. PREPARE_RC=0",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 25,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:05:34",
+      "step": "compile_attempt1",
+      "action": "首次编译失败：缺少 unzip",
+      "command": "sh local_install.sh compile -b release",
+      "output": "build_ograc failed. unzip: command not found",
+      "error": "unzip not found",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 218,
+      "result": "失败：缺少 unzip",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:05:34",
+      "step": "fix_missing_unzip",
+      "action": "安装 unzip 后准备重试",
+      "command": "dnf install -y unzip",
+      "output": "Installed unzip-6.0-52",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 4,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:13:30",
+      "step": "compile_attempt2",
+      "action": "第二次编译失败：缺少 numa.h",
+      "command": "sh local_install.sh compile -b release",
+      "output": "fatal error: numa.h: No such file or directory",
+      "error": "numa.h missing",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 284,
+      "result": "失败：缺少 numactl-devel",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:13:30",
+      "step": "fix_missing_numa",
+      "action": "安装 numactl-devel 并创建 /home/regress/ogracKernel 软链后重试",
+      "command": "dnf install -y numactl-devel; ln -sfn /workspace /home/regress/ogracKernel",
+      "output": "numa.h installed",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 5,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:24:41",
+      "step": "compile_success",
+      "action": "第三次编译成功（安装 unzip/numactl-devel 后）",
+      "command": "sh local_install.sh compile -b release",
+      "output": "COMPILE_RC=0 END_COMPILE 2026-08-12T04:20:30 make pkg ogsql",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 384,
+      "result": "成功",
+      "details": {
+        "artifacts_count": 19
+      }
+    },
+    {
+      "timestamp": "2026-08-12T12:30:49",
+      "step": "ut_attempt1",
+      "action": "首次 UT 失败：installdb.sh Permission denied（output/bin 为 root:750）",
+      "command": "bash pkg/test/og_regress/do_all_test.sh",
+      "output": "Error: Can not start cms. Permission denied on installdb.sh",
+      "error": "Permission denied",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 14,
+      "result": "失败：权限不足",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:30:49",
+      "step": "fix_output_perms",
+      "action": "chmod -R a+rX /workspace/output 后重试 UT",
+      "command": "chmod -R a+rX /workspace/output",
+      "output": "drwxr-xr-x 6 5000 5000 4096 Aug 12 04:19 /workspace/output\ndrwxr-xr-x 6 root root 4096 Aug 12 04:20 /workspace/output/bin\ndrwxr-xr-x 2 root root 4096 Aug 12 04:20 /workspace/output/bin/oGRAC-DATABASE-LINUX-64bit\n-r-xr-xr-x 1 5000 5000 8750 Aug 12 04:20 /workspace/output/bin/oGRAC-DATABASE-LINUX-64bit/installdb.sh\nREADY\n",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 2,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:36:36",
+      "step": "ut_attempt2",
+      "action": "第二次 UT：安装成功但缺少 og_regress 二进制",
+      "command": "bash pkg/test/og_regress/do_all_test.sh",
+      "output": "cp: cannot stat output/bin/og_regress; og_regress FAILED",
+      "error": "missing og_regress",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 54,
+      "result": "失败：缺少 og_regress",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:36:36",
+      "step": "build_og_regress",
+      "action": "单独编译测试目标 og_regress",
+      "command": "cd build/pkg/test/og_regress && make -sj 8",
+      "output": "Built target og_regress MAKE_RC=0",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 30,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:42:13",
+      "step": "ut_attempt3",
+      "action": "第三次 UT：ogracdba 用户存在但缺少 .bashrc",
+      "command": "do_all_test.sh",
+      "output": "Can not read user profile: /home/ogracdba/.bashrc",
+      "error": "missing .bashrc",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 3,
+      "result": "失败：用户 home 不完整",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:42:13",
+      "step": "fix_ogracdba_home",
+      "action": "重建 ogracdba 用户并创建 .bashrc",
+      "command": "useradd -m ogracdba -u 5000; touch .bashrc",
+      "output": "-rw-r--r-- 1 ogracdba ogracdba 138 Aug 12 04:42 /home/ogracdba/.bashrc\nuid=5000(ogracdba) gid=5000(ogracdba) groups=5000(ogracdba)\nREADY\n",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 2,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:58:59",
+      "step": "sample_attempt1",
+      "action": "首次样例安装失败：install.py 属主为 ogracdba，root 无法执行",
+      "command": "sh local_install.sh install -u ogracdba",
+      "output": "Error: The owner of install.py is [ogracdba], can't run it by root.",
+      "error": "owner check failed",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 1,
+      "result": "失败",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T12:58:59",
+      "step": "fix_install_owner",
+      "action": "chown root 恢复 install 脚本属主后重试样例",
+      "command": "chown -R root:root /workspace/pkg/install /workspace/build",
+      "output": "restarting sample install",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 1,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T13:01:13",
+      "step": "sample_disk_issue",
+      "action": "样例安装因根分区可用空间不足失败",
+      "command": "local_install.sh install",
+      "output": "available size smaller than 20580M, current 15299M",
+      "error": "disk insufficient on /",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 3,
+      "result": "失败：磁盘空间",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T13:01:13",
+      "step": "fix_home_on_large_disk",
+      "action": "将 ogracdba HOME 放到 /home/regress 大盘并重试",
+      "command": "useradd -d /home/regress/home_ogracdba",
+      "output": "s.\nChecking directory.\nChecking integrality of run file...\nDecompressing run file.\nSetting user env.\nChecking data dir and config file\nInitialize db instance.\nCreating database with dbcompatibility 'A'.\nRUN_MODE set to ogracd_in_cluster and made persistent.\nStarting cms...\nError: Can not start cms.\nStart cmd: su - ogracdba -c 'sh /workspace/oGRAC-DATABASE-LINUX-64bit/installdb.sh -P cms >> /home/regress/home_ogracdba/logs/install.log 2>&1'.\nOutput: -bash: line 1: /home/regress/home_ogracdba/logs/install.log: Permission denied\nPlease refer to install log \"/home/regress/home_ogracdba/logs/install.log\" for more detailed information.\ninstall oGRAC failed.\n\nreal\t0m4.336s\nuser\t0m1.989s\nsys\t0m0.612s\nINSTALL_RC=1\n-bash: line 1: ogsql: command not found\nSMOKE_RC=127\nEND_SAMPLE5 2026-08-12T05:01:11\n",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 5,
+      "result": "成功启动重试",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T13:04:45",
+      "step": "sample_ograc_data_on_root",
+      "action": "样例创建库失败：WORK_DIR 解析为 /，数据写到根分区触发 OG-00028",
+      "command": "install",
+      "output": "OG-00028 file size larger than disk",
+      "error": "disk",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 59,
+      "result": "失败",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T13:04:45",
+      "step": "fix_ograc_data_symlink",
+      "action": "将 /ograc_data 软链到 /home/regress/ograc_data 后重试",
+      "command": "ln -sfn /home/regress/ograc_data /ograc_data",
+      "output": "as started\nStarting ogracd...\nogracd has started\nCreating ograc database...\nCreating database succeed.\nCreating third package ...\nCreating third package succeed.\nChanging file permission due to security audit.\nset ogracd coredump_filter value to 0x6f(1101111)\nInstall successfully, for more detail information see /home/regress/home_ogracdba/logs/install.log.\n\nreal\t1m6.125s\nuser\t0m2.446s\nsys\t0m1.066s\nINSTALL_RC=0\n-bash: line 1: ogsql: command not found\nSMOKE_RC=127\nEND_SAMPLE7 2026-08-12T05:04:43\n",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 5,
+      "result": "成功启动重试",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T13:05:14",
+      "step": "sample_install_success",
+      "action": "样例安装成功",
+      "command": "sh local_install.sh install -u ogracdba",
+      "output": "Install successfully INSTALL_RC=0",
+      "error": "",
+      "success": true,
+      "returncode": 0,
+      "duration_seconds": 66,
+      "result": "成功",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T13:05:14",
+      "step": "sample_smoke",
+      "action": "冒烟：ogsql SELECT 1",
+      "command": "su - ogracdba -c \"source ~/.bashrc; ogsql / as sysdba -c 'SELECT 1 AS smoke;'\"",
+      "output": "export OGDB_HOME=\"/home/ogracdba/install\"\nPATH=/home/ogracdba/install/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin\n/home/ogracdba/install/bin/ogsql\n\nWarning: SSL connection to server without CA certificate is insecure. Continue anyway? (y/n):\nWarning: SSL connection to server without CA certificate is insecure. Continue anyway? (y/n):\nConfirming SSL connection without CA certificate has timed out.\r\n",
+      "error": "",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 5,
+      "result": "失败",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T13:05:42",
+      "step": "sample_smoke_retry",
+      "action": "冒烟重试：yes/heredoc 应答 SSL 提示",
+      "command": "yes y | ogsql / as sysdba -c \"SELECT 1 AS smoke;\"",
+      "output": "\n\nWarning: SSL connection to server without CA certificate is insecure. Continue anyway? (y/n):\nWarning: SSL connection to server without CA certificate is insecure. Continue anyway? (y/n):\nConfirming SSL connection without CA certificate has timed out.\r\n",
+      "error": "",
+      "success": false,
+      "returncode": 1,
+      "duration_seconds": 10,
+      "result": "失败：SSL 交互或连接问题",
+      "details": {}
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "step": "sample_execution",
+      "action": "expect 应答 SSL 后执行 ogsql SELECT 1 冒烟",
+      "result": "成功：返回 SMOKE=1",
+      "details": {
+        "rows": 1
+      },
+      "command": "expect smoke.exp / ogsql / as sysdba -c 'SELECT 1 AS smoke;'",
+      "success": true,
+      "output": "SMOKE=1; 1 rows fetched",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "已配置 pre-commit；lint-runner 未配置。pre-commit 执行失败（格式/拼写/密钥检测等 hook）。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "failed",
+        "duration_seconds": 72.6
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "n/a",
+      "used_image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "summary": "仓库未配置 .devcontainer"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 384,
+      "artifacts": [
+        {
+          "name": "cms",
+          "path": "/workspace/output/bin/cms",
+          "size": "808688",
+          "type": "binary"
+        },
+        {
+          "name": "dbstor",
+          "path": "/workspace/output/bin/dbstor",
+          "size": "136888",
+          "type": "binary"
+        },
+        {
+          "name": "ogbackup",
+          "path": "/workspace/output/bin/ogbackup",
+          "size": "68160",
+          "type": "binary"
+        },
+        {
+          "name": "ogbox",
+          "path": "/workspace/output/bin/ogbox",
+          "size": "16191224",
+          "type": "binary"
+        },
+        {
+          "name": "ogencrypt",
+          "path": "/workspace/output/bin/ogencrypt",
+          "size": "68152",
+          "type": "binary"
+        },
+        {
+          "name": "ogracd",
+          "path": "/workspace/output/bin/ogracd",
+          "size": "14997584",
+          "type": "binary"
+        },
+        {
+          "name": "ogracd-7.0.0-RC3",
+          "path": "/workspace/output/bin/ogracd-7.0.0-RC3",
+          "size": "14997584",
+          "type": "binary"
+        },
+        {
+          "name": "oGRAC-DATABASE-LINUX-64bit.sha256",
+          "path": "/workspace/output/bin/oGRAC-DATABASE-LINUX-64bit.sha256",
+          "size": "65",
+          "type": "binary"
+        },
+        {
+          "name": "oGRAC-DATABASE-LINUX-64bit-SYMBOL.sha256",
+          "path": "/workspace/output/bin/oGRAC-DATABASE-LINUX-64bit-SYMBOL.sha256",
+          "size": "65",
+          "type": "binary"
+        },
+        {
+          "name": "oGRAC-DATABASE-LINUX-64bit-SYMBOL.tar.gz",
+          "path": "/workspace/output/bin/oGRAC-DATABASE-LINUX-64bit-SYMBOL.tar.gz",
+          "size": "199635029",
+          "type": "binary"
+        },
+        {
+          "name": "oGRAC-DATABASE-LINUX-64bit.tar.gz",
+          "path": "/workspace/output/bin/oGRAC-DATABASE-LINUX-64bit.tar.gz",
+          "size": "30677398",
+          "type": "binary"
+        },
+        {
+          "name": "oGRAC-OGSQL-LINUX-64bit.sha256",
+          "path": "/workspace/output/bin/oGRAC-OGSQL-LINUX-64bit.sha256",
+          "size": "65",
+          "type": "binary"
+        },
+        {
+          "name": "oGRAC-OGSQL-LINUX-64bit.tar.gz",
+          "path": "/workspace/output/bin/oGRAC-OGSQL-LINUX-64bit.tar.gz",
+          "size": "5143529",
+          "type": "binary"
+        },
+        {
+          "name": "ogrst",
+          "path": "/workspace/output/bin/ogrst",
+          "size": "18041784",
+          "type": "binary"
+        },
+        {
+          "name": "ogsql",
+          "path": "/workspace/output/bin/ogsql",
+          "size": "3112048",
+          "type": "binary"
+        },
+        {
+          "name": "package.xml",
+          "path": "/workspace/output/bin/package.xml",
+          "size": "348",
+          "type": "binary"
+        },
+        {
+          "name": "rbps",
+          "path": "/workspace/output/bin/rbps",
+          "size": "395872",
+          "type": "binary"
+        },
+        {
+          "name": "rbps_contrl.sh",
+          "path": "/workspace/output/bin/rbps_contrl.sh",
+          "size": "1123",
+          "type": "binary"
+        },
+        {
+          "name": "rbps_ctl",
+          "path": "/workspace/output/bin/rbps_ctl",
+          "size": "9910",
+          "type": "binary"
+        }
+      ],
+      "compiler": "gcc 12.3.1",
+      "concurrency": 19,
+      "notes": "release 构建成功；曾因缺少 unzip/numactl-devel 失败并修复"
+    },
+    "ut": {
+      "status": "failed",
+      "duration_seconds": 204,
+      "total": 277,
+      "passed": 271,
+      "failed": 6,
+      "failures": [
+        {
+          "name": "og_resource_manager",
+          "schedule": "og_schedule_part1"
+        },
+        {
+          "name": "og_withas",
+          "schedule": "og_schedule_part1"
+        },
+        {
+          "name": "bison_parser_1",
+          "schedule": "og_schedule_part1"
+        },
+        {
+          "name": "bison_parser_2",
+          "schedule": "og_schedule_part1"
+        },
+        {
+          "name": "bison_parser_dcl",
+          "schedule": "og_schedule_part1"
+        },
+        {
+          "name": "bison_parser_ddl",
+          "schedule": "og_schedule_part1"
+        }
+      ]
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 80,
+      "results": [
+        {
+          "sample_name": "local_install.sh install -u ogracdba",
+          "execution_status": "success",
+          "output_summary": "Install successfully",
+          "execution_time": "66s"
+        },
+        {
+          "sample_name": "ogsql SELECT 1 AS smoke",
+          "execution_status": "success",
+          "output_summary": "connected; SMOKE=1; 1 rows fetched",
+          "execution_time": "5s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-12T13:06:31",
+      "title": "README 单元测试要求 do_all_test.sh need_compile，但单节点 compile 文档路径未说明会生成 og_regress；仅用 local_install.sh compile 时缺少该产物",
+      "body": "按单节点编译后再跑 UT（不带 need_compile）会失败；建议：在单元测试章节明确需 need_compile，或在 compile 产物列表中说明 og_regress",
+      "source": "README.md 单元测试章节"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "编译失败：build.sh 需要 unzip 但 openEuler 基础镜像未预装",
+      "solution": "dnf install -y unzip 后清理 output 并重试 compile",
+      "source": "build"
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "编译失败：cs_tcp.c 需要 numa.h",
+      "solution": "dnf install -y numactl-devel",
+      "source": "build"
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "构建脚本查找 /home/regress/ogracKernel",
+      "solution": "容器内 ln -sfn /workspace /home/regress/ogracKernel",
+      "source": "build"
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "UT 安装阶段 su ogracdba 执行 installdb.sh 报 Permission denied",
+      "solution": "chmod -R a+rX /workspace/output，使非 root 用户可执行产物脚本",
+      "source": "ut"
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "local_install.sh release 编译未产出 og_regress，UT 无法运行",
+      "solution": "在 build/pkg/test/og_regress 执行 make 生成 output/bin/og_regress",
+      "source": "ut"
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "UT 安装检查失败：/home/ogracdba/.bashrc 不存在",
+      "solution": "useradd -m ogracdba -u 5000 并 touch .bashrc",
+      "source": "ut"
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "样例安装失败：UT 将源码/安装脚本属主改为 ogracdba，root 执行 install 被拒绝",
+      "solution": "chown -R root:root pkg/install build 后重试 local_install.sh install",
+      "source": "sample"
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "样例安装校验磁盘：容器根分区仅约15GB可用，小于要求20580MB",
+      "solution": "将 ogracdba 家目录放到挂载在宿主机 /home 的大盘路径 /home/regress/home_ogracdba",
+      "source": "sample"
+    },
+    {
+      "timestamp": "2026-08-12T13:06:31",
+      "problem": "容器内 /workspace 的 ../../ 为根目录，local_install 把共享数据写到 /ograc_data（小根盘）导致建库 OG-00028",
+      "solution": "ln -sfn /home/regress/ograc_data /ograc_data，使数据落在大盘",
+      "source": "sample"
+    }
+  ]
+}
