@@ -1,0 +1,360 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/KTAG.git",
+    "branch": "master",
+    "commit": "38f1564",
+    "version": "1.0.1",
+    "start_time": "2026-08-13T20:25:00",
+    "end_time": "2026-08-13T20:55:00",
+    "duration_seconds": 1800,
+    "total_steps": 12,
+    "environment": "远端 SSH 机器 192.168.25.111（Kunpeng 920, openEuler 22.03 LTS-SP4, aarch64），基础 OS 容器 openeuler/openeuler:22.03-lts-sp4",
+    "verifier": "opencode"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-pro",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "ssh_host": "192.168.25.111",
+      "os": "openEuler 22.03 LTS-SP4",
+      "kernel": "5.10.0-216.0.0.115.oe2203sp4.aarch64",
+      "architecture": "aarch64",
+      "cpu_model": "HUAWEI Kunpeng 920 7282C",
+      "cpu_cores": 320,
+      "memory": "1.0TiB",
+      "disk": "3.5T root (3.3T available)",
+      "docker_version": "Docker version 18.09.0, build 4fc3a92"
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS-SP4",
+      "architecture": "aarch64",
+      "cpu_cores": 320,
+      "memory": "1.0TiB",
+      "container_name": "kt_verify"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openeuler/openeuler:22.03-lts-sp4",
+      "selection_reason": "README 表2 已验证环境为 openEuler 22.03 LTS SP4 与 openEuler 24.03 LTS SP2，优先项目推荐，选用 openEuler 22.03 LTS-SP4 基础镜像",
+      "dependency_mapping": {
+        "from_dockerfile": "仓库无 Dockerfile；依赖从 docs/zh/installation_guide.md + build.sh + CMakeLists.txt 提取",
+        "from_readme": "README 表3 软件要求 + installation_guide 编译指南",
+        "mappings": [
+          {"original": "yaml-cpp 0.8.0（GitHub 源码构建）", "target": "yaml-cpp-devel（dnf，版本 0.6.3）", "source": "installation_guide 依赖准备"},
+          {"original": "onnxruntime 1.22.0（GitHub 下载）", "target": "onnxruntime 1.22.0（经 ghfast.top 镜像下载）", "source": "installation_guide 依赖准备"}
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README 表2 已验证环境",
+      "value": "aarch64 (鲲鹏920新型号处理器)"
+    },
+    "recommended_image": {
+      "source": "README 表2",
+      "value": "openEuler 22.03 LTS SP4 / openEuler 24.03 LTS SP2"
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库无 Dockerfile",
+      "value": "无 Dockerfile；依赖从 installation_guide 编译指南 + build.sh 提取"
+    },
+    "dependencies": {
+      "source": "README 表3 + docs/zh/installation_guide.md 编译指南 + build.sh",
+      "value": [
+        "gcc 10.3.1 (dnf: gcc gcc-c++)",
+        "cmake 3.22.0 (dnf: cmake)",
+        "yaml-cpp 0.8.0 (文档要求源码构建，dnf 可用 yaml-cpp-devel 0.6.3)",
+        "onnxruntime 1.22.0 (预编译 aarch64 tgz，GitHub 下载)",
+        "libpcap-devel (build.sh 自动安装)",
+        "libxml2/xmllint (build.sh 解析 dependence.xml)",
+        "python 与 unzip (测试需要，文档未列出)"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/zh/installation_guide.md 编译指导",
+      "value": "sh build.sh（产出 libKDADK_feature_extract.so 与 libKDADK_inference.so）"
+    },
+    "ut_commands": {
+      "source": "docs/zh/user_guide.md 测试框架",
+      "value": "sh build.sh -lib && cd test/build && make && make rfunc"
+    },
+    "sample_commands": {
+      "source": "docs/zh/user_guide.md",
+      "value": "功能测试（make rfunc，104 个用例）即核心功能验证"
+    },
+    "special_dependencies": {
+      "source": "docs/zh/installation_guide.md",
+      "value": [
+        "onnxruntime 需从 GitHub 下载 aarch64 预编译包（国内网络极慢，无镜像说明）",
+        "测试需 pcap 流量文件（test/traces/）",
+        "测试框架 GoogleTest 1.8.0（gtest-download/download.sh 自动下载）"
+      ]
+    },
+    "repo_name": "KTAG (网络流分类库，原 KDADK-APPID)",
+    "main_language": "C/C++",
+    "build_system": "build.sh + CMake",
+    "pre_commit": ".pre-commit-config.yaml"
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-13T20:25:00",
+      "step": "document_reading",
+      "action": "阅读 README.md、docs/zh/installation_guide.md、docs/zh/user_guide.md、build.sh、function.sh、CMakeLists.txt、src/CMakeLists.txt",
+      "result": "成功",
+      "details": {"files": ["README.md", "docs/zh/installation_guide.md", "docs/zh/user_guide.md", "build.sh", "CMakeLists.txt"]},
+      "command": "",
+      "success": true,
+      "output": "KTAG 网络流分类库，依赖 yaml-cpp + onnxruntime 1.22.0 + libpcap，sh build.sh 构建",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 300
+    },
+    {
+      "timestamp": "2026-08-13T20:28:00",
+      "step": "image_selection",
+      "action": "选择 openEuler 22.03 LTS-SP4 基础镜像",
+      "result": "openEuler 22.03 LTS-SP4",
+      "details": {"image": "openeuler/openeuler:22.03-lts-sp4"},
+      "command": "docker run -d --name kt_verify ... openeuler/openeuler:22.03-lts-sp4",
+      "success": true,
+      "output": "Container fd935857c05b started",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-08-13T20:30:00",
+      "step": "dependency_installation",
+      "action": "安装基础依赖 cmake/gcc/gcc-c++/make/libpcap-devel/libxml2/git",
+      "result": "成功",
+      "details": {"source": "openEuler 官方仓库 (dnf)", "packages": ["cmake", "gcc", "gcc-c++", "make", "libpcap-devel", "libxml2", "git"]},
+      "command": "dnf install -y cmake gcc gcc-c++ make libpcap-devel libxml2 git",
+      "success": true,
+      "output": "Complete!",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 90
+    },
+    {
+      "timestamp": "2026-08-13T20:32:00",
+      "step": "dependency_installation",
+      "action": "下载 onnxruntime 1.22.0 aarch64 预编译包（GitHub 直连停滞，改用 ghfast.top 镜像）",
+      "result": "成功",
+      "details": {"source": "ghfast.top 镜像 (GitHub 直连极慢)", "size": "6.8MB tgz (解压 18.8MB)", "path": "util/onnxruntime-linux-aarch64-1.22.0"},
+      "command": "curl -sL -o onnxruntime.tgz https://ghfast.top/https://github.com/microsoft/onnxruntime/releases/download/v1.22.0/onnxruntime-linux-aarch64-1.22.0.tgz",
+      "success": true,
+      "output": "libonnxruntime.so.1.22.0 与 include/ 就绪",
+      "error": "GitHub 直连下载停滞（~5KB/s），改用镜像",
+      "returncode": 0,
+      "duration_seconds": 300
+    },
+    {
+      "timestamp": "2026-08-13T20:36:00",
+      "step": "dependency_installation",
+      "action": "安装 yaml-cpp（dnf yaml-cpp-devel 0.6.3，替代文档要求的 0.8.0 源码构建）",
+      "result": "成功",
+      "details": {"source": "openEuler 官方仓库 (dnf)", "version": "yaml-cpp-devel-0.6.3"},
+      "command": "dnf install -y yaml-cpp-devel",
+      "success": true,
+      "output": "yaml-cpp-devel-0.6.3-3.oe2203sp4 安装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-13T20:38:00",
+      "step": "build_attempt",
+      "action": "运行 sh build.sh 编译",
+      "result": "成功",
+      "details": {"artifacts": "output/libKDADK_feature_extract.so (67KB), output/libKDADK_inference.so (265KB)"},
+      "command": "sh build.sh",
+      "success": true,
+      "output": "build success",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-13T20:40:00",
+      "step": "build_attempt",
+      "action": "sh build.sh -lib 构建测试用库",
+      "result": "成功",
+      "details": {},
+      "command": "sh build.sh -lib",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 90
+    },
+    {
+      "timestamp": "2026-08-13T20:42:00",
+      "step": "problem_resolution",
+      "action": "下载 googletest 1.8.0 时缺 unzip，安装 unzip 后重新下载解压",
+      "result": "成功",
+      "details": {"issue": "unzip: command not found"},
+      "command": "dnf install -y unzip; cd test/gtest-download && sh download.sh",
+      "success": true,
+      "output": "googletest-release-1.8.0 解压完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-13T20:44:00",
+      "step": "ut_execution",
+      "action": "编译功能测试代码（make）",
+      "result": "成功",
+      "details": {"binaries": ["kdadk_appid_functest", "kdadk_appid_perftest"]},
+      "command": "cd test/build && make",
+      "success": true,
+      "output": "Linking kdadk_appid_functest / kdadk_appid_perftest",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-13T20:46:00",
+      "step": "problem_resolution",
+      "action": "运行功能测试缺 python 命令（gtest-parallel 依赖），创建 python3 软链",
+      "result": "成功",
+      "details": {"issue": "/usr/bin/env: python: No such file or directory"},
+      "command": "ln -sf /usr/bin/python3 /usr/local/bin/python",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-13T20:47:00",
+      "step": "ut_execution",
+      "action": "运行功能测试 make rfunc（gtest-parallel 并行）",
+      "result": "全部通过",
+      "details": {"total": 104, "passed": 104, "failed": 0, "runner": "gtest-parallel"},
+      "command": "cd test/build && make rfunc",
+      "success": true,
+      "output": "[104/104] 全部测试完成，rfunc exit=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-13T20:52:00",
+      "step": "report_generation",
+      "action": "生成验证报告 JSON 与文档建议",
+      "result": "成功",
+      "details": {"output_path": "D:\\soft\\ai\\opencode\\ttfhw\\json\\verification_report_SSH_KTAG_20260813.json"},
+      "command": "",
+      "success": true,
+      "output": "报告已生成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": ".pre-commit-config.yaml 已配置（未在容器中执行）",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "Configured, not executed",
+        "duration_seconds": 0,
+        "hooks": []
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "openeuler/openeuler:22.03-lts-sp4",
+      "summary": "仓库无 .devcontainer 与 Dockerfile"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 210,
+      "artifacts": [
+        {"name": "libKDADK_feature_extract.so", "path": "output/libKDADK_feature_extract.so", "size": "67KB"},
+        {"name": "libKDADK_inference.so", "path": "output/libKDADK_inference.so", "size": "265KB"}
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 120,
+      "total": 104,
+      "passed": 104,
+      "failed": 0,
+      "failures": [],
+      "details": "GoogleTest + gtest-parallel：104/104 用例通过（make rfunc）"
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 60,
+      "results": [
+        {"sample": "功能测试 (make rfunc)", "status": "success", "output": "104/104 测试通过，覆盖特征提取与推理接口", "error": ""}
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "category": "依赖下载无国内镜像",
+      "description": "编译指南要求从 GitHub 下载 onnxruntime 1.22.0 与 yaml-cpp 0.8.0，实测 GitHub 直连下载停滞（onnxruntime 约 5KB/s，数分钟仅下载 2.7MB），文档未提供任何国内镜像/加速地址",
+      "severity": "high",
+      "suggestion": "提供国内镜像下载地址（如 ghfast.top 等 GitHub 加速镜像），或提供 onnxruntime/yaml-cpp 的国产源（如华为云 OBS、openEuler 仓库）"
+    },
+    {
+      "category": "yaml-cpp 版本与获取方式",
+      "description": "文档要求 yaml-cpp 0.8.0 从源码构建，但 openEuler 22.03 仓库提供 yaml-cpp-devel（0.6.3）可直接 dnf 安装，且用 0.6.3 也能编译通过。文档未提及更简单的 dnf 安装方式",
+      "severity": "medium",
+      "suggestion": "在文档中说明可用 dnf install yaml-cpp-devel 替代源码构建，并注明版本差异不影响构建"
+    },
+    {
+      "category": "测试依赖 python 未说明",
+      "description": "功能测试通过 gtest-parallel（Python 脚本）运行，需要 python（无版本后缀）命令，但文档与依赖清单均未说明需安装 python/python-unversioned-command。干净环境下 make rfunc 报 '/usr/bin/env: python: No such file or directory'",
+      "severity": "medium",
+      "suggestion": "在依赖清单中补充 python 或 python-unversioned-command"
+    },
+    {
+      "category": "测试依赖 unzip 未说明",
+      "description": "下载并解压 googletest 需要 unzip 命令，文档未提及，干净环境报 'unzip: command not found'",
+      "severity": "low",
+      "suggestion": "在依赖清单中补充 unzip"
+    },
+    {
+      "category": "缺少 Dockerfile",
+      "description": "仓库无 Dockerfile 与 .devcontainer 配置",
+      "severity": "low",
+      "suggestion": "提供 Dockerfile 示例（基于 openEuler 22.03，预置 onnxruntime/yaml-cpp）"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "网络下载问题",
+      "description": "onnxruntime 1.22.0 从 GitHub 直连下载停滞，yaml-cpp 源码同样下载缓慢",
+      "root_cause": "国内网络访问 GitHub release 资产受限，文档未提供镜像",
+      "solution": "onnxruntime 改用 ghfast.top 镜像下载成功；yaml-cpp 改用 dnf 安装 yaml-cpp-devel",
+      "severity": "medium"
+    },
+    {
+      "category": "测试运行失败",
+      "description": "make rfunc 报 python 命令不存在",
+      "root_cause": "gtest-parallel 脚本 shebang 为 #!/usr/bin/env python，容器仅安装了 python3",
+      "solution": "创建 python 软链指向 python3 后测试通过",
+      "severity": "low"
+    }
+  ]
+}
