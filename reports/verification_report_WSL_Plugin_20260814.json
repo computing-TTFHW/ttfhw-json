@@ -1,0 +1,635 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/opengauss/Plugin.git",
+    "branch": "detached HEAD",
+    "commit": "b7f8d1634fe37bc6620b5b1d43697e495ae020ee",
+    "start_time": "2026-08-14T12:36:05",
+    "end_time": "2026-08-14T13:15:24",
+    "duration_seconds": 2359.0,
+    "total_steps": 17,
+    "environment": "WSL host + Docker openEuler 24.03 LTS aarch64；/binarylibs 只读挂载；host network；CMake build.sh 集成 Dolphin。",
+    "verifier": "Codex GPT-5"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "gpt-5-codex",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "unknown",
+      "cpu_cores": 128,
+      "memory": "Mem:          1.0Ti        61Gi       263Gi       219Gi       696Gi       593Gi",
+      "disk": "/dev/mapper/openeuler-home  3.6T  2.1T  1.3T  62% /home",
+      "docker_version": "Docker version 18.09.0, build 9c76233"
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS)",
+      "architecture": "aarch64",
+      "cpu_cores": 128,
+      "memory": "Mem: 1.0Ti 428Gi used 263Gi free 219Gi shared 696Gi buff/cache 593Gi available",
+      "container_name": "ttfhw-plugin-openeuler-env-20260814"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "用户推荐且 skill 强制使用 openEuler 基础镜像；目标环境为 openEuler 24.03 LTS aarch64。",
+      "dependency_mapping": {
+        "from_dockerfile": "Plugin 仓 Dockerfile 位于 contrib/age 与 contrib/chparser，非 Dolphin 主验证入口；仅作为依赖参考。",
+        "from_readme": "README 说明 Dolphin 需放入 openGauss-server/contrib/dolphin 并执行回归测试；本轮按用户补充要求使用 server build.sh/CMake 集成编译。",
+        "mappings": [
+          {
+            "original": "apt build-essential/flex/bison/git/postgresql-server-dev-11 等",
+            "openEuler": "dnf gcc gcc-c++ make flex bison git cmake 等；PostgreSQL server-dev 不用于 openGauss Dolphin 构建",
+            "source": "Plugin contrib/age/Dockerfile"
+          },
+          {
+            "original": "yum tar bzip2 curl libaio gcc make readline shadow 等",
+            "openEuler": "openEuler 24.03 dnf 同名或等价包",
+            "source": "Plugin contrib/chparser/docker/dockerfile_arm"
+          },
+          {
+            "original": "GCC10、openssl、libcgroup、Huawei_Secure_C、dcf、kerberos 等二进制依赖",
+            "openEuler": "使用已有 /binarylibs 只读挂载，不联网重复下载大依赖",
+            "source": "用户环境要求"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "用户要求和容器 uname -m",
+      "value": "aarch64"
+    },
+    "recommended_image": {
+      "source": "用户要求和 skill",
+      "value": "hub.oepkgs.net/openeuler/openeuler:24.03-lts"
+    },
+    "dockerfile_dependencies": {
+      "source": "Plugin contrib/age/Dockerfile; contrib/chparser/docker/dockerfile_arm/x86",
+      "value": [
+        {
+          "original": "bison build-essential ca-certificates flex git postgresql-plpython3-11 postgresql-server-dev-11",
+          "openEuler_equivalent": "bison flex git gcc gcc-c++ make ca-certificates python3 等；PostgreSQL 依赖不用于本轮 openGauss Dolphin 构建"
+        },
+        {
+          "original": "tar bzip2 bzip2-devel curl libaio gcc make readline readline-devel util-linux shadow",
+          "openEuler_equivalent": "tar bzip2 bzip2-devel curl libaio-devel gcc make readline-devel util-linux shadow-utils"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "用户环境要求、server build.sh、Plugin README",
+      "value": [
+        "gcc/gcc-c++/make/cmake/git/python3/python3-pip",
+        "libedit-devel/libxml2-devel/lz4-devel/numactl-devel/unixODBC-devel/java-1.8.0-openjdk-devel/libaio-devel/flex/bison/ncurses-devel/glibc-devel/readline-devel/openblas-devel/dkms",
+        "dos2unix/iproute/glibc-locale-source/glibc-locale-archive",
+        "/binarylibs buildtools/gcc10.3 与 kernel dependency/component 库"
+      ]
+    },
+    "build_commands": {
+      "source": "用户本轮补充要求和 openGauss-server build.sh",
+      "value": "修改 build/script/build_opengauss.sh: CMAKE_PKG=\"N\" -> \"Y\"；执行 ./build.sh -m release -3rd /binarylibs --cmake"
+    },
+    "build_entry": {
+      "source": "用户本轮补充要求",
+      "value": "在隔离 openGauss-server 目标 commit 中复制 Plugin/contrib/dolphin 后，用 build.sh/CMake 集成编译 server 与 Dolphin。"
+    },
+    "ut_commands": {
+      "source": "用户本轮补充要求和 Dolphin Makefile",
+      "value": "cd openGauss-server/contrib/dolphin && make check p=38000，不指定 PART，使用合并 parallel_schedule_dolphin。"
+    },
+    "ut_entry": {
+      "source": "contrib/dolphin/Makefile",
+      "value": "PART 为空时 DATA_built 会生成 parallel_schedule_dolphin，REGRESS_OPTS 使用 --schedule=./parallel_schedule_dolphin。"
+    },
+    "sample_commands": {
+      "source": "用户范围限制",
+      "value": "未执行单独样例，只执行 Dolphin make check。"
+    },
+    "special_dependencies": {
+      "source": "实际执行环境",
+      "value": [
+        "pg_regress 必须由 omm UID/GID 22211 执行",
+        "38000 执行前必须空闲",
+        "/binarylibs 只读时 build.sh license_control 需在 workspace 可写副本执行",
+        "en_US.utf8 需存在以避免 SQL_ASCII/locale 类环境失败"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-14T12:36:05",
+      "step": "container_setup",
+      "action": "创建本次隔离运行目录并启动 openEuler 容器",
+      "result": "完成",
+      "details": {
+        "run_dir": "/home/ly_skill_test/plugin/ttfhw-run-20260814"
+      },
+      "command": "docker run -d --name ttfhw-plugin-openeuler-env-20260814 --network host --security-opt seccomp=unconfined -v ttfhw-run-20260814:/workspace -v openGauss-third_party_binarylibs_openEuler_2403_arm:/binarylibs:ro hub.oepkgs.net/openeuler/openeuler:24.03-lts sleep infinity",
+      "success": true,
+      "output": "容器已启动，/binarylibs 为只读挂载。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "dependency_installation",
+      "action": "安装 openEuler 系统依赖并创建 omm 用户",
+      "result": "完成",
+      "details": {
+        "uid": 22211,
+        "gid": 22211
+      },
+      "command": "dnf install -y gcc gcc-c++ make cmake git python3 python3-pip ... glibc-locale-source glibc-locale-archive; localedef; useradd omm",
+      "success": true,
+      "output": "  perl-parent-1:0.241-1.oe2403.noarch                                           \n  perl-perlfaq-5.20230812-1.oe2403.noarch                                       \n  perl-podlators-1:5.01-2.oe2403.noarch                                         \n  perl-threads-2:2.36-2.oe2403.aarch64                                          \n  perl-threads-shared-1.62-2.oe2403.aarch64                                     \n  perl-version-8:0.99.30-1.oe2403.aarch64                                       \n  pixman-0.42.2-1.oe2403.aarch64                                                \n  pkgconf-1.9.5-1.oe2403.aarch64                                                \n  python3-pip-23.3.1-11.oe2403.noarch                                           \n  python3-pyparsing-3.1.1-1.oe2403.noarch                                       \n  python3-setuptools-68.0.0-2.oe2403.noarch                                     \n  qt5-srpm-macros-5.15.10-4.oe2403.noarch                                       \n  readline-devel-8.2-5.oe2403.aarch64                                           \n  shadow-2:4.14.3-8.oe2403.aarch64                                              \n  shadow-subid-devel-2:4.14.3-8.oe2403.aarch64                                  \n  shared-mime-info-2.4-1.oe2403.aarch64                                         \n  systemd-255-58.oe2403.aarch64                                                 \n  systemtap-sdt-devel-5.0-3.oe2403.aarch64                                      \n  tzdata-java-2024a-4.oe2403.noarch                                             \n  unixODBC-2.3.9-4.oe2403.aarch64                                               \n  unixODBC-devel-2.3.9-4.oe2403.aarch64                                         \n  util-linux-2.39.1-38.oe2403.aarch64                                           \n  xkeyboard-config-2.39-3.oe2403.noarch                                         \n  xorg-x11-font-utils-1:7.5-44.oe2403.aarch64                                   \n  xorg-x11-fonts-others-7.5-25.oe2403.noarch                                    \n  xorg-x11-utils-7.5-31.oe2403.aarch64                                          \n  xz-5.4.7-8.oe2403.aarch64                                                     \n  xz-devel-5.4.7-8.oe2403.aarch64                                               \n  zip-3.0-32.oe2403.aarch64                                                     \n  zlib-devel-1.2.13-5.oe2403.aarch64                                            \n\nComplete!\nuid=22211(omm) gid=22211(omm) groups=22211(omm)\nC.utf8\nen_SC.utf8\nen_US\nen_US.iso88591\nen_US.utf8\nes_EC.utf8\nEND 2026-08-14T04:41:50",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 326.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "dependency_installation",
+      "action": "补装 dos2unix 和 iproute",
+      "result": "完成",
+      "details": {},
+      "command": "dnf install -y dos2unix iproute",
+      "success": true,
+      "output": "  Running scriptlet: libnetfilter_conntrack-1.0.9-4.oe2403.aarch64          3/9 \n  Installing       : libpcap-14:1.10.4-5.oe2403.aarch64                     4/9 \n  Installing       : iptables-libs-1.8.9-13.oe2403.aarch64                  5/9 \n  Installing       : libbpf-2:1.2.2-11.oe2403.aarch64                       6/9 \n  Installing       : psmisc-23.6-1.oe2403.aarch64                           7/9 \n  Installing       : iproute-1:6.6.0-9.oe2403.aarch64                       8/9 \n  Installing       : dos2unix-7.5.2-1.oe2403.aarch64                        9/9 \n  Running scriptlet: dos2unix-7.5.2-1.oe2403.aarch64                        9/9 \n  Verifying        : dos2unix-7.5.2-1.oe2403.aarch64                        1/9 \n  Verifying        : libmnl-1.0.5-2.oe2403.aarch64                          2/9 \n  Verifying        : libnetfilter_conntrack-1.0.9-4.oe2403.aarch64          3/9 \n  Verifying        : libnfnetlink-1.0.2-2.oe2403.aarch64                    4/9 \n  Verifying        : psmisc-23.6-1.oe2403.aarch64                           5/9 \n  Verifying        : iproute-1:6.6.0-9.oe2403.aarch64                       6/9 \n  Verifying        : iptables-libs-1.8.9-13.oe2403.aarch64                  7/9 \n  Verifying        : libbpf-2:1.2.2-11.oe2403.aarch64                       8/9 \n  Verifying        : libpcap-14:1.10.4-5.oe2403.aarch64                     9/9 \n\nInstalled:\n  dos2unix-7.5.2-1.oe2403.aarch64                                               \n  iproute-1:6.6.0-9.oe2403.aarch64                                              \n  iptables-libs-1.8.9-13.oe2403.aarch64                                         \n  libbpf-2:1.2.2-11.oe2403.aarch64                                              \n  libmnl-1.0.5-2.oe2403.aarch64                                                 \n  libnetfilter_conntrack-1.0.9-4.oe2403.aarch64                                 \n  libnfnetlink-1.0.2-2.oe2403.aarch64                                           \n  libpcap-14:1.10.4-5.oe2403.aarch64                                            \n  psmisc-23.6-1.oe2403.aarch64                                                  \n\nComplete!",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 11.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "document_reading",
+      "action": "阅读 Plugin README、Dolphin Makefile、server build.sh/build_opengauss.sh",
+      "result": "完成",
+      "details": {},
+      "command": "sed/grep Plugin README, contrib/dolphin/Makefile, openGauss-server build scripts",
+      "success": true,
+      "output": "确认 Dolphin 目录、CMake build.sh 入口、make check p=38000 合并 schedule 行为。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "dockerfile_analysis",
+      "action": "扫描并阅读 Plugin Dockerfile",
+      "result": "完成",
+      "details": {},
+      "command": "find Plugin-src -path */Dockerfile -o -path */dockerfile*",
+      "success": true,
+      "output": "发现 contrib/age/Dockerfile、contrib/chparser/docker/dockerfile_arm、contrib/chparser/docker/dockerfile_x86；均非 Dolphin 主验证入口。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "static_analysis_scan",
+      "action": "扫描 pre-commit、lint-runner、devcontainer 配置",
+      "result": "完成",
+      "details": {},
+      "command": "rg --files Plugin-src | rg pre-commit|lint-runner|devcontainer",
+      "success": true,
+      "output": "目标 commit 未发现 .pre-commit-config.yaml、lint-runner、devcontainer 配置。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "dependency_installation",
+      "action": "Plugin 仓从 0 重新 clone 并 checkout 目标 commit",
+      "result": "完成",
+      "details": {
+        "commit": "b7f8d1634fe37bc6620b5b1d43697e495ae020ee"
+      },
+      "command": "git clone https://gitcode.com/opengauss/Plugin.git Plugin-src && git checkout b7f8d1634fe37bc6620b5b1d43697e495ae020ee",
+      "success": true,
+      "output": "Updating files:  72% (8178/11358)\nUpdating files:  73% (8292/11358)\nUpdating files:  74% (8405/11358)\nUpdating files:  75% (8519/11358)\nUpdating files:  76% (8633/11358)\nUpdating files:  77% (8746/11358)\nUpdating files:  78% (8860/11358)\nUpdating files:  79% (8973/11358)\nUpdating files:  80% (9087/11358)\nUpdating files:  81% (9200/11358)\nUpdating files:  82% (9314/11358)\nUpdating files:  83% (9428/11358)\nUpdating files:  84% (9541/11358)\nUpdating files:  85% (9655/11358)\nUpdating files:  86% (9768/11358)\nUpdating files:  87% (9882/11358)\nUpdating files:  88% (9996/11358)\nUpdating files:  89% (10109/11358)\nUpdating files:  90% (10223/11358)\nUpdating files:  91% (10336/11358)\nUpdating files:  92% (10450/11358)\nUpdating files:  93% (10563/11358)\nUpdating files:  94% (10677/11358)\nUpdating files:  95% (10791/11358)\nUpdating files:  96% (10904/11358)\nUpdating files:  97% (11018/11358)\nUpdating files:  98% (11131/11358)\nUpdating files:  99% (11245/11358)\nUpdating files:  99% (11331/11358)\nUpdating files: 100% (11358/11358)\nUpdating files: 100% (11358/11358), done.\nNote: switching to 'b7f8d1634fe37bc6620b5b1d43697e495ae020ee'.\n\nYou are in 'detached HEAD' state. You can look around, make experimental\nchanges and commit them, and you can discard any commits you make in this\nstate without impacting any branches by switching back to a branch.\n\nIf you want to create a new branch to retain commits you create, you may\ndo so (now or later) by using -c with the switch command. Example:\n\n  git switch -c <new-branch-name>\n\nOr undo this operation with:\n\n  git switch -\n\nTurn off this advice by setting config variable advice.detachedHead to false\n\nHEAD is now at b7f8d1634 !2514 fix: 【plugin】支持 CMake 构建产物下 dolphin 和 shark 执行 make check 回归测试\nb7f8d1634fe37bc6620b5b1d43697e495ae020ee",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "dependency_installation",
+      "action": "openGauss-server clone 并 checkout 目标 commit",
+      "result": "完成",
+      "details": {
+        "commit": "ae26a1b23f770182f90653229e769997224ac973"
+      },
+      "command": "git clone https://gitcode.com/opengauss/openGauss-server.git openGauss-server && git checkout ae26a1b23f770182f90653229e769997224ac973",
+      "success": true,
+      "output": "Updating files:  72% (12708/17650)\nUpdating files:  73% (12885/17650)\nUpdating files:  74% (13061/17650)\nUpdating files:  75% (13238/17650)\nUpdating files:  76% (13414/17650)\nUpdating files:  77% (13591/17650)\nUpdating files:  77% (13647/17650)\nUpdating files:  78% (13767/17650)\nUpdating files:  79% (13944/17650)\nUpdating files:  80% (14120/17650)\nUpdating files:  81% (14297/17650)\nUpdating files:  82% (14473/17650)\nUpdating files:  83% (14650/17650)\nUpdating files:  84% (14826/17650)\nUpdating files:  85% (15003/17650)\nUpdating files:  86% (15179/17650)\nUpdating files:  87% (15356/17650)\nUpdating files:  88% (15532/17650)\nUpdating files:  89% (15709/17650)\nUpdating files:  90% (15885/17650)\nUpdating files:  91% (16062/17650)\nUpdating files:  92% (16238/17650)\nUpdating files:  93% (16415/17650)\nUpdating files:  94% (16591/17650)\nUpdating files:  95% (16768/17650)\nUpdating files:  96% (16944/17650)\nUpdating files:  97% (17121/17650)\nUpdating files:  98% (17297/17650)\nUpdating files:  99% (17474/17650)\nUpdating files: 100% (17650/17650)\nUpdating files: 100% (17650/17650), done.\nNote: switching to 'ae26a1b23f770182f90653229e769997224ac973'.\n\nYou are in 'detached HEAD' state. You can look around, make experimental\nchanges and commit them, and you can discard any commits you make in this\nstate without impacting any branches by switching back to a branch.\n\nIf you want to create a new branch to retain commits you create, you may\ndo so (now or later) by using -c with the switch command. Example:\n\n  git switch -c <new-branch-name>\n\nOr undo this operation with:\n\n  git switch -\n\nTurn off this advice by setting config variable advice.detachedHead to false\n\nHEAD is now at ae26a1b23 !9538 fix: 【server】支持 CMake 构建产物下 dolphin 和 shark 执行 make check 回归测试\nae26a1b23f770182f90653229e769997224ac973",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 34.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "build_attempt",
+      "action": "复制 Dolphin 并修改 CMake 构建配置",
+      "result": "完成",
+      "details": {
+        "patched_files": [
+          "build/script/build_opengauss.sh",
+          "build/script/utils/cmake_compile.sh"
+        ]
+      },
+      "command": "cp -a Plugin-src/contrib/dolphin openGauss-server/contrib/dolphin; patch CMAKE_PKG=N to Y; patch cpus_num 60%",
+      "success": true,
+      "output": "仅修改本次隔离 openGauss-server 树；CMAKE_PKG 默认 Y，并发限制 76。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "build_attempt",
+      "action": "执行首次 server CMake build",
+      "result": "失败",
+      "details": {
+        "classification": "环境问题：只读 /binarylibs 与构建脚本写 license_control 冲突"
+      },
+      "command": "./build.sh -m release -3rd /binarylibs --cmake",
+      "success": false,
+      "output": "ROOT_DIR : /workspace/src/openGauss-server\nCMAKE_OPT----> -DENABLE_MULTIPLE_NODES=OFF -DENABLE_THREAD_SAFETY=ON -DENABLE_MOT=ON -DENABLE_READLINE=ON -DENABLE_OPENEULER_MAJOR=ON -DENABLE_OPENSSL3=ON \n[makegaussdb] 26-08-14 04:44:37: script dir : /workspace/src/openGauss-server/build/script\n[makegaussdb] 26-08-14 04:44:37: Work root dir : /workspace/src/openGauss-server\n[makegaussdb] 26-08-14 04:44:37: create /binarylibs/buildtools/license_control license file failed.\ncreate /binarylibs/buildtools/license_control license file failed.\nbuild_opengauss.sh failed, aborting.",
+      "error": "license_control 写只读 /binarylibs 失败",
+      "returncode": 1,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "problem_resolution",
+      "action": "修复只读 /binarylibs license_control 冲突",
+      "result": "完成",
+      "details": {},
+      "command": "patch cmake_compile.sh to copy license_control into workspace writable dir",
+      "success": true,
+      "output": "修复点限制在隔离构建脚本，不改 /binarylibs 本体。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "build_retry",
+      "action": "重试 server build.sh/CMake 集成编译",
+      "result": "完成",
+      "details": {
+        "artifacts": [
+          "mppdb_temp_install/bin/gaussdb",
+          "mppdb_temp_install/lib/postgresql/dolphin.so"
+        ]
+      },
+      "command": "./build.sh -m release -3rd /binarylibs --cmake",
+      "success": true,
+      "output": "[ 16%] Built target dolphin_plpgsql\n[ 19%] Built target dolphin_opt_plan\n[ 28%] Built target dolphin_outer_obj\n[ 28%] Built target dolphin_adt_show\n[ 34%] Built target dolphin_proto\n[ 40%] Built target dolphin_opt_commands\n[ 63%] Built target dolphin_parser\n[100%] Built target dolphin_utils_adt\n[100%] Built target dolphin\nInstall the project...\n-- Install configuration: \"\"\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin.control\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.3.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--1.0--1.1.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--1.1--1.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--1.1--2.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--2.0--1.1.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--2.0--3.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--3.0--2.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--3.0--4.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.0--3.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.0--4.1.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.1--4.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.1--4.2.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.2--4.1.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.2--4.3.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.3--4.2.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.3--4.4.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.4--4.3.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.4--4.5.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.5--4.4.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.5--5.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.0--4.5.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.0--5.1.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.1--5.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.1--5.2.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.2--5.1.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.2--5.3.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.3--5.2.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--2.0--2.0.1.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--2.0.1--2.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.0--4.0.1.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.0.1--4.0.sql\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/openGauss_expr_dolphin.ir\n-- Installing: /workspace/src/openGauss-server/mppdb_temp_install/lib/postgresql/dolphin.so\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin.control\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.3.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--1.0--1.1.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--1.1--1.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--1.1--2.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--2.0--1.1.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--2.0--3.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--3.0--2.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--3.0--4.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.0--3.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.1--4.2.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.2--4.1.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.2--4.3.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.3--4.2.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.3--4.4.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.4--4.3.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.4--4.5.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.5--4.4.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.5--5.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.0--4.5.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.0--5.1.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.1--5.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.1--5.2.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.2--5.1.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.2--5.3.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--5.3--5.2.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.0--4.1.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.1--4.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--2.0--2.0.1.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--2.0.1--2.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.0--4.0.1.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin--4.0.1--4.0.sql\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/openGauss_expr_dolphin.ir\n-- Up-to-date: /workspace/src/openGauss-server/mppdb_temp_install/lib/postgresql/dolphin.so\nnow, all build has finished!",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 309.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "dependency_verification",
+      "action": "检查端口和运行身份",
+      "result": "完成",
+      "details": {
+        "selected_port": 38000
+      },
+      "command": "ss -ltnp | grep :38000; id omm",
+      "success": true,
+      "output": "38000/36000/34000/32000 均空闲；omm uid/gid 为 22211。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "ut_execution",
+      "action": "执行 Dolphin 合并 make check",
+      "result": "失败",
+      "details": {
+        "classification": "用例真实失败/expected 与当前主仓行为不匹配",
+        "failed_tests": [
+          "create_function_test/m_type_create_proc",
+          "create_function_test/b_compat_create_func",
+          "view_definer_test",
+          "builtin_funcs/b_compatibility_time_funcs2",
+          "dump_encryption_test",
+          "db_b_date_time_functions3",
+          "show_create",
+          "show_create_database",
+          "b_format_infomation_schema",
+          "case_sensitive_test/role_test",
+          "case_sensitive_test_backquote/role_test",
+          "show"
+        ],
+        "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+        "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+        "results_dir": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results",
+        "total": 518,
+        "passed": 506,
+        "failed": 12,
+        "summary_source": "/home/ly_skill_test/plugin/ttfhw-run-20260814/log/dolphin-check-combined.log"
+      },
+      "command": "cd openGauss-server/contrib/dolphin && make check p=38000",
+      "success": false,
+      "output": "     gs_dump_unique_key       .... ok                TIME TAKEN: [    5.932]\nparallel group (6 tests)(81/99):  test_trigger_ddl_import_and_export test_procedure_ddl_import_and_export test_insert_ddl_import_and_export test_function_ddl_import_and_export test_data_type_import_and_export test_load_data_ddl_import_and_export\n     test_procedure_ddl_import_and_export .... ok                TIME TAKEN: [   40.610]\n     test_function_ddl_import_and_export .... ok                TIME TAKEN: [   45.333]\n     test_trigger_ddl_import_and_export .... ok                TIME TAKEN: [   24.930]\n     test_insert_ddl_import_and_export .... ok                TIME TAKEN: [   41.716]\n     test_load_data_ddl_import_and_export .... ok                TIME TAKEN: [   65.825]\n     test_data_type_import_and_export .... ok                TIME TAKEN: [   51.661]\nparallel group (7 tests)(82/99):  test_schema connection_id fetch_rows_with_ties test_system_user test_bit_xor union binary_export_test\n     test_schema              .... ok                TIME TAKEN: [    0.103]\n     connection_id            .... ok                TIME TAKEN: [    0.103]\n     test_system_user         .... ok                TIME TAKEN: [    0.204]\n     test_bit_xor             .... ok                TIME TAKEN: [    0.807]\n     union                    .... ok                TIME TAKEN: [    5.332]\n     binary_export_test       .... ok                TIME TAKEN: [   12.061]\n     fetch_rows_with_ties     .... ok                TIME TAKEN: [    0.102]\nparallel group (7 tests)(83/99):  builtin_funcs/cast get_b_database test_outer_join any_value_test union2 builtin_funcs/rand_func default_function\n     builtin_funcs/cast       .... ok                TIME TAKEN: [    0.103]\n     any_value_test           .... ok                TIME TAKEN: [    0.204]\n     default_function         .... ok                TIME TAKEN: [    5.532]\n     get_b_database           .... ok                TIME TAKEN: [    0.103]\n     union2                   .... ok                TIME TAKEN: [    1.310]\n     test_outer_join          .... ok                TIME TAKEN: [    0.103]\n     builtin_funcs/rand_func  .... ok                TIME TAKEN: [    1.512]\nparallel group (8 tests)(84/99):  json_objectagg json_arrayagg json_operator json_storage_size json_type json_pretty json_length json_valid\n     json_type                .... ok                TIME TAKEN: [    0.306]\n     json_pretty              .... ok                TIME TAKEN: [    0.306]\n     json_valid               .... ok                TIME TAKEN: [    0.708]\n     json_length              .... ok                TIME TAKEN: [    0.507]\n     json_objectagg           .... ok                TIME TAKEN: [    0.203]\n     json_arrayagg            .... ok                TIME TAKEN: [    0.203]\n     json_operator            .... ok                TIME TAKEN: [    0.203]\n     json_storage_size        .... ok                TIME TAKEN: [    0.204]\nparallel group (7 tests)(85/99):  test_text2bool test_uuid_short funcname_with_odd_single_quote distinct fulltext_index dual_test test_sleep\n     test_uuid_short          .... Use of uninitialized value $1 in quotemeta at /workspace/src/openGauss-server/contrib/dolphin/smartmatch.pl line 421, <$RESULT> line 4.\nUse of uninitialized value $1 in quotemeta at /workspace/src/openGauss-server/contrib/dolphin/smartmatch.pl line 421, <$RESULT> line 10.\nok                TIME TAKEN: [    0.204]\n     test_sleep               .... ok                TIME TAKEN: [    3.219]\n     distinct                 .... ok                TIME TAKEN: [    0.305]\n     dual_test                .... ok                TIME TAKEN: [    0.607]\n     fulltext_index           .... ok                TIME TAKEN: [    0.406]\n     test_text2bool           .... ok                TIME TAKEN: [    0.102]\n     funcname_with_odd_single_quote .... ok                TIME TAKEN: [    0.203]\nparallel group (8 tests)(86/99):  operator_compatibility_test/multi_type_operator_test operator_compatibility_test/compare_operator_plan operator_compatibility_test/string_operator_test operator_compatibility_test/time_operator_test operator_compatibility_test/numeric_operator_test_normal operator_compatibility_test/numeric_operator_test_max operator_compatibility_test/numeric_operator_test_min operator_compatibility_test/compare_operator_test\n     operator_compatibility_test/numeric_operator_test_normal .... ok                TIME TAKEN: [    3.726]\n     operator_compatibility_test/numeric_operator_test_min .... ok                TIME TAKEN: [    6.442]\n     operator_compatibility_test/numeric_operator_test_max .... ok                TIME TAKEN: [    5.938]\n     operator_compatibility_test/time_operator_test .... ok                TIME TAKEN: [    1.915]\n     operator_compatibility_test/string_operator_test .... Use of uninitialized value $1 in quotemeta at /workspace/src/openGauss-server/contrib/dolphin/smartmatch.pl line 421, <$RESULT> line 3086.\nok                TIME TAKEN: [    1.411]\n     operator_compatibility_test/multi_type_operator_test .... ok                TIME TAKEN: [    0.203]\n     operator_compatibility_test/compare_operator_test .... ok                TIME TAKEN: [   12.268]\n     operator_compatibility_test/compare_operator_plan .... ok                TIME TAKEN: [    0.504]\nparallel group (7 tests)(87/99):  operator_associativity operator_compatibility_test/json_cmp_operator_test operator_compatibility_test/not_test operator_compatibility_test/multi_type_xor_test operator_compatibility_test/pipes_as_concat_test operator_compatibility_test/multi_type_or_test operator_compatibility_test/json_operator_test\n     operator_compatibility_test/json_operator_test .... ok                TIME TAKEN: [    8.343]\n     operator_compatibility_test/json_cmp_operator_test .... ok                TIME TAKEN: [    0.404]\n     operator_associativity   .... ok                TIME TAKEN: [    0.102]\n     operator_compatibility_test/multi_type_or_test .... ok                TIME TAKEN: [    5.931]\n     operator_compatibility_test/multi_type_xor_test .... ok                TIME TAKEN: [    1.309]\n     operator_compatibility_test/pipes_as_concat_test .... ok                TIME TAKEN: [    1.510]\n     operator_compatibility_test/not_test .... ok                TIME TAKEN: [    0.404]\nparallel group (4 tests)(88/99):  operator_compatibility_test/multi_type_bitandor_test operator_compatibility_test/multi_type_leftright_shift_test operator_compatibility_test/multi_type_add_sub_multi_test operator_compatibility_test/multi_type_div_mod_test\n     operator_compatibility_test/multi_type_bitandor_test .... ok                TIME TAKEN: [    3.020]\n     operator_compatibility_test/multi_type_leftright_shift_test .... ok                TIME TAKEN: [    6.839]\n     operator_compatibility_test/multi_type_add_sub_multi_test .... ok                TIME TAKEN: [   14.072]\n     operator_compatibility_test/multi_type_div_mod_test .... ok                TIME TAKEN: [   20.401]\nparallel group (5 tests)(89/99):  sconst_sconst test_geometric_operator column_quote_alias sqlmode_strict test_view_table_depend\n     column_quote_alias       .... ok                TIME TAKEN: [    0.304]\n     sconst_sconst            .... ok                TIME TAKEN: [    0.102]\n     sqlmode_strict           .... ok                TIME TAKEN: [    0.707]\n     test_view_table_depend   .... ok                TIME TAKEN: [    2.719]\n     test_geometric_operator  .... ok                TIME TAKEN: [    0.102]\nparallel group (8 tests)(90/99):  b_database_subquery test_lag_lead escape_char delimiter test_std test_var_pop builtin_funcs/max_min test_row_in\n     test_row_in              .... ok                TIME TAKEN: [    0.809]\n     test_std                 .... ok                TIME TAKEN: [    0.205]\n     test_var_pop             .... ok                TIME TAKEN: [    0.205]\n     b_database_subquery      .... ok                TIME TAKEN: [    0.102]\n     test_lag_lead            .... ok                TIME TAKEN: [    0.102]\n     builtin_funcs/max_min    .... ok                TIME TAKEN: [    0.305]\n     escape_char              .... ok                TIME TAKEN: [    0.102]\n     delimiter                .... ok                TIME TAKEN: [    0.103]\nparallel group (10 tests)(91/99):  charset_utf8mb4_b_db charset_gbk_b_db test_shows_1 like_index_test_gb18030 like_index_test_gbk test_charset_collate db_b_parser2 test_binary2 builtin_funcs/character_length builtin_funcs/char_length\n     db_b_parser2             .... Use of uninitialized value $1 in quotemeta at /workspace/src/openGauss-server/contrib/dolphin/smartmatch.pl line 421, <$RESULT> line 133.\nUse of uninitialized value $1 in quotemeta at /workspace/src/openGauss-server/contrib/dolphin/smartmatch.pl line 421, <$RESULT> line 139.\nok                TIME TAKEN: [   54.582]\n     test_shows_1             .... ok                TIME TAKEN: [   14.275]\n     test_charset_collate     .... ok                TIME TAKEN: [   28.952]\n     charset_utf8mb4_b_db     .... ok                TIME TAKEN: [    7.942]\n     charset_gbk_b_db         .... ok                TIME TAKEN: [   10.556]\n     test_binary2             .... ok                TIME TAKEN: [   61.017]\n     like_index_test_gbk      .... ok                TIME TAKEN: [   18.296]\n     like_index_test_gb18030  .... ok                TIME TAKEN: [   14.878]\n     builtin_funcs/char_length .... ok                TIME TAKEN: [   69.559]\n     builtin_funcs/character_length .... ok                TIME TAKEN: [   65.338]\nparallel group (3 tests)(92/99):  eq_all_subquery in_test alter_tables\n     in_test                  .... ok                TIME TAKEN: [    0.605]\n     eq_all_subquery          .... ok                TIME TAKEN: [    0.202]\n     alter_tables             .... ok                TIME TAKEN: [    0.806]\nparallel group (3 tests)(93/99):  insert_bypass prepare_index_con tpcc_plan\n     insert_bypass            .... ok                TIME TAKEN: [    0.103]\n     prepare_index_con        .... ok                TIME TAKEN: [    0.304]\n     tpcc_plan                .... ok                TIME TAKEN: [    0.304]\ntest dummy                    .... ok                TIME START: [2026-08-14 05:11:16]. TIME TAKEN: [    0.101] %UCPU: [ 0.00] %SCPU:  [ 0.00] %MEM: [ 0.00] MEM: [0 B      ]\n\n============== shutting down postmaster               ==============\nstop postmaster now!\nls: cannot read symbolic link '/proc/25374/cwd': No such file or directory\n\n=========================\n 12 of 518 tests failed. \n Total Time: 1119.408998s\n=========================\n\nThe differences that caused some tests to fail can be viewed in the\nfile \"/workspace/src/openGauss-server/contrib/dolphin/regression.diffs\".  A copy of the test summary that you see\nabove is saved in the file \"/workspace/src/openGauss-server/contrib/dolphin/regression.out\".\n\nstop postmaster now!\nstop postmaster now!\nmake: *** [../../cmake/check/contrib-regress.mk:20: check] Error 1",
+      "error": "12 of 518 tests failed",
+      "returncode": 2,
+      "duration_seconds": 1200.0
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "step": "report_generation",
+      "action": "生成 schema JSON 报告",
+      "result": "完成",
+      "details": {
+        "artifact_index": "/home/ly_skill_test/plugin/verification_report/artifacts_index_Plugin_20260814.txt"
+      },
+      "command": "python3 generate verification_report_WSL_Plugin_20260814.json and jsonschema.validate",
+      "success": true,
+      "output": "报告仅记录 artifact 路径，不嵌入 regression.out/regression.diffs 原文。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.0
+    },
+    {
+      "timestamp": "2026-08-14T13:14:49",
+      "step": "report_generation",
+      "action": "修正报告 UT 总数解析",
+      "result": "完成",
+      "details": {
+        "reason": "最终汇总行位于 dolphin-check-combined.log；regression.out 已读取但尾部不含汇总。",
+        "total": 518,
+        "passed": 506,
+        "failed": 12,
+        "failed_names": [
+          "create_function_test/m_type_create_proc",
+          "create_function_test/b_compat_create_func",
+          "view_definer_test",
+          "builtin_funcs/b_compatibility_time_funcs2",
+          "dump_encryption_test",
+          "db_b_date_time_functions3",
+          "show_create",
+          "show_create_database",
+          "b_format_infomation_schema",
+          "case_sensitive_test/role_test",
+          "case_sensitive_test_backquote/role_test",
+          "show"
+        ]
+      },
+      "command": "python3 update UT total from dolphin-check-combined.log",
+      "success": true,
+      "output": "UT 统计已修正为 12/518 failed。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.1
+    },
+    {
+      "timestamp": "2026-08-14T13:15:24",
+      "step": "cleanup",
+      "action": "停止并删除本次验证容器",
+      "result": "完成",
+      "details": {
+        "container": "ttfhw-plugin-openeuler-env-20260814",
+        "scope": "仅清理本次任务容器；保留 ttfhw-run-20260814 运行目录、日志、artifacts 和报告。"
+      },
+      "command": "docker stop ttfhw-plugin-openeuler-env-20260814 && docker rm ttfhw-plugin-openeuler-env-20260814",
+      "success": true,
+      "output": "ttfhw-plugin-openeuler-env-20260814\nttfhw-plugin-openeuler-env-20260814",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 12.69
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "已扫描 Plugin 目标 commit，未发现 .pre-commit-config.yaml、lint-runner 或 devcontainer；且用户限定不扩大范围，未执行额外静态检查。",
+      "pre_commit": {
+        "configured": false,
+        "config_file": null,
+        "status": "未配置",
+        "duration_seconds": 0,
+        "total_hooks": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "executed_in_verification": false,
+        "hooks": []
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": null,
+      "config_files": [],
+      "original_base_image": "未发现 .devcontainer/devcontainer.json",
+      "used_image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "summary": "仓库无 devcontainer；按 skill 和用户要求使用 openEuler 基础镜像容器。"
+    },
+    "build": {
+      "status": "通过",
+      "duration_seconds": 309.0,
+      "compiler": "gcc (GCC) 10.3.1; cmake 3.27.9",
+      "concurrency": 76,
+      "concurrency_ratio": "128 核环境限制到 60%，make -sj 76",
+      "notes": "首次 CMake build 因 /binarylibs 只读导致 license_control chmod/write 失败；在隔离构建脚本中改为复制 license_control 到 workspace 可写副本后重试成功。build_opengauss.sh 已按用户要求将 CMAKE_PKG 默认值改为 Y。",
+      "artifacts": [
+        {
+          "name": "gaussdb",
+          "path": "/workspace/src/openGauss-server/mppdb_temp_install/bin/gaussdb",
+          "size": "828336840 bytes",
+          "type": "binary"
+        },
+        {
+          "name": "dolphin.so",
+          "path": "/workspace/src/openGauss-server/mppdb_temp_install/lib/postgresql/dolphin.so",
+          "size": "67483488 bytes",
+          "type": "shared_library"
+        },
+        {
+          "name": "dolphin.control",
+          "path": "/workspace/src/openGauss-server/mppdb_temp_install/share/postgresql/extension/dolphin.control",
+          "size": "123 bytes",
+          "type": "extension_control"
+        }
+      ]
+    },
+    "ut": {
+      "status": "未通过",
+      "duration_seconds": 1200.0,
+      "total": 518,
+      "passed": 506,
+      "failed": 12,
+      "skipped": 0,
+      "cpp": {
+        "status": "未通过",
+        "total": 518,
+        "passed": 506,
+        "failed": 12,
+        "note": "Dolphin 合并 schedule 回归；dolphin-check-combined.log 记录 Total Time 1119.408998s，命令墙钟 1200.0s。regression.out/regression.diffs 已读取，artifact 中保留。"
+      },
+      "failures": [
+        {
+          "test_name": "create_function_test/m_type_create_proc",
+          "classification": "用例真实失败：DDL/函数/权限相关输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/create_function_test/m_type_create_proc.out"
+        },
+        {
+          "test_name": "create_function_test/b_compat_create_func",
+          "classification": "用例真实失败：DDL/函数/权限相关输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/create_function_test/b_compat_create_func.out"
+        },
+        {
+          "test_name": "view_definer_test",
+          "classification": "expected 与当前主仓行为不匹配：SHOW/视图/元数据输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/view_definer_test.out"
+        },
+        {
+          "test_name": "builtin_funcs/b_compatibility_time_funcs2",
+          "classification": "用例真实失败：日期时间函数输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/builtin_funcs/b_compatibility_time_funcs2.out"
+        },
+        {
+          "test_name": "dump_encryption_test",
+          "classification": "用例真实失败：dump/加密导出输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/dump_encryption_test.out"
+        },
+        {
+          "test_name": "db_b_date_time_functions3",
+          "classification": "用例真实失败：日期时间函数输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/db_b_date_time_functions3.out"
+        },
+        {
+          "test_name": "show_create",
+          "classification": "expected 与当前主仓行为不匹配：SHOW/视图/元数据输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/show_create.out"
+        },
+        {
+          "test_name": "show_create_database",
+          "classification": "expected 与当前主仓行为不匹配：SHOW/视图/元数据输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/show_create_database.out"
+        },
+        {
+          "test_name": "b_format_infomation_schema",
+          "classification": "expected 与当前主仓行为不匹配：SHOW/视图/元数据输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/b_format_infomation_schema.out"
+        },
+        {
+          "test_name": "case_sensitive_test/role_test",
+          "classification": "用例真实失败：DDL/函数/权限相关输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/case_sensitive_test/role_test.out"
+        },
+        {
+          "test_name": "case_sensitive_test_backquote/role_test",
+          "classification": "用例真实失败：DDL/函数/权限相关输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/case_sensitive_test_backquote/role_test.out"
+        },
+        {
+          "test_name": "show",
+          "classification": "expected 与当前主仓行为不匹配：SHOW/视图/元数据输出差异",
+          "evidence": "make check 已完成，initdb 使用 en_US.utf8/UTF8，端口与运行身份正常；该用例在 regression.out 中标记 FAILED，详细差异见本地 regression.diffs。",
+          "regression_out": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.out",
+          "regression_diffs": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/regression.diffs",
+          "result_output": "/home/ly_skill_test/plugin/ttfhw-run-20260814/artifacts/combined_final/results/show.out"
+        }
+      ]
+    },
+    "sample": {
+      "status": "未执行",
+      "duration_seconds": 0,
+      "reason": "用户明确限定执行 Dolphin make check，不执行单独样例。",
+      "results": []
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-14T13:13:50",
+      "title": "只读 /binarylibs 与 build.sh license_control 行为冲突未在文档说明",
+      "body": "build.sh/CMake 流程会执行 encrypted_version_file.py，该脚本会 chmod 并重写 license_control 目录下文件；当 /binarylibs 按要求只读挂载时首次构建失败。需要文档说明可写副本或脚本支持输出到构建目录。",
+      "source": "server-cmake-build.log; makemppdb_pkg.log"
+    },
+    {
+      "time": "2026-08-14T13:13:50",
+      "title": "CMake build 并发默认使用全部 CPU",
+      "body": "cmake_compile.sh 默认 cpus_num 为 /proc/cpuinfo 全部核心并 make -sj；skill 要求不超过 60%，本轮在隔离脚本中限制为 76/128。",
+      "source": "build/script/utils/cmake_compile.sh"
+    },
+    {
+      "time": "2026-08-14T13:13:50",
+      "title": "Dolphin README 仍以 make 构建和 PART=A/B 为主",
+      "body": "用户本轮要求使用 server build.sh/CMake 并不指定 PART 直接跑合并 schedule；README 中 CMake 集成构建和合并 schedule 操作说明不完整。",
+      "source": "Plugin README; 用户补充要求"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "problem": "首次 CMake build 失败：/binarylibs 只读导致 encrypted_version_file.py 无法 chmod GaussDB_features_list。",
+      "solution": "只在本次隔离 openGauss-server 脚本中修改 cmake_compile.sh，将 /binarylibs/buildtools/license_control 复制到 /workspace/src/openGauss-server/license_control_work 后运行脚本，并让 sha256 读取可写副本。",
+      "source": "ttfhw-run-20260814/log/server-cmake-build.log"
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "problem": "cmake_compile.sh 默认用全部 128 核 make -sj，不满足 skill 并发不超过 60% 的要求。",
+      "solution": "只在本次隔离脚本中将 cpus_num 调整为 CPU 数量 * 60 / 100，实际并发为 76。",
+      "source": "ttfhw-run-20260814/src/openGauss-server/build/script/utils/cmake_compile.sh"
+    },
+    {
+      "timestamp": "2026-08-14T13:13:50",
+      "problem": "Dolphin 合并 make check 返回码 2，12/518 failed。",
+      "solution": "读取 regression.out 和 regression.diffs 后分类为用例真实失败/expected 与当前主仓行为不匹配；完整 out/diffs/results 已保存在本地 artifacts，不嵌入 JSON。",
+      "source": "ttfhw-run-20260814/artifacts/combined_final/regression.out; regression.diffs"
+    }
+  ]
+}
