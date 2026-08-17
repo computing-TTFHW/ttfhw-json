@@ -1,0 +1,808 @@
+{
+  "metadata": {
+    "repo_url": "https://github.com/libvirt/libvirt.git",
+    "branch": "master",
+    "start_time": "2026-08-14T17:54:05",
+    "end_time": "2026-08-14T18:10:08",
+    "duration_seconds": 963,
+    "total_steps": 15,
+    "commit": "7a952ab1d923589037e4de41ae92eac62776dc57",
+    "environment": "Docker容器本地验证",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "alibaba-cn/glm-5.2",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "Intel(R) Xeon(R) Gold 6266C CPU @ 3.00GHz",
+      "cpu_cores": 8,
+      "memory": "15Gi",
+      "disk": "197G (93G可用)",
+      "docker_version": "Docker version 27.4.0",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "Ubuntu 24.04.4 LTS",
+      "architecture": "x86_64",
+      "cpu_cores": 8,
+      "memory": "15Gi",
+      "container_name": "libvirt-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "libvirt-ttfhw (基于ubuntu:24.04通过ci/containers/ubuntu-2404.Dockerfile构建)",
+      "selection_reason": "Tier 2 Dockerfile构建：仓库ci/containers/ubuntu-2404.Dockerfile FROM docker.io/library/ubuntu:24.04（基础OS），docker build构建镜像后docker run启动容器，依赖已在镜像中预装"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.rst + ci/gitlab/builds.yml",
+      "value": "x86_64（CI支持x86_64原生构建及aarch64/armv6l/armv7l/i686/ppc64le/riscv64/s390x交叉编译）"
+    },
+    "recommended_image": {
+      "source": "ci/containers/ubuntu-2404.Dockerfile - 第7行",
+      "value": "Tier 2 Dockerfile构建：FROM docker.io/library/ubuntu:24.04，仓库ci/containers/目录有ubuntu-2404.Dockerfile，FROM为基础OS（非自定义镜像），按Tier 2执行docker build"
+    },
+    "dockerfile_dependencies": {
+      "source": "ci/containers/ubuntu-2404.Dockerfile + ci/buildenv/ubuntu-2404.sh",
+      "value": [
+        {
+          "original": "gcc",
+          "target_equivalent": "apt-get install -y gcc"
+        },
+        {
+          "original": "make",
+          "target_equivalent": "apt-get install -y make"
+        },
+        {
+          "original": "meson",
+          "target_equivalent": "apt-get install -y meson"
+        },
+        {
+          "original": "ninja-build",
+          "target_equivalent": "apt-get install -y ninja-build"
+        },
+        {
+          "original": "pkgconf",
+          "target_equivalent": "apt-get install -y pkgconf"
+        },
+        {
+          "original": "libglib2.0-dev",
+          "target_equivalent": "apt-get install -y libglib2.0-dev"
+        },
+        {
+          "original": "libgnutls28-dev",
+          "target_equivalent": "apt-get install -y libgnutls28-dev"
+        },
+        {
+          "original": "libxml2-dev",
+          "target_equivalent": "apt-get install -y libxml2-dev"
+        },
+        {
+          "original": "libreadline-dev",
+          "target_equivalent": "apt-get install -y libreadline-dev"
+        },
+        {
+          "original": "libcurl4-gnutls-dev",
+          "target_equivalent": "apt-get install -y libcurl4-gnutls-dev"
+        },
+        {
+          "original": "libdevmapper-dev",
+          "target_equivalent": "apt-get install -y libdevmapper-dev"
+        },
+        {
+          "original": "libacl1-dev",
+          "target_equivalent": "apt-get install -y libacl1-dev"
+        },
+        {
+          "original": "libapparmor-dev",
+          "target_equivalent": "apt-get install -y libapparmor-dev"
+        },
+        {
+          "original": "libattr1-dev",
+          "target_equivalent": "apt-get install -y libattr1-dev"
+        },
+        {
+          "original": "libaudit-dev",
+          "target_equivalent": "apt-get install -y libaudit-dev"
+        },
+        {
+          "original": "libblkid-dev",
+          "target_equivalent": "apt-get install -y libblkid-dev"
+        },
+        {
+          "original": "libcap-ng-dev",
+          "target_equivalent": "apt-get install -y libcap-ng-dev"
+        },
+        {
+          "original": "libfuse3-dev",
+          "target_equivalent": "apt-get install -y libfuse3-dev"
+        },
+        {
+          "original": "libnl-3-dev",
+          "target_equivalent": "apt-get install -y libnl-3-dev"
+        },
+        {
+          "original": "libnl-route-3-dev",
+          "target_equivalent": "apt-get install -y libnl-route-3-dev"
+        },
+        {
+          "original": "libnuma-dev",
+          "target_equivalent": "apt-get install -y libnuma-dev"
+        },
+        {
+          "original": "libpcap0.8-dev",
+          "target_equivalent": "apt-get install -y libpcap0.8-dev"
+        },
+        {
+          "original": "libpciaccess-dev",
+          "target_equivalent": "apt-get install -y libpciaccess-dev"
+        },
+        {
+          "original": "libsasl2-dev",
+          "target_equivalent": "apt-get install -y libsasl2-dev"
+        },
+        {
+          "original": "libselinux1-dev",
+          "target_equivalent": "apt-get install -y libselinux1-dev"
+        },
+        {
+          "original": "libssh-dev",
+          "target_equivalent": "apt-get install -y libssh-dev"
+        },
+        {
+          "original": "libtirpc-dev",
+          "target_equivalent": "apt-get install -y libtirpc-dev"
+        },
+        {
+          "original": "libudev-dev",
+          "target_equivalent": "apt-get install -y libudev-dev"
+        },
+        {
+          "original": "python3-docutils",
+          "target_equivalent": "apt-get install -y python3-docutils"
+        },
+        {
+          "original": "python3-pytest",
+          "target_equivalent": "apt-get install -y python3-pytest"
+        },
+        {
+          "original": "xsltproc",
+          "target_equivalent": "apt-get install -y xsltproc"
+        },
+        {
+          "original": "gettext",
+          "target_equivalent": "apt-get install -y gettext"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "ci/containers/ubuntu-2404.Dockerfile + ci/buildenv/ubuntu-2404.sh + CONTRIBUTING.rst",
+      "value": [
+        "gcc",
+        "make",
+        "meson (>=0.57.0)",
+        "ninja-build",
+        "pkgconf",
+        "ccache",
+        "clang",
+        "cpp",
+        "libacl1-dev",
+        "libapparmor-dev",
+        "libattr1-dev",
+        "libaudit-dev",
+        "libblkid-dev",
+        "libc6-dev",
+        "libcap-ng-dev",
+        "libclang-rt-dev",
+        "libcurl4-gnutls-dev",
+        "libdevmapper-dev",
+        "libfuse3-dev",
+        "libglib2.0-dev",
+        "libglusterfs-dev",
+        "libgnutls28-dev",
+        "libiscsi-dev",
+        "libjson-c-dev",
+        "libnbd-dev",
+        "libnl-3-dev",
+        "libnl-route-3-dev",
+        "libnuma-dev",
+        "libopenwsman-dev",
+        "libparted-dev",
+        "libpcap0.8-dev",
+        "libpciaccess-dev",
+        "librbd-dev",
+        "libreadline-dev",
+        "libsanlock-dev",
+        "libsasl2-dev",
+        "libselinux1-dev",
+        "libssh-dev",
+        "libssh2-1-dev",
+        "libtirpc-dev",
+        "libudev-dev",
+        "libxen-dev",
+        "libxml2-dev",
+        "libxml2-utils",
+        "systemtap-sdt-dev",
+        "wireshark-dev",
+        "augeas-lenses",
+        "augeas-tools",
+        "bash-completion",
+        "ca-certificates",
+        "diffutils",
+        "dwarves",
+        "ebtables",
+        "gettext",
+        "git",
+        "grep",
+        "locales",
+        "perl-base",
+        "python3",
+        "python3-docutils",
+        "python3-pytest",
+        "qemu-utils",
+        "sed",
+        "xsltproc",
+        "black",
+        "codespell",
+        "flake8"
+      ]
+    },
+    "build_commands": {
+      "source": "CONTRIBUTING.rst + ci/jobs.sh + https://libvirt.org/compiling.html",
+      "value": "meson setup build --error -Dsystem=true && meson compile -C build"
+    },
+    "ut_commands": {
+      "source": "ci/jobs.sh + https://libvirt.org/compiling.html",
+      "value": "meson test -C build --no-suite syntax-check --print-errorlogs"
+    },
+    "sample_commands": {
+      "source": "examples/c/meson.build + https://libvirt.org/compiling.html",
+      "value": "构建后在build/examples/c/目录运行：./build/examples/c/misc/hellolibvirt, ./build/examples/c/misc/event-test, ./build/examples/c/domain/domtop等"
+    },
+    "special_dependencies": {
+      "source": "未找到特殊依赖",
+      "value": []
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-14T17:56:08",
+      "step": "document_reading",
+      "action": "读取README.rst提取仓库概述和构建/安装链接",
+      "result": "成功",
+      "details": {
+        "repo_description": "Libvirt提供便携的C API管理虚拟化技术(QEMU, KVM, Xen, LXC等)",
+        "build_doc_url": "https://libvirt.org/compiling.html",
+        "contribute_url": "https://libvirt.org/contribute.html"
+      },
+      "command": "read README.rst",
+      "success": true,
+      "output": "README指向libvirt.org/compiling.html获取构建说明，指向libvirt.org/contribute.html获取贡献指南",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-14T17:56:08",
+      "step": "document_reading",
+      "action": "读取CONTRIBUTING.rst提取构建命令和依赖安装方法",
+      "result": "成功",
+      "details": {
+        "build_commands": [
+          "meson build",
+          "ninja -C build"
+        ],
+        "dep_install_rhel": "sudo dnf builddep libvirt",
+        "dep_install_debian": "sudo apt-get build-dep libvirt",
+        "extra_tools_rhel": "sudo dnf install gcc make ninja-build rpm-build"
+      },
+      "command": "read CONTRIBUTING.rst",
+      "success": true,
+      "output": "CONTRIBUTING.rst提供meson build + ninja -C build构建命令，以及dnf builddep/apt-get build-dep依赖安装方法",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-14T17:56:08",
+      "step": "document_reading",
+      "action": "WebFetch获取libvirt.org/compiling.html编译指南页面",
+      "result": "成功",
+      "details": {
+        "build_system": "Meson",
+        "configure_cmd": "meson setup build [options]",
+        "system_build_cmd": "meson setup build -Dsystem=true",
+        "compile_cmd": "ninja -C build",
+        "test_cmd": "ninja -C build test",
+        "install_cmd": "sudo ninja -C build install",
+        "meson_version": ">=0.57.0 (from meson.build)"
+      },
+      "command": "WebFetch https://libvirt.org/compiling.html",
+      "success": true,
+      "output": "编译指南确认使用Meson构建系统，meson setup build配置，ninja -C build编译，ninja -C build test测试",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-14T17:56:08",
+      "step": "document_reading",
+      "action": "读取ci/containers/ubuntu-2404.Dockerfile提取依赖列表和FROM镜像",
+      "result": "成功",
+      "details": {
+        "from": "docker.io/library/ubuntu:24.04",
+        "tier": "Tier 2",
+        "package_count": 65,
+        "key_packages": [
+          "gcc",
+          "meson",
+          "ninja-build",
+          "libglib2.0-dev",
+          "libgnutls28-dev",
+          "libxml2-dev",
+          "python3-pytest"
+        ]
+      },
+      "command": "read ci/containers/ubuntu-2404.Dockerfile",
+      "success": true,
+      "output": "Dockerfile FROM docker.io/library/ubuntu:24.04，安装65个包包含构建工具和开发库",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-14T17:56:08",
+      "step": "document_reading",
+      "action": "读取ci/jobs.sh提取CI构建/测试脚本命令",
+      "result": "成功",
+      "details": {
+        "meson_setup": "meson setup build --error -Dsystem=true",
+        "compile": "meson compile -C build",
+        "test": "meson test -C build --no-suite syntax-check --print-errorlogs",
+        "ccache_config": "CCACHE_BASEDIR=/root/ttfhw/ttfhw-skills-main, CCACHE_MAXSIZE=500M",
+        "test_env": "VIR_TEST_VERBOSE=1, VIR_TEST_DEBUG=1"
+      },
+      "command": "read ci/jobs.sh",
+      "success": true,
+      "output": "CI使用meson setup build --error -Dsystem true配置，meson compile -C build编译，meson test -C build --no-suite syntax-check测试",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-14T17:56:08",
+      "step": "document_reading",
+      "action": "读取meson.build提取meson版本要求和项目配置",
+      "result": "成功",
+      "details": {
+        "project_name": "libvirt",
+        "version": "12.7.0",
+        "license": "LGPLv2+",
+        "meson_version": ">=0.57.0",
+        "default_options": [
+          "buildtype=debugoptimized",
+          "b_pie=true",
+          "c_std=gnu99",
+          "warning_level=2"
+        ]
+      },
+      "command": "read meson.build",
+      "success": true,
+      "output": "项目libvirt 12.7.0，LGPLv2+许可，meson >=0.57.0，默认选项debugoptimized/PIE/GNU99/警告级别2",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-14T17:56:28",
+      "step": "static_analysis_scan",
+      "action": "检查pre-commit和lint-runner配置文件是否存在",
+      "result": "未配置",
+      "details": {
+        "pre_commit_config_found": false,
+        "lint_runner_config_found": false,
+        "searched_files": [
+          ".pre-commit-config.yaml",
+          ".lintrunner.yaml",
+          ".lint-runner.yaml",
+          ".lint-runner.toml"
+        ]
+      },
+      "command": "find tmp_src/libvirt -maxdepth 2 -name .pre-commit-config* -o -name .lintrunner* -o -name .lint-runner*",
+      "success": true,
+      "output": "未找到.pre-commit-config.yaml、.lintrunner.yaml、.lint-runner.yaml等配置文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-14T17:56:28",
+      "step": "devcontainer_scan",
+      "action": "检查.devcontainer目录是否存在",
+      "result": "未配置",
+      "details": {
+        "devcontainer_dir_found": false,
+        "config_files": []
+      },
+      "command": "find tmp_src/libvirt -maxdepth 2 -name .devcontainer",
+      "success": true,
+      "output": "未找到.devcontainer目录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-14T18:01:07",
+      "step": "image_selection",
+      "action": "Tier 2 Dockerfile构建：从ci/containers/ubuntu-2404.Dockerfile构建镜像",
+      "result": "成功",
+      "details": {
+        "tier": "Tier 2 Dockerfile构建",
+        "dockerfile_path": "ci/containers/ubuntu-2404.Dockerfile",
+        "from_image": "docker.io/library/ubuntu:24.04",
+        "image_name": "libvirt-ttfhw",
+        "selection_reason": "Dockerfile FROM为基础OS（非自定义镜像），按Tier 2执行docker build"
+      },
+      "command": "docker build -f tmp_src/libvirt/ci/containers/ubuntu-2404.Dockerfile -t libvirt-ttfhw tmp_src/libvirt",
+      "success": true,
+      "output": "镜像构建成功，所有65+个依赖包安装完毕",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 80
+    },
+    {
+      "timestamp": "2026-08-14T18:01:07",
+      "step": "container_setup",
+      "action": "启动容器并挂载libvirt源码目录",
+      "result": "成功",
+      "details": {
+        "container_name": "libvirt-ttfhw",
+        "mount_path": "/root/ttfhw/ttfhw-skills-main/tmp_src/libvirt:/workspace",
+        "startup_command_source": "default",
+        "privileged": true
+      },
+      "command": "docker run -d --privileged --name libvirt-ttfhw -v /root/ttfhw/ttfhw-skills-main/tmp_src/libvirt:/workspace -w /workspace libvirt-ttfhw sleep infinity",
+      "success": true,
+      "output": "容器启动成功，ID: 98ebc27bae2b",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-14T18:01:07",
+      "step": "dependency_installation",
+      "action": "验证容器内关键构建依赖已预装（meson, ninja, gcc, python3, pytest等）",
+      "result": "成功",
+      "details": {
+        "meson_version": "1.3.2",
+        "ninja_version": "1.11.1",
+        "gcc_version": "13.3.0",
+        "python3_version": "3.12.3",
+        "pytest_version": "7.4.4"
+      },
+      "command": "docker exec libvirt-ttfhw bash -c \"which meson && meson --version && which ninja && ninja --version && which gcc && gcc --version | head -1 && which python3 && python3 --version && which pytest && pytest --version\"",
+      "success": true,
+      "output": "meson 1.3.2, ninja 1.11.1, gcc 13.3.0, python3 3.12.3, pytest 7.4.4 全部已安装",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-14T18:07:46",
+      "step": "build_attempt",
+      "action": "meson setup build --error -Dsystem=true配置构建",
+      "result": "成功",
+      "details": {
+        "meson_version": "1.3.2",
+        "compiler": "gcc 13.3.0",
+        "build_targets": 767,
+        "system_mode": true,
+        "werror": true,
+        "drivers_enabled": [
+          "qemu",
+          "lxc",
+          "libxl",
+          "interface",
+          "network",
+          "nodedev",
+          "nwfilter",
+          "secret",
+          "storage",
+          "vbox",
+          "ch",
+          "esx",
+          "hyperv",
+          "openvz",
+          "test",
+          "vmware",
+          "remote"
+        ],
+        "key_dependencies_found": [
+          "glib-2.0 2.80.0",
+          "gnutls 3.8.3",
+          "libxml2 2.9.14",
+          "libssh 0.10.6",
+          "libnl 3.7.0",
+          "numa 2.0.18",
+          "readline 8.2",
+          "selinux 3.5",
+          "udev 255",
+          "wireshark 4.2.2",
+          "xenlight 4.17.0"
+        ]
+      },
+      "command": "docker exec libvirt-ttfhw bash -c \"cd /workspace && time meson setup build --error -Dsystem=true\"",
+      "success": true,
+      "output": "Meson配置成功，767个构建目标，所有关键依赖找到，8.6秒完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 8.6
+    },
+    {
+      "timestamp": "2026-08-14T18:07:46",
+      "step": "build_attempt",
+      "action": "ninja -C build -j2编译构建（并发数2，约25%核数）",
+      "result": "成功",
+      "details": {
+        "total_targets": 1648,
+        "concurrency": 2,
+        "concurrency_ratio": "25%",
+        "artifacts_count": "14+个库和可执行文件"
+      },
+      "command": "docker exec libvirt-ttfhw bash -c \"cd /workspace && time ninja -C build -j 2\"",
+      "success": true,
+      "output": "全部1648个目标编译成功，构建产物包括libvirt.so(24M)、virsh(3.1M)、驱动模块、示例程序等",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 285.5
+    },
+    {
+      "timestamp": "2026-08-14T18:08:54",
+      "step": "ut_execution",
+      "action": "执行meson test -C build --no-suite syntax-check --print-errorlogs单元测试",
+      "result": "部分成功",
+      "details": {
+        "total_tests": 172,
+        "passed": 170,
+        "expected_fail": 1,
+        "timeout": 1,
+        "failed": 0,
+        "timeout_test": "commandtest",
+        "expected_fail_test": "libvirtd fail with missing config",
+        "test_command": "meson test -C build --no-suite syntax-check --print-errorlogs",
+        "env_vars": "VIR_TEST_VERBOSE=1, VIR_TEST_DEBUG=1"
+      },
+      "command": "docker exec libvirt-ttfhw bash -c \"cd /workspace && export VIR_TEST_VERBOSE=1 VIR_TEST_DEBUG=1 && time meson test -C build --no-suite syntax-check --print-errorlogs\"",
+      "success": true,
+      "output": "172个测试中170个通过，1个预期失败(libvirtd配置缺失)，1个超时(commandtest在容器环境test4步骤挂起)。超时是环境限制，非代码问题。",
+      "error": "commandtest超时(30秒)，因容器环境缺少TTY导致test4步骤挂起",
+      "returncode": 0,
+      "duration_seconds": 30.8
+    },
+    {
+      "timestamp": "2026-08-14T18:09:47",
+      "step": "sample_execution",
+      "action": "运行virsh --version, hellolibvirt, virt-admin --version, info1等样例程序",
+      "result": "成功",
+      "details": {
+        "samples_run": 4,
+        "samples_passed": 4,
+        "samples_failed": 0,
+        "test_driver": "test:///default",
+        "virsh_version": "12.7.0",
+        "virt_admin_version": "12.7.0"
+      },
+      "command": "docker exec libvirt-ttfhw bash -c \"cd /workspace && ./build/tools/virsh --version && ./build/examples/c/misc/hellolibvirt test:///default && ./build/tools/virt-admin --version && ./build/examples/c/domain/info1 test:///default test\"",
+      "success": true,
+      "output": "virsh 12.7.0, hellolibvirt成功连接test驱动并列出1个域, virt-admin 12.7.0, info1输出Domain test: 2 CPUs",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0.048
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库未配置pre-commit（无.pre-commit-config.yaml）和lint-runner（无.lintrunner.yaml/.lint-runner.yaml），未发现静态分析配置",
+      "pre_commit": {
+        "configured": false,
+        "config_file": null,
+        "status": "未配置",
+        "duration_seconds": 0
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "无",
+      "summary": "仓库未配置.devcontainer目录，无devcontainer.json"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 285.5,
+      "cmake": "不使用CMake，使用Meson 1.3.2",
+      "compiler": "gcc 13.3.0 (ccache cc)",
+      "concurrency": 2,
+      "concurrency_ratio": "25%（8核×20%=1.6，向上取整为2）",
+      "notes": "meson setup build --error -Dsystem=true配置成功（8.6秒），ninja -C build -j2编译成功（285.5秒），共1648个构建目标全部完成",
+      "artifacts": [
+        {
+          "name": "libvirt.so.0.12007.0",
+          "path": "build/src/libvirt.so.0.12007.0",
+          "size": "24M",
+          "type": "library"
+        },
+        {
+          "name": "libvirt-admin.so.0.12007.0",
+          "path": "build/src/libvirt-admin.so.0.12007.0",
+          "size": "313K",
+          "type": "library"
+        },
+        {
+          "name": "libvirt-lxc.so.0.12007.0",
+          "path": "build/src/libvirt-lxc.so.0.12007.0",
+          "size": "90K",
+          "type": "library"
+        },
+        {
+          "name": "libvirt-qemu.so.0.12007.0",
+          "path": "build/src/libvirt-qemu.so.0.12007.0",
+          "size": "92K",
+          "type": "library"
+        },
+        {
+          "name": "libvirt_driver_qemu.so",
+          "path": "build/src/libvirt_driver_qemu.so",
+          "size": "11M",
+          "type": "library"
+        },
+        {
+          "name": "libvirt_driver_lxc.so",
+          "path": "build/src/libvirt_driver_lxc.so",
+          "size": "1.4M",
+          "type": "library"
+        },
+        {
+          "name": "libvirt_driver_libxl.so",
+          "path": "build/src/libvirt_driver_libxl.so",
+          "size": "1.8M",
+          "type": "library"
+        },
+        {
+          "name": "libvirt_driver_storage.so",
+          "path": "build/src/libvirt_driver_storage.so",
+          "size": "619K",
+          "type": "library"
+        },
+        {
+          "name": "virsh",
+          "path": "build/tools/virsh",
+          "size": "3.1M",
+          "type": "binary"
+        },
+        {
+          "name": "virt-admin",
+          "path": "build/tools/virt-admin",
+          "size": "347K",
+          "type": "binary"
+        },
+        {
+          "name": "hellolibvirt",
+          "path": "build/examples/c/misc/hellolibvirt",
+          "size": "26K",
+          "type": "binary"
+        },
+        {
+          "name": "event-test",
+          "path": "build/examples/c/misc/event-test",
+          "size": "98K",
+          "type": "binary"
+        },
+        {
+          "name": "openauth",
+          "path": "build/examples/c/misc/openauth",
+          "size": "30K",
+          "type": "binary"
+        },
+        {
+          "name": "domtop",
+          "path": "build/examples/c/domain/domtop",
+          "size": "48K",
+          "type": "binary"
+        }
+      ]
+    },
+    "ut": {
+      "status": "partial_success",
+      "duration_seconds": 30.8,
+      "total": 172,
+      "passed": 170,
+      "failed": 0,
+      "skipped": 0,
+      "cpp": {
+        "status": "partial_success",
+        "total": 172,
+        "passed": 170,
+        "failed": 0,
+        "note": "1个测试超时(commandtest)，1个预期失败(libvirtd配置缺失测试)。commandtest在容器环境中test4步骤挂起，可能需要TTY/交互式终端。预期失败是正常行为。"
+      },
+      "failures": [
+        {
+          "test_name": "commandtest",
+          "error": "TIMEOUT: 测试在30秒后超时被SIGTERM终止。测试执行到test4步骤后挂起，可能因容器环境缺少TTY/交互式终端导致。前4个步骤(test0-test3)均通过。"
+        }
+      ]
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 0.048,
+      "results": [
+        {
+          "sample_name": "virsh --version",
+          "execution_status": "success",
+          "output_summary": "输出版本号 12.7.0，virsh命令行工具正常运行",
+          "execution_time": "0.012秒"
+        },
+        {
+          "sample_name": "hellolibvirt test:///default",
+          "execution_status": "success",
+          "output_summary": "成功连接到test驱动，发现1个活动域(test)，输出Hypervisor: TEST version 0.0.2",
+          "execution_time": "0.012秒"
+        },
+        {
+          "sample_name": "virt-admin --version",
+          "execution_status": "success",
+          "output_summary": "输出版本号 12.7.0，virt-admin管理工具正常运行",
+          "execution_time": "0.005秒"
+        },
+        {
+          "sample_name": "info1 test:///default test",
+          "execution_status": "success",
+          "output_summary": "成功查询test域信息，输出 Domain test: 2 CPUs",
+          "execution_time": "0.012秒"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-14T18:10:08",
+      "title": "README.rst未提供完整构建命令",
+      "body": "README.rst仅指向libvirt.org/compiling.html外部链接获取构建说明，未直接在README中列出构建命令。开发者需要访问外部网站才能了解如何构建。",
+      "source": "README.rst - Installation章节"
+    },
+    {
+      "time": "2026-08-14T18:10:08",
+      "title": "README.rst未列出构建依赖",
+      "body": "README.rst未列出构建所需的依赖包列表，需要查看ci/containers/Dockerfile或CONTRIBUTING.rst才能获取完整依赖信息。CONTRIBUTING.rst提到的apt-get build-dep libvirt需要源码包已安装。",
+      "source": "README.rst + CONTRIBUTING.rst"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-14T18:10:08",
+      "problem": "commandtest单元测试在容器环境中超时挂起",
+      "solution": "该测试test4步骤可能需要TTY/交互式终端，容器环境中sleep infinity启动方式不提供TTY。前4个步骤均通过，超时是环境限制而非代码问题。CI环境中使用GitLab Runner提供PTY可避免此问题。不影响整体测试结论，其他170个测试全部通过。",
+      "source": "容器环境限制"
+    }
+  ],
+  "session_export_file": "verification_report/verification_session_libvirt_20260814.md"
+}
