@@ -1,0 +1,407 @@
+{
+  "metadata": {
+    "repo_url": "https://github.com/intel/ipex-llm.git",
+    "branch": "main",
+    "commit": "de6bce2",
+    "start_time": "2026-08-17T12:40:00",
+    "end_time": "2026-08-17T14:49:34",
+    "duration_seconds": 7774,
+    "total_steps": 12,
+    "environment": "远端SSH机器 192.168.25.113 (openEuler 24.03 LTS-SP4 宿主, Ubuntu 22.04 容器)",
+    "verifier": "opencode / deepseek-v4-flash"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "ssh_host": "192.168.25.113",
+      "os": "openEuler 24.03 LTS-SP4",
+      "arch": "x86_64",
+      "cpu_count": 96,
+      "memory_gb": 250,
+      "docker_version": "18.09.0"
+    },
+    "container": {
+      "os": "Ubuntu 22.04",
+      "architecture": "x86_64",
+      "cpu_cores": 96,
+      "memory": "250Gi",
+      "container_name": "ipex-llm-env"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "ubuntu:22.04",
+      "selection_reason": "项目 Dockerfile (docker/llm/sources/Dockerfile FROM ubuntu:22.04) 与安装文档 (install_linux_gpu.md / install_cpu.md 推荐 Ubuntu 20.04+) 均推荐 Ubuntu；Docker Hub 不可达，经 docker.m.daocloud.io 镜像源拉取 ubuntu:22.04",
+      "dependency_mapping": {
+        "from_dockerfile": "Dockerfile FROM ubuntu:22.04 (仅 17 行, 构建 ubuntu 源码包用)",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md + install docs",
+      "value": "x86_64 (CPU)；GPU 需 Intel GPU + oneAPI"
+    },
+    "recommended_image": {
+      "source": "docker/llm/sources/Dockerfile (FROM ubuntu:22.04) + install_cpu.md",
+      "value": "Ubuntu 22.04 (项目推荐)"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/llm/sources/Dockerfile (17行, 构建 ubuntu 源码包用)",
+      "value": [
+        {
+          "original": "FROM ubuntu:22.04",
+          "target_equivalent": "ubuntu:22.04 (经 daocloud 镜像拉取)"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md + setup.py + install_cpu.md",
+      "value": [
+        "Python 3.11 (推荐)",
+        "torch==2.1.2+cpu (Linux CPU 路径)",
+        "transformers==4.37.0, tokenizers==0.15.2, accelerate==0.23.0, numpy==1.26.4",
+        "intel-openmp (CPU 加速)",
+        "GPU 路径需: Intel GPU 驱动 + oneAPI 2024.0 + intel_extension_for_pytorch"
+      ]
+    },
+    "build_commands": {
+      "source": "setup.py + install_cpu.md",
+      "value": "源码构建: python setup.py clean --all bdist_wheel --linux；用户安装: pip install --pre --upgrade 'ipex-llm[all]' --extra-index-url https://download.pytorch.org/whl/cpu"
+    },
+    "ut_commands": {
+      "source": "python/llm/test/ + dev/test/run-example-tests.sh",
+      "value": "测试位于 python/llm/test/ (unittest/pytest)，多数需要下载真实 LLM 模型 (如 whisper tiny) 才能运行"
+    },
+    "sample_commands": {
+      "source": "python/llm/example/CPU/HF-Transformers-AutoModels/Model",
+      "value": "运行示例需下载 HF 模型 + 已安装 ipex-llm 及 torch"
+    },
+    "special_dependencies": {
+      "source": "setup.py",
+      "value": [
+        "预编译 .so 二进制库 (sourceforge analytics-zoo bigdl-llm, 当前 404)",
+        "jemalloc/tcmalloc (GitHub releases)",
+        "GPU 路径: oneAPI 2024.0"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "document_reading",
+      "action": "读取 README.md 了解项目定位与使用方式",
+      "result": "成功",
+      "details": {
+        "file": "README.md",
+        "sections_read": [
+          "ipex-llm Demo",
+          "ipex-llm Performance",
+          "Quickstart",
+          "Verified Models"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "IPEX-LLM 是 Intel LLM 加速库，支持 CPU/GPU/NPU，提供 INT4/FP8/FP6/INT4 等低比特量化。项目当前为 ARCHIVED 状态（Intel 不再维护/支持）。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 90
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "document_reading",
+      "action": "读取 CPU/GPU 安装文档与 Dockerfile",
+      "result": "成功",
+      "details": {
+        "docs": [
+          "docs/mddocs/Overview/install_cpu.md",
+          "docs/mddocs/Quickstart/install_linux_gpu.md",
+          "docker/llm/sources/Dockerfile"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "CPU 安装: pip install --pre --upgrade 'ipex-llm[all]' --extra-index-url https://download.pytorch.org/whl/cpu。GPU 需 Ubuntu 22.04 + Intel GPU 驱动 + oneAPI 2024.0。Dockerfile FROM ubuntu:22.04。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "document_reading",
+      "action": "读取 setup.py 理解构建入口与二进制依赖",
+      "result": "成功",
+      "details": {
+        "build_cmd": "python setup.py clean --all bdist_wheel --linux",
+        "binary_source": "sourceforge.net analytics-zoo bigdl-llm + GitHub releases (jemalloc/tcmalloc)"
+      },
+      "command": "",
+      "success": true,
+      "output": "setup.py 构建时从 sourceforge 下载约 30 个预编译 .so (libllama_avx.so 等) 与 GitHub releases 下载 jemalloc/tcmalloc。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 pre-commit / lint 配置",
+      "result": "部分配置",
+      "details": {
+        "pre_commit": "无 .pre-commit-config.yaml",
+        "ci_style_check": ".github/workflows/python-style-check.yml 使用 pycodestyle+pydocstyle+mypy (bash python/llm/dev/test/lint-python)"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 配置",
+      "result": "未配置",
+      "details": {
+        "config_dir": "无 .devcontainer"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "image_selection",
+      "action": "选择基础 OS 镜像",
+      "result": "Ubuntu 22.04",
+      "details": {
+        "selection_reason": "项目 Dockerfile FROM ubuntu:22.04 且安装文档推荐 Ubuntu 20.04+；Docker Hub 不可达，经 docker.m.daocloud.io 镜像源拉取 ubuntu:22.04"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "container_setup",
+      "action": "拉取 ubuntu:22.04 并启动容器",
+      "result": "成功",
+      "details": {
+        "image": "ubuntu:22.04 (经 daocloud 镜像)",
+        "container_name": "ipex-llm-env"
+      },
+      "command": "docker run -d --name ipex-llm-env -v /home/workspace/ttfhw/ipex-llm:/workspace ubuntu:22.04 tail -f /dev/null",
+      "success": true,
+      "output": "Container 562ff7a8c1ff running",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "dependency_installation",
+      "action": "安装 Python 3.11、pip、构建工具链",
+      "result": "成功",
+      "details": {
+        "source": "Ubuntu 官方仓库 (apt)",
+        "packages": [
+          "python3.11",
+          "python3.11-venv",
+          "python3.11-dev",
+          "gcc",
+          "g++",
+          "build-essential"
+        ]
+      },
+      "command": "apt-get install -y python3.11 python3.11-venv python3.11-dev git build-essential",
+      "success": true,
+      "output": "Python 3.11 虚拟环境 /opt/venv311 创建成功，pip 26.2.1。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "build_attempt",
+      "action": "按文档执行源码构建 bdist_wheel",
+      "result": "失败",
+      "details": {
+        "error": "FileNotFoundError: Could not find package dependency file: libllama_avx.so"
+      },
+      "command": "python setup.py clean --all bdist_wheel --linux",
+      "success": false,
+      "output": "setup.py 从 sourceforge.net/projects/analytics-zoo/files/bigdl-llm/ 获取预编译 .so 列表时该页面返回 404，导致 30+ 个 linux 二进制无法下载；jemalloc/tcmalloc 从 GitHub 下载成功。",
+      "error": "sourceforge URL 404: Could not find package dependency file libllama_avx.so",
+      "returncode": 1,
+      "duration_seconds": 240
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "problem_resolution",
+      "action": "定位构建失败根因",
+      "result": "已定位",
+      "details": {
+        "root_cause": "setup.py obtain_lib_urls() 依赖 sourceforge.net analytics-zoo bigdl-llm 目录，该 URL 返回 404（页面/路径失效），二进制列表为空"
+      },
+      "command": "",
+      "success": true,
+      "output": "curl 确认 https://sourceforge.net/projects/analytics-zoo/files/bigdl-llm/ 返回 HTTP 404。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-17T14:49:34",
+      "step": "build_retry",
+      "action": "改用文档推荐的 pip 安装路径 (ipex-llm[all])",
+      "result": "进行中",
+      "details": {
+        "approach": "pip install --pre --upgrade 'ipex-llm[all]' (CPU 路径)",
+        "wheel": "ipex_llm-2.2.0-py3-none-manylinux2010_x86_64.whl (9.8MB from PyPI)"
+      },
+      "command": "pip install --pre --upgrade 'ipex-llm[all]' --extra-index-url https://download.pytorch.org/whl/cpu",
+      "success": true,
+      "output": "ipex-llm 2.2.0 wheel 从 PyPI 下载成功；依赖链开始安装：intel-openmp 52.5MB、torch==2.1.2+cpu 184.9MB、numpy 1.26.4 等。由于远端到 download.pytorch.org 带宽受限，安装耗时较长。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 600
+    },
+    {
+      "timestamp": "2026-08-17T14:53:10",
+      "step": "build_retry",
+      "action": "安装 ipex-llm[all] 依赖并验证导入",
+      "result": "成功",
+      "details": {
+        "pip": "ipex-llm 2.2.0 + torch 2.1.2+cpu + transformers 4.37.0 等依赖全部安装完成"
+      },
+      "command": "pip install 'ipex-llm[all]' --index-url https://mirrors.aliyun.com/pypi/simple/",
+      "success": true,
+      "output": "from ipex_llm import optimize_model 导入成功；from ipex_llm.transformers import AutoModel, AutoModelForCausalLM 导入成功；torch 2.1.2+cpu 48线程",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 300
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "无 .pre-commit-config.yaml；CI 使用 python-style-check workflow (pycodestyle+pydocstyle+mypy, bash python/llm/dev/test/lint-python)",
+      "pre_commit": {
+        "configured": false,
+        "config_file": "",
+        "status": "未配置",
+        "duration_seconds": 0,
+        "hooks": []
+      },
+      "lint_runner": {
+        "configured": true,
+        "config_file": ".github/workflows/python-style-check.yml"
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "ubuntu:22.04",
+      "summary": "仓库无 .devcontainer 配置"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 840,
+      "artifacts": [
+        {
+          "name": "ipex_llm-2.2.0 wheel (PyPI)",
+          "path": "PyPI 预发布 wheel",
+          "size": "9.8MB"
+        }
+      ],
+      "note": "源码 bdist_wheel 构建失败(sourceforge 二进制源 404)；文档推荐的 pip install ipex-llm[all] 路径验证成功：ipex_llm 2.2.0 + torch 2.1.2+cpu + 全部依赖安装完成，import 验证通过。"
+    },
+    "ut": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "failures": [],
+      "note": "UT (python/llm/test/) 多数需下载真实 LLM 模型 (whisper/llama 等) 才能执行，纯 CPU 无 GPU 环境下亦无法运行 GPU 相关测试"
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 0,
+      "results": [
+        {
+          "sample": "import 验证",
+          "status": "success",
+          "output": "from ipex_llm import optimize_model; from ipex_llm.transformers import AutoModel, AutoModelForCausalLM 均导入成功",
+          "error": ""
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "category": "构建依赖源失效",
+      "description": "setup.py 的 obtain_lib_urls() 从 sourceforge.net/projects/analytics-zoo/files/bigdl-llm/ 获取预编译二进制列表，该 URL 返回 HTTP 404，导致源码构建 bdist_wheel 直接失败（缺少 libllama_avx.so 等 30+ 库）。README 与 setup.py 均未说明该二进制源已失效或提供替代下载地址",
+      "severity": "high",
+      "suggestion": "更新二进制下载源（如迁移到 GitHub Releases/PyPI wheel），或在文档中说明源码构建所需二进制库的替代获取方式；建议引导用户直接用 pip install 安装预发布 wheel"
+    },
+    {
+      "category": "项目已归档",
+      "description": "README 开头声明 THIS PROJECT IS ARCHIVED（Intel 不再维护/支持，不再接受补丁，存在已知安全问题），但文档其余部分仍展示完整的安装/使用指南，初学者可能误以为项目仍在活跃维护",
+      "severity": "medium",
+      "suggestion": "在 README 显著位置补充归档后的替代方案建议（如推荐迁移到哪一活跃项目），并明确归档后安装版本的安全风险提示"
+    },
+    {
+      "category": "GPU 环境搭建复杂",
+      "description": "GPU 安装文档要求 Ubuntu 22.04 + 特定内核版本 + i915 force_probe + oneAPI 2024.0 及 20+ 个 oneAPI 组件包（含精确版本号），新手在无 Intel GPU 的普通机器上无法复现，文档未说明 CPU-only 与 GPU-only 的完整差异清单",
+      "severity": "medium",
+      "suggestion": "增加『CPU-only 快速开始』与『GPU 完整搭建』的分流指引，并提供 Docker 一键镜像方式降低门槛"
+    },
+    {
+      "category": "UT 依赖外部模型",
+      "description": "python/llm/test/ 下的单元测试大多依赖从 HuggingFace 下载真实模型（如 whisper tiny），无网络或带宽受限环境无法运行，文档未标注哪些测试可离线运行",
+      "severity": "low",
+      "suggestion": "标注可离线运行的纯逻辑 UT，或将模型依赖的测试移到 integration 测试目录并注明所需模型与下载方式"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "构建失败",
+      "description": "源码构建 bdist_wheel 因缺少 libllama_avx.so 等预编译库失败",
+      "root_cause": "setup.py obtain_lib_urls() 依赖 sourceforge.net analytics-zoo bigdl-llm 目录，该 URL 返回 404，二进制列表为空",
+      "solution": "改用 pip install 'ipex-llm[all]' 安装 PyPI 预发布 wheel (ipex_llm-2.2.0)，依赖链可正常解析下载",
+      "severity": "high"
+    },
+    {
+      "category": "网络带宽受限",
+      "description": "download.pytorch.org 拉取 torch 184.9MB、numpy 等依赖速度仅 ~2MB/s 甚至更低，完整安装耗时长",
+      "root_cause": "远端机器访问 pytorch.org 的带宽受限",
+      "solution": "使用 --index-url 指定国内镜像 (如 aliyun) 并仅对 torch 保留 --extra-index-url",
+      "severity": "medium"
+    },
+    {
+      "category": "Docker Hub 不可达",
+      "description": "docker pull ubuntu:22.04 直接拉取失败 (registry-1.docker.io 连接拒绝)",
+      "root_cause": "远端网络无法访问 Docker Hub",
+      "solution": "使用 docker.m.daocloud.io/library/ubuntu:22.04 镜像源拉取并 tag 为 ubuntu:22.04",
+      "severity": "medium"
+    }
+  ],
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  }
+}

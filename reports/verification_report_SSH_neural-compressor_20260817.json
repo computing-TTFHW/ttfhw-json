@@ -1,0 +1,450 @@
+{
+  "metadata": {
+    "repo_url": "https://github.com/intel/neural-compressor.git",
+    "branch": "main",
+    "commit": "295b56a",
+    "start_time": "2026-08-17T16:20:00",
+    "end_time": "2026-08-17T16:57:35",
+    "duration_seconds": 2255,
+    "total_steps": 11,
+    "environment": "远端SSH机器 192.168.25.113 (openEuler 24.03 LTS-SP4 宿主, Ubuntu 22.04 容器)",
+    "verifier": "opencode / deepseek-v4-flash"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "ssh_host": "192.168.25.113",
+      "os": "openEuler 24.03 LTS-SP4",
+      "arch": "x86_64",
+      "cpu_count": 96,
+      "memory_gb": 250,
+      "docker_version": "18.09.0"
+    },
+    "container": {
+      "os": "Ubuntu 22.04",
+      "architecture": "x86_64",
+      "cpu_cores": 96,
+      "memory": "250Gi",
+      "container_name": "nc-env"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "ubuntu:22.04",
+      "selection_reason": "项目 Dockerfile.devel 使用 ubuntu:22.04 且 CI 主要用 ubuntu；Python 要求 >=3.11；Docker Hub 不可达，经 docker.m.daocloud.io 拉取",
+      "dependency_mapping": {
+        "from_dockerfile": ".azure-pipelines/docker/Dockerfile.devel (ubuntu:22.04 + python3-dev + build tools)",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md",
+      "value": "x86_64 (支持 Intel CPU/GPU/Gaudi, AMD/ARM/NVIDIA 有限支持)"
+    },
+    "recommended_image": {
+      "source": ".azure-pipelines/docker/Dockerfile.devel (ubuntu:22.04)",
+      "value": "Ubuntu 22.04"
+    },
+    "dockerfile_dependencies": {
+      "source": "Dockerfile.devel",
+      "value": [
+        {
+          "original": "ubuntu:22.04 + python3-dev + build-essential",
+          "target_equivalent": "python:3.11-slim (Ubuntu 22.04 自带 3.11.0rc1 不兼容 torch)"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md + requirements_pt.txt + setup.py",
+      "value": [
+        "Python >= 3.11",
+        "numpy, packaging, prettytable, psutil, py-cpuinfo, pydantic, torchao",
+        "torch (neural-compressor-pt wheel 未声明, 需手动装)",
+        "intel_extension_for_pytorch (SmoothQuant/加速所需, 需手动装)",
+        "transformers/accelerate (UT 所需)"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md",
+      "value": "pip install neural-compressor-pt (PyTorch 后端)"
+    },
+    "ut_commands": {
+      "source": ".azure-pipelines/ut-3x-pt.yml",
+      "value": "python -m pytest test/torch/... (需 transformers 等)"
+    },
+    "sample_commands": {
+      "source": "README.md Getting Started",
+      "value": "FP8 样例 (Gaudi) / RTN weight-only 样例 (CPU)"
+    },
+    "special_dependencies": {
+      "source": "README.md",
+      "value": [
+        "intel_extension_for_pytorch",
+        "Gaudi 软件栈 (HPU)",
+        "AutoRound (LLM 量化)"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "document_reading",
+      "action": "读取 README.md 了解项目与安装方式",
+      "result": "成功",
+      "details": {
+        "file": "README.md",
+        "note": "Python >=3.11, release 3.9"
+      },
+      "command": "",
+      "success": true,
+      "output": "Intel Neural Compressor 是模型压缩库 (PyTorch/TF/JAX)。安装: pip install neural-compressor-pt/tf/jax。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "document_reading",
+      "action": "读取 setup.py/requirements/Dockerfile",
+      "result": "成功",
+      "details": {
+        "setup": "python_requires>=3.11",
+        "requirements_pt": [
+          "numpy",
+          "packaging",
+          "prettytable",
+          "psutil",
+          "py-cpuinfo",
+          "pydantic",
+          "torchao"
+        ],
+        "docker": ".azure-pipelines/docker/Dockerfile.devel (ubuntu:22.04)"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 配置",
+      "result": "已配置",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks": [
+          "end-of-file-fixer",
+          "check-json",
+          "check-yaml",
+          "debug-statements",
+          "file-contents-sorter",
+          "requirements-txt-fixer"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 配置",
+      "result": "未配置",
+      "details": {
+        "config_dir": "无 .devcontainer"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "image_selection",
+      "action": "选择基础 OS 镜像",
+      "result": "Ubuntu 22.04",
+      "details": {
+        "selection_reason": "项目 Dockerfile.devel 使用 ubuntu:22.04；Docker Hub 不可达，经 docker.m.daocloud.io 拉取"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "container_setup",
+      "action": "拉取 ubuntu:22.04 并启动容器",
+      "result": "成功",
+      "details": {
+        "image": "ubuntu:22.04 (经 daocloud 镜像)",
+        "container_name": "nc-env (后改用 python:3.11-slim)"
+      },
+      "command": "docker run -d --name nc-env -v ... ubuntu:22.04 tail -f /dev/null",
+      "success": true,
+      "output": "发现 Ubuntu 22.04 自带 python3.11 为 3.11.0rc1 (RC 版本)，与 torch 2.13 不兼容，改用 python:3.11-slim 镜像 (Python 3.11.16)。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "dependency_installation",
+      "action": "安装 neural-compressor-pt 3.9 与 torch",
+      "result": "成功",
+      "details": {
+        "source": "PyPI (aliyun 镜像) + pytorch.org cpu index",
+        "packages": [
+          "neural-compressor-pt 3.9",
+          "torch 2.13.0+cpu",
+          "torchao 0.18.0",
+          "pydantic 2.13.4"
+        ]
+      },
+      "command": "pip install neural-compressor-pt; pip install torch==2.13.0+cpu --index-url https://download.pytorch.org/whl/cpu --no-deps",
+      "success": true,
+      "output": "neural-compressor-pt wheel 的 Requires 未含 torch (仅 torchao)，需手动安装 torch。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 900
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "problem_resolution",
+      "action": "定位静态量化 AttributeError",
+      "result": "已定位",
+      "details": {
+        "bug": "neural_compressor/torch/quantization/algorithm_entry.py:321 (repo 源码与安装 wheel v3.9 一致): dynamic_shapes = model.dynamic_shapes 无 getattr 保护，普通 nn.Module 无此属性时抛 AttributeError"
+      },
+      "command": "",
+      "success": true,
+      "output": "静态量化 prepare() 对纯 nn.Module 报 AttributeError: 'SimpleModel' object has no attribute 'dynamic_shapes'。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "sample_execution",
+      "action": "运行 Weight-Only (RTN) 量化样例",
+      "result": "成功",
+      "details": {
+        "sample": "RTN A32W4G32",
+        "config": "get_default_rtn_config() + prepare/convert"
+      },
+      "command": "python RTN sample",
+      "success": true,
+      "output": "RTN 量化成功: Linear 层应用 A32W4G32，输出 shape torch.Size([2, 4])。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "sample_execution",
+      "action": "运行 SmoothQuant 样例",
+      "result": "失败(缺依赖)",
+      "details": {
+        "error": "ModuleNotFoundError: No module named 'intel_extension_for_pytorch'",
+        "note": "README 说明需安装 intel_extension_for_pytorch"
+      },
+      "command": "python SQ sample",
+      "success": false,
+      "output": "SmoothQuant 需要 intel_extension_for_pytorch (文档要求安装但未自动拉取)。",
+      "error": "No module named 'intel_extension_for_pytorch'",
+      "returncode": 1,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-17T16:57:35",
+      "step": "ut_execution",
+      "action": "运行 unit test (weight_only)",
+      "result": "成功(部分)",
+      "details": {
+        "test": "test/torch/quantization/weight_only/test_woq_utils.py",
+        "total": 5,
+        "passed": 5,
+        "note": "test_rtn.py 需 transformers/accelerate 且会下载模型，运行较慢"
+      },
+      "command": "python -m pytest test/torch/quantization/weight_only/test_woq_utils.py",
+      "success": true,
+      "output": "5 passed",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "pre-commit 已配置: end-of-file-fixer/check-json/check-yaml/debug-statements/file-contents-sorter/requirements-txt-fixer 等",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置",
+        "duration_seconds": 0,
+        "hooks": [
+          {
+            "name": "end-of-file-fixer",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "check-yaml",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "check-json",
+            "status": "configured",
+            "duration_seconds": 0,
+            "error": ""
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "ubuntu:22.04",
+      "used_image": "python:3.11-slim",
+      "summary": "仓库无 .devcontainer；Dockerfile.devel 用 ubuntu:22.04"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 900,
+      "artifacts": [
+        {
+          "name": "neural-compressor-pt 3.9",
+          "path": "PyPI wheel (pip install)",
+          "size": "-"
+        },
+        {
+          "name": "torch 2.13.0+cpu",
+          "path": "pytorch.org cpu index",
+          "size": "191.8MB"
+        }
+      ],
+      "note": "pip install neural-compressor-pt 成功；import neural_compressor 成功 (version 3.9)"
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 60,
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "failures": [],
+      "note": "test_woq_utils.py 5 passed；其他 UT 需 transformers/accelerate 等额外依赖"
+    },
+    "sample": {
+      "status": "partial",
+      "duration_seconds": 30,
+      "results": [
+        {
+          "sample": "RTN Weight-Only 量化 (CPU)",
+          "status": "success",
+          "output": "Linear 层应用 A32W4G32, 输出 shape torch.Size([2, 4])",
+          "error": ""
+        },
+        {
+          "sample": "Static Quant prepare",
+          "status": "failed",
+          "output": "",
+          "error": "AttributeError: 'SimpleModel' object has no attribute 'dynamic_shapes' (algorithm_entry.py:321)"
+        },
+        {
+          "sample": "SmoothQuant",
+          "status": "failed",
+          "output": "",
+          "error": "ModuleNotFoundError: No module named 'intel_extension_for_pytorch'"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "category": "静态量化代码 bug",
+      "description": "neural_compressor/torch/quantization/algorithm_entry.py 第321行 (repo 源码与已发布 wheel v3.9 相同): 'dynamic_shapes = model.dynamic_shapes' 无 getattr 保护。对普通 torch.nn.Module 调用 prepare() 静态量化时报 AttributeError。README 的 Getting Started 示例 (FP8 on Gaudi) 依赖类似 prepare/convert 流程，初学者照做会触发此 bug",
+      "severity": "high",
+      "suggestion": "改用 getattr(model, 'dynamic_shapes', None) 或 hasattr 判断；补充仅用纯 PyTorch 模型 (无 GPTQ/ONNX 等包装) 的静态量化测试用例"
+    },
+    {
+      "category": "neural-compressor-pt wheel 未声明 torch 依赖",
+      "description": "PyPI 上 neural-compressor-pt 3.9 的 Requires 列表只有 numpy/packaging/prettytable/psutil/py-cpuinfo/pydantic/torchao，未含 torch。README 说 'pip install neural-compressor-pt' 但装完 import 仍缺 torch，需手动安装",
+      "severity": "medium",
+      "suggestion": "在 wheel 依赖中声明 torch (或 torch 相关 extra)，并在 README 明确 torch/ipex 需单独安装"
+    },
+    {
+      "category": "SmoothQuant 等依赖未自动安装",
+      "description": "SmoothQuant 等算法需要 intel_extension_for_pytorch，README 安装章节有说明但入门示例 (Getting Started) 未提醒；初学者按示例运行会报 ModuleNotFoundError",
+      "severity": "medium",
+      "suggestion": "在 Getting Started 示例前注明所需额外依赖，或提供 requirements-dev/requirements-test 清单"
+    },
+    {
+      "category": "Ubuntu 自带 Python 3.11 为 RC",
+      "description": "Ubuntu 22.04 的 python3.11 是 3.11.0rc1 (发布候选)，与 torch 2.13 不兼容 (缺 sys.get_int_max_str_digits)。文档只写 Python >=3.11，未提示需正式发布版 Python",
+      "severity": "low",
+      "suggestion": "建议使用 python:3.11-slim 镜像或死蛇 PPA 安装正式版 3.11"
+    },
+    {
+      "category": "UT 依赖未说明",
+      "description": "test/torch/ 下的 UT 需要 transformers/accelerate/datasets 等，README 未列出测试依赖",
+      "severity": "low",
+      "suggestion": "提供 test requirements 文件并在文档说明"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "静态量化 bug",
+      "description": "prepare() 静态量化对纯 nn.Module 报 AttributeError: no attribute 'dynamic_shapes'",
+      "root_cause": "algorithm_entry.py:321 直接访问 model.dynamic_shapes 无保护",
+      "solution": "改用 weight-only (RTN) 量化路径可绕过；需修复代码或使用包装模型",
+      "severity": "high"
+    },
+    {
+      "category": "Python 版本不兼容",
+      "description": "Ubuntu 22.04 python3.11 (3.11.0rc1) 导入 torch 2.13 报 sys 无 get_int_max_str_digits",
+      "root_cause": "RC 版本 Python 缺少新 API",
+      "solution": "改用 python:3.11-slim Docker 镜像 (Python 3.11.16)",
+      "severity": "medium"
+    },
+    {
+      "category": "torch 安装慢",
+      "description": "从 pytorch.org 下载 torch 191MB 慢且非 torch 依赖 (networkx/sympy) 下载极慢",
+      "root_cause": "pytorch.org 带宽受限",
+      "solution": "torch 用 --no-deps 从 pytorch index 装，其余依赖从 aliyun 装",
+      "severity": "low"
+    },
+    {
+      "category": "Docker Hub 不可达",
+      "description": "docker pull ubuntu:22.04/python:3.11-slim 直接拉取失败",
+      "root_cause": "远端网络无法访问 registry-1.docker.io",
+      "solution": "使用 docker.m.daocloud.io 镜像源",
+      "severity": "low"
+    }
+  ],
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  }
+}

@@ -1,0 +1,380 @@
+{
+  "metadata": {
+    "repo_url": "https://github.com/intel/BigDL.git",
+    "branch": "main",
+    "commit": "545a35a",
+    "start_time": "2026-08-17T15:40:00",
+    "end_time": "2026-08-17T16:00:15",
+    "duration_seconds": 1215,
+    "total_steps": 10,
+    "environment": "远端SSH机器 192.168.25.113 (openEuler 24.03 LTS-SP4 宿主, Ubuntu 20.04 容器)",
+    "verifier": "opencode / deepseek-v4-flash"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "ssh_host": "192.168.25.113",
+      "os": "openEuler 24.03 LTS-SP4",
+      "arch": "x86_64",
+      "cpu_count": 96,
+      "memory_gb": 250,
+      "docker_version": "18.09.0"
+    },
+    "container": {
+      "os": "Ubuntu 20.04",
+      "architecture": "x86_64",
+      "cpu_cores": 96,
+      "memory": "250Gi",
+      "container_name": "bigdl-env"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "ubuntu:20.04",
+      "selection_reason": "项目 Dockerfile (docker/bigdl/Dockerfile) 使用 ubuntu:20.04；Docker Hub 不可达，经 docker.m.daocloud.io 拉取",
+      "dependency_mapping": {
+        "from_dockerfile": "Dockerfile FROM ubuntu:20.04 (JDK8+Spark2.4.6+Miniconda+python)",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md + Dockerfile",
+      "value": "x86_64 (需 JDK 8 + Spark)"
+    },
+    "recommended_image": {
+      "source": "docker/bigdl/Dockerfile (ubuntu:20.04)",
+      "value": "Ubuntu 20.04"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/bigdl/Dockerfile",
+      "value": [
+        {
+          "original": "ubuntu:20.04",
+          "target_equivalent": "ubuntu:20.04 (经 daocloud 镜像)"
+        },
+        {
+          "original": "JDK 8u192",
+          "target_equivalent": "需自行下载 (JDK_URL 构建参数)"
+        },
+        {
+          "original": "Spark 2.4.6",
+          "target_equivalent": "pyspark 2.4.6 (pip 依赖)"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md + python.md + setup.py",
+      "value": [
+        "Python 3.6/3.7 (文档测试版本; 实际 3.8+ 与 pyspark 2.4.6 不兼容)",
+        "pyspark==2.4.6 (bigdl-dllib 强制依赖)",
+        "numpy>=1.19.5",
+        "JDK 8 (Scala 端)",
+        "各子库: bigdl-orca/nano/chronos/friesian/serving (需要 tensorflow/torch/ray)"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md",
+      "value": "pip install bigdl (或 pip install bigdl-chronos 等单个库)"
+    },
+    "ut_commands": {
+      "source": "CI (llm_unit_tests.yml 等)",
+      "value": "各子库独立测试；本验证聚焦 Python 安装与导入"
+    },
+    "sample_commands": {
+      "source": "README.md Orca 示例",
+      "value": "Python 示例需 Spark/Ray/TensorFlow 环境"
+    },
+    "special_dependencies": {
+      "source": "python.md + Dockerfile",
+      "value": [
+        "Python 3.6/3.7 (重要兼容约束)",
+        "Spark/Ray 运行时 (Orca)",
+        "SGX (PPML)"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "document_reading",
+      "action": "读取 README.md 了解项目状态与定位",
+      "result": "成功",
+      "details": {
+        "file": "README.md",
+        "note": "项目 2026/6/30 归档，bigdl-llm 已迁移到 ipex-llm"
+      },
+      "command": "",
+      "success": true,
+      "output": "BigDL 是分布式大数据+AI 平台 (Orca/Nano/DLlib/Chronos/Friesian/PPML)。LLM 已弃用迁移至 IPEX-LLM。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "document_reading",
+      "action": "读取 Dockerfile 与 Python 文档确认环境要求",
+      "result": "成功",
+      "details": {
+        "dockerfile": "docker/bigdl/Dockerfile (ubuntu:20.04 + JDK8 + Spark2.4.6 + Miniconda)",
+        "docs": "docs/.../python.md 标注 BigDL 在 Python 3.6/3.7 测试通过"
+      },
+      "command": "",
+      "success": true,
+      "output": "README 推荐 pip install bigdl。python.md 明确 BigDL 在 Python 3.6 和 3.7 测试过。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit / CI",
+      "result": "部分配置",
+      "details": {
+        "pre_commit": "未直接查看",
+        "ci": "60+ workflow 文件 (llm/nano/chronos/ppml 各子库), python-style-check.yml"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 配置",
+      "result": "未配置",
+      "details": {
+        "config_dir": "无 .devcontainer"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "image_selection",
+      "action": "选择基础 OS 镜像",
+      "result": "Ubuntu 20.04",
+      "details": {
+        "selection_reason": "项目 Dockerfile (docker/bigdl/Dockerfile) 使用 ubuntu:20.04；Docker Hub 不可达，经 docker.m.daocloud.io 拉取"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "container_setup",
+      "action": "拉取 ubuntu:20.04 并启动容器",
+      "result": "成功",
+      "details": {
+        "image": "ubuntu:20.04 (经 daocloud 镜像)",
+        "container_name": "bigdl-env"
+      },
+      "command": "docker run -d --name bigdl-env -v /home/workspace/ttfhw/BigDL:/workspace ubuntu:20.04 tail -f /dev/null",
+      "success": true,
+      "output": "Container 48ca1bac56d8 running",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "dependency_installation",
+      "action": "安装 Python 3.8 + pip + bigdl-dllib==2.4.0",
+      "result": "成功",
+      "details": {
+        "source": "Ubuntu apt + PyPI (aliyun 镜像)",
+        "packages": [
+          "python3.8",
+          "pyspark 2.4.6",
+          "numpy 1.24.4",
+          "bigdl-core",
+          "bigdl-dllib 2.4.0"
+        ]
+      },
+      "command": "pip install bigdl-dllib==2.4.0",
+      "success": true,
+      "output": "bigdl-dllib 安装成功 (pyspark 2.4.6 从源码构建 wheel 218MB)。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 420
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "build_attempt",
+      "action": "验证 import bigdl",
+      "result": "成功",
+      "details": {
+        "import": "import bigdl OK"
+      },
+      "command": "python -c 'import bigdl'",
+      "success": true,
+      "output": "bigdl 元包导入成功。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "build_attempt",
+      "action": "验证 import bigdl.dllib.nn",
+      "result": "失败",
+      "details": {
+        "error": "pyspark 2.4.6 cloudpickle 与 Python 3.8 types.CodeType 不兼容: TypeError: an integer is required (got type bytes)"
+      },
+      "command": "python -c 'from bigdl.dllib.nn import Sequential'",
+      "success": false,
+      "output": "bigdl.dllib 导入时触发 pyspark 的 cloudpickle._make_cell_set_template_code() 报错。",
+      "error": "TypeError: an integer is required (got type bytes)",
+      "returncode": 1,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-17T16:00:15",
+      "step": "problem_resolution",
+      "action": "定位 Python 版本不兼容根因",
+      "result": "已定位",
+      "details": {
+        "root_cause": "BigDL 2.4.0 固定依赖 pyspark==2.4.6，其内置 cloudpickle 与 Python 3.8+ 的 types.CodeType API 不兼容 (Python 3.8 改为只接受 int 参数)；文档说明 BigDL 仅在 Python 3.6/3.7 测试过"
+      },
+      "command": "",
+      "success": true,
+      "output": "README 未注明 Python 版本要求，用户默认用系统 Python (3.8/3.10/3.11) 会触发此错误。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "CI 丰富 (60+ workflows)，含 python-style-check；未直接验证 pre-commit",
+      "pre_commit": {
+        "configured": false,
+        "config_file": "",
+        "status": "未确认",
+        "duration_seconds": 0,
+        "hooks": []
+      },
+      "lint_runner": {
+        "configured": true,
+        "config_file": ".github/workflows/python-style-check.yml"
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "ubuntu:20.04",
+      "used_image": "ubuntu:20.04",
+      "summary": "仓库无 .devcontainer 配置"
+    },
+    "build": {
+      "status": "partial",
+      "duration_seconds": 440,
+      "artifacts": [
+        {
+          "name": "bigdl-dllib 2.4.0",
+          "path": "PyPI wheel (pip install)",
+          "size": "20MB"
+        }
+      ],
+      "note": "pip install bigdl-dllib 成功；import bigdl 成功，但 import bigdl.dllib 因 pyspark 2.4.6 与 Python 3.8 不兼容失败 (需 Python 3.6/3.7)"
+    },
+    "ut": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "failures": [],
+      "note": "bigdl.dllib 无法导入 (pyspark 兼容问题)，无法运行核心 UT；各子库 UT 需独立环境"
+    },
+    "sample": {
+      "status": "failed",
+      "duration_seconds": 20,
+      "results": [
+        {
+          "sample": "import bigdl",
+          "status": "success",
+          "output": "OK",
+          "error": ""
+        },
+        {
+          "sample": "bigdl.dllib.nn Sequential 模型创建",
+          "status": "failed",
+          "output": "",
+          "error": "pyspark cloudpickle: TypeError: an integer is required (got type bytes)"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "category": "Python 版本要求未在 README 说明",
+      "description": "README 仅推荐 pip install bigdl，未注明 Python 版本要求。项目文档 (docs python.md) 提到 'BigDL has been tested on Python 3.6 and 3.7'，但该信息不在 README 主入口。实际验证 Python 3.8 下 import bigdl.dllib 报 pyspark cloudpickle TypeError",
+      "severity": "high",
+      "suggestion": "在 README 明确 Python 3.6/3.7 要求并给 conda 创建命令 (conda create -n bigdl python=3.7)，说明 3.8+ 需升级 pyspark 或使用替代方案"
+    },
+    {
+      "category": "pyspark 2.4.6 依赖过旧",
+      "description": "bigdl-dllib 强制依赖 pyspark==2.4.6，其 cloudpickle 与 Python 3.8+ 不兼容；且 pyspark 2.4.6 有已知 CVE (log4j)。README/安装文档未提示此兼容与安全问题",
+      "severity": "high",
+      "suggestion": "升级 pyspark 版本或说明使用 Python 3.6/3.7；提示 Spark 2.4 的 log4j 安全风险与升级路径"
+    },
+    {
+      "category": "项目已归档",
+      "description": "README 标注 2026/6/30 归档、LLM 迁移至 ipex-llm，但 Orca/Nano/Chronos 等仍在 README 全面展示且无替代方案说明，初学者可能误判维护状态",
+      "severity": "medium",
+      "suggestion": "为各子库 (Orca/Nano/Chronos/Friesian/PPML) 补充归档后的维护状态与替代方案"
+    },
+    {
+      "category": "README 安装命令隐含超大依赖",
+      "description": "pip install bigdl 实际会拉取 bigdl-orca/nano/chronos/friesian/serving 及 tensorflow/torch/ray 等海量依赖，README 未提示安装体积与耗时",
+      "severity": "low",
+      "suggestion": "区分轻量安装 (如仅 bigdl-dllib) 与完整安装，并给出各子库独立安装说明"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "Python 版本不兼容",
+      "description": "import bigdl.dllib 报 pyspark cloudpickle TypeError",
+      "root_cause": "pyspark 2.4.6 的 cloudpickle 用 types.CodeType 旧 API，与 Python 3.8+ 不兼容；BigDL 文档说明仅测试过 Python 3.6/3.7",
+      "solution": "使用 Python 3.6/3.7 (conda 环境)；或升级 pyspark (需 BigDL 兼容版本)",
+      "severity": "high"
+    },
+    {
+      "category": "Docker Hub 不可达",
+      "description": "docker pull ubuntu:20.04 直接拉取失败",
+      "root_cause": "远端网络无法访问 registry-1.docker.io",
+      "solution": "使用 docker.m.daocloud.io/library/ubuntu:20.04 镜像源",
+      "severity": "low"
+    },
+    {
+      "category": "pip 网络慢",
+      "description": "pip 默认源下载慢，pyspark 218MB 需从源码构建 wheel",
+      "root_cause": "访问 pypi.org 带宽受限",
+      "solution": "配置 aliyun 镜像源",
+      "severity": "low"
+    }
+  ],
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  }
+}
