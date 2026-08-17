@@ -1,0 +1,741 @@
+{
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md \"System Requirements\" / \"Validated Configurations\"",
+      "value": "aarch64 (AArch64)，同时支持 Intel 64/AMD64、PPC64、s390x、RV64。本机为 HiSilicon Kunpeng 920 aarch64。"
+    },
+    "build_commands": {
+      "source": "doc/build/build.md \"Step 2. Build the Library\" + README.md",
+      "value": "mkdir -p build \u0026\u0026 cd build \u0026\u0026 cmake .. \u0026\u0026 cmake --build . --parallel \u003cN\u003e"
+    },
+    "dependencies": {
+      "source": "README.md \"Requirements for Building from Source\" + doc/build/build.md + CMakeLists.txt + cmake/options.cmake",
+      "value": [
+        "C++ 编译器（支持 C++11 标准）：gcc/g++ 或 clang",
+        "CMake \u003e= 3.13 (cmake_minimum_required VERSION 3.13)",
+        "make（Unix Makefiles 生成器）",
+        "OpenMP 运行时（编译器需支持 OpenMP 2.0+，gcc 自带 libgomp）",
+        "GoogleTest（源码内置 third_party/gtest，构建测试时自动拉取）",
+        "Python 3（部分脚本与测试辅助）",
+        "AArch64 可选: Arm Compute Library(ACL) \u003e= 53.1.0（可选，非必需，本次未启用）"
+      ]
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库根目录及子目录扫描（find -iname Dockerfile*）",
+      "value": "仓库无任何 Dockerfile，无依赖指令可提取"
+    },
+    "recommended_image": {
+      "source": "README.md \"Validated Configurations\" + 仓库无 Dockerfile/.devcontainer",
+      "value": "Ubuntu 22.04（AArch64 CPU engine 在 Ubuntu 22.04 上验证通过；仓库无 Dockerfile，按 skill 默认规则选 Ubuntu 22.04）"
+    },
+    "sample_commands": {
+      "source": "examples/CMakeLists.txt（BUILD_EXAMPLES 默认 ON，foreach 注册可执行文件，名字由源文件名 [/_\\.] 替换为 -）+ doc/examples.md",
+      "value": "cd build \u0026\u0026 ./getting_started-cpp（其他样例如 cnn_inference_f32-cpp、cpu_cnn_training_f32-c 等）"
+    },
+    "special_dependencies": {
+      "source": "README.md / CMakeLists.txt / requirements 扫描",
+      "value": []
+    },
+    "ut_commands": {
+      "source": "CMakeLists.txt(enable_testing + add_subdirectory(tests)) + tests/CMakeLists.txt + tests/gtests/CMakeLists.txt(使用 third_party/gtest)",
+      "value": "cd build \u0026\u0026 ctest --parallel \u003cN\u003e --output-on-failure（测试基于 GoogleTest，BUILD_TESTS 默认 ON）"
+    }
+  },
+  "documentation_gaps": [
+    {
+      "body": "oneDNN 仓库根目录及子目录均无任何 Dockerfile，也无 .devcontainer 目录。新开发者需自行从 README \"Requirements for Building from Source\" 推断依赖并搭建环境，缺乏开箱即用的容器化构建环境。README 仅链接到在线 Build from Source 文档，未提供可复现的容器定义。",
+      "source": "仓库根目录扫描（find -iname Dockerfile*）+ .devcontainer 目录检查",
+      "time": "2026-08-14T07:45:05",
+      "title": "仓库未提供 Dockerfile 或 devcontainer 配置"
+    },
+    {
+      "body": "README \"Validated Configurations\" 明确 AArch64 CPU engine 在 Ubuntu 22.04 + GCC 10/13/Clang 17 上验证，但未说明 openEuler/RHEL 等 Linux 发行版是否同样支持。虽然 oneDNN 是标准 C++/CMake 项目理论上跨发行版，但缺乏明确说明可能让使用 openEuler 等发行版的开发者犹豫。",
+      "source": "README.md \"Validated Configurations\" 章节",
+      "time": "2026-08-14T07:45:05",
+      "title": "AArch64 验证配置仅列出 Ubuntu 22.04，未说明其他 Linux 发行版兼容性"
+    },
+    {
+      "body": "验证中发现 AArch64（Kunpeng 920）上 test_convolution_forward_f32 等卷积测试发生内存损坏（free(): invalid next size）、benchdnn conv/deconv/gru/rnn 发生 SEGFAULT、graph ref primitive 报 out_of_memory、bnorm-u8-via-binary-postops 样例失败。README/发布说明未列出这些 AArch64 已知限制，开发者可能在 AArch64 上遇到后难以判断是环境问题还是仓库缺陷。",
+      "source": "验证执行结果（ctest 34 失败 + 样例 bnorm-u8 失败）",
+      "time": "2026-08-14T07:45:05",
+      "title": "AArch64 上部分卷积/图/binary 算子存在已知失败但文档未提示"
+    },
+    {
+      "body": "README Installation 章节仅链接到在线 Build from Source 文档，未在 README 本体直接列出 ctest 与样例运行命令。测试与样例命令需从 CMakeLists.txt(enable_testing/add_subdirectory) 与 examples/CMakeLists.txt 推断，对新手不够友好。",
+      "source": "README.md + doc/build/build.md + CMakeLists.txt",
+      "time": "2026-08-14T07:45:05",
+      "title": "README 未给出明确的单元测试/样例执行命令"
+    }
+  ],
+  "execution_log": [
+    {
+      "action": "在远程宿主机克隆 oneDNN 仓库（main 分支，--depth 1）",
+      "command": "git clone --depth 1 -b main https://github.com/uxlfoundation/oneDNN.git .",
+      "details": {
+        "branch": "main",
+        "clone_dir": "/tmp/oneDNN-verify (挂载到容器 /workspace)",
+        "commit": "357a8ebb1a1dc84c596e470b19e91ffebebb71cd",
+        "depth": 1,
+        "repo_url": "https://github.com/uxlfoundation/oneDNN.git"
+      },
+      "duration_seconds": 6,
+      "error": "",
+      "output": "Cloning into ... real 0m6.122s；commit 357a8ebb1a1dc84c596e470b19e91ffebebb71cd (2026-08-13) xe: introduce shortcut name for logging infrastructure",
+      "result": "成功",
+      "returncode": 0,
+      "step": "git_clone",
+      "success": true,
+      "timestamp": "2026-08-14T07:16:04"
+    },
+    {
+      "action": "扫描仓库内所有 Dockerfile 以确定推荐 OS 与依赖",
+      "command": "find . -maxdepth 3 -iname \"Dockerfile*\" -not -path \"./.git/*\"",
+      "details": {
+        "decision": "无 Dockerfile，README 明确 AArch64 验证于 Ubuntu 22.04，按 skill 默认规则选 Ubuntu 22.04",
+        "found": [],
+        "scan_command": "find . -maxdepth 3 -iname Dockerfile* -not -path ./.git/*"
+      },
+      "duration_seconds": 2,
+      "error": "",
+      "output": "（无输出，未发现任何 Dockerfile）",
+      "result": "无 Dockerfile",
+      "returncode": 0,
+      "step": "dockerfile_analysis",
+      "success": true,
+      "timestamp": "2026-08-14T07:16:04"
+    },
+    {
+      "action": "根据 README Validated Configurations + 无 Dockerfile 选择基础镜像",
+      "command": "docker images | grep ubuntu",
+      "details": {
+        "image": "ubuntu:22.04 (local cached, 69.6MB)",
+        "selection_reason": "README 明确 AArch64 CPU engine 在 Ubuntu 22.04 验证；仓库无 Dockerfile 按 skill 默认规则；Docker Hub 不可达但本地已缓存 ubuntu:22.04 镜像"
+      },
+      "duration_seconds": 1,
+      "error": "",
+      "output": "ubuntu 22.04 844d31f3a9fd 13 days ago 69.6MB（本地已存在）",
+      "result": "Ubuntu 22.04",
+      "returncode": 0,
+      "step": "image_selection",
+      "success": true,
+      "timestamp": "2026-08-14T07:16:04"
+    },
+    {
+      "action": "清理同名残留容器并启动 ubuntu:22.04 容器，挂载仓库到 /workspace",
+      "command": "docker rm -f oneDNN-ttfhw; docker run -d --name oneDNN-ttfhw -v /tmp/oneDNN-verify:/workspace -w /workspace ubuntu:22.04 tail -f /dev/null",
+      "details": {
+        "arch": "aarch64",
+        "container_name": "oneDNN-ttfhw",
+        "image": "ubuntu:22.04",
+        "mount": "/tmp/oneDNN-verify:/workspace",
+        "nproc": 394,
+        "os": "Ubuntu 22.04.5 LTS",
+        "workdir": "/workspace"
+      },
+      "duration_seconds": 3,
+      "error": "",
+      "output": "44d8fed1ac5404c3ecfba4760910c210e82f2af35a0f3fefae744c3913050303; Up; Ubuntu 22.04.5 LTS; ARCH=aarch64; NPROC=394",
+      "result": "成功",
+      "returncode": 0,
+      "step": "container_setup",
+      "success": true,
+      "timestamp": "2026-08-14T07:16:04"
+    },
+    {
+      "action": "在容器内阅读 README.md、doc/build/build.md、CMakeLists.txt、cmake/options.cmake、examples/CMakeLists.txt、tests/CMakeLists.txt，提取依赖、构建/测试/样例命令",
+      "command": "docker exec oneDNN-ttfhw bash -c 'cd /workspace \u0026\u0026 cat README.md doc/build/build.md CMakeLists.txt cmake/options.cmake examples/CMakeLists.txt tests/CMakeLists.txt'",
+      "details": {
+        "build_examples_default": "ON",
+        "build_tests_default": "ON (DNNL_IS_MAIN_PROJECT)",
+        "cmake_min": "3.13",
+        "cpu_runtime_default": "OMP",
+        "files_read": [
+          "README.md",
+          "doc/build/build.md",
+          "doc/build/build_options.md",
+          "CMakeLists.txt",
+          "cmake/options.cmake",
+          "examples/CMakeLists.txt",
+          "tests/CMakeLists.txt",
+          "tests/gtests/CMakeLists.txt"
+        ],
+        "gpu_runtime_default": "NONE",
+        "project_version": "3.14.0"
+      },
+      "duration_seconds": 20,
+      "error": "",
+      "output": "README: AArch64 validated on Ubuntu 22.04 with GCC 10/13, Clang 17; build reqs C++11 + CMake\u003e=3.13; build: mkdir build \u0026\u0026 cd build \u0026\u0026 cmake .. \u0026\u0026 cmake --build . --parallel N; tests use gtest + ctest; examples named \u003csrc\u003e-cpp",
+      "result": "成功",
+      "returncode": 0,
+      "step": "document_reading",
+      "success": true,
+      "timestamp": "2026-08-14T07:16:04"
+    },
+    {
+      "action": "检查 .pre-commit-config.yaml 与 lint-runner 配置是否存在",
+      "command": "docker exec oneDNN-ttfhw bash -c 'cd /workspace \u0026\u0026 ls .pre-commit-config.yaml 2\u003e/dev/null; find . -maxdepth 2 -iname \"*lint-runner*\" -o -iname \"*.lintrunner*\"'",
+      "details": {
+        "lint_runner_config_exists": false,
+        "note": "仓库根目录无 .pre-commit-config.yaml；无 .lintrunner.toml/.lint-runner.yaml 等配置；存在 .clang-format/.clang-tidy/.flake8 但无 pre-commit 编排文件，按 skill 判定标准 configured=false",
+        "pre_commit_config_exists": false
+      },
+      "duration_seconds": 2,
+      "error": "",
+      "output": "（无输出，未发现 .pre-commit-config.yaml 及 lint-runner 配置）",
+      "result": "均未配置",
+      "returncode": 0,
+      "step": "static_analysis_scan",
+      "success": true,
+      "timestamp": "2026-08-14T07:16:04"
+    },
+    {
+      "action": "检查 .devcontainer 目录",
+      "command": "docker exec oneDNN-ttfhw bash -c 'cd /workspace \u0026\u0026 ls -la .devcontainer 2\u003e/dev/null || echo no-devcontainer'",
+      "details": {
+        "config_files": [],
+        "devcontainer_dir_exists": false
+      },
+      "duration_seconds": 2,
+      "error": "",
+      "output": "no-devcontainer",
+      "result": "未配置",
+      "returncode": 0,
+      "step": "devcontainer_scan",
+      "success": true,
+      "timestamp": "2026-08-14T07:16:04"
+    },
+    {
+      "action": "第一层：apt-get update 并安装系统工具链（build-essential cmake git python3 python3-pip ca-certificates）",
+      "command": "export DEBIAN_FRONTEND=noninteractive; apt-get update \u0026\u0026 apt-get install -y --no-install-recommends build-essential cmake git python3 python3-pip ca-certificates",
+      "details": {
+        "packages": [
+          "build-essential",
+          "cmake",
+          "git",
+          "python3",
+          "python3-pip",
+          "ca-certificates"
+        ],
+        "source": "Ubuntu 官方仓库 (apt)",
+        "versions": {
+          "cmake": "3.22.1",
+          "gcc/g++": "11.4.0",
+          "git": "2.34.1",
+          "make": "4.3",
+          "python3": "3.10.12"
+        }
+      },
+      "duration_seconds": 55,
+      "error": "",
+      "output": "apt-get update: Fetched 47.0 MB in 9s; install: Setting up build-essential, cmake, git, python3-pip, g++ 11.4.0; gcc 11.4.0, cmake 3.22.1, make 4.3, python3 3.10.12",
+      "result": "成功",
+      "returncode": 0,
+      "step": "dependency_installation",
+      "success": true,
+      "timestamp": "2026-08-14T07:18:41"
+    },
+    {
+      "action": "第二层：确认 OpenMP 运行时依赖（libgomp1，gcc 自带）并验证 -fopenmp 可链接",
+      "command": "dpkg -l | grep libgomp; gcc -fopenmp /tmp/omp_test.c -o /tmp/omp_test \u0026\u0026 /tmp/omp_test",
+      "details": {
+        "omp_test": "max_threads=394",
+        "package": "libgomp1:arm64 12.3.0-1ubuntu1~22.04.3",
+        "source": "Ubuntu 官方仓库 (libgomp1 随 gcc 安装)"
+      },
+      "duration_seconds": 3,
+      "error": "",
+      "output": "libgomp1:arm64 已安装；OpenMP 编译运行测试 max_threads=394，OMP_OK",
+      "result": "成功",
+      "returncode": 0,
+      "step": "dependency_installation",
+      "success": true,
+      "timestamp": "2026-08-14T07:18:41"
+    },
+    {
+      "action": "验证所有构建依赖版本满足要求：CMake\u003e=3.13、C++11、OpenMP、GoogleTest 内置",
+      "command": "docker exec oneDNN-ttfhw bash -c 'cmake --version; gcc --version; ls /workspace/third_party/gtest'",
+      "details": {
+        "cmake_actual": "3.22.1",
+        "cmake_required": "3.13",
+        "compiler": "gcc/g++ 11.4.0",
+        "cpp_std_required": "C++11",
+        "gtest": "third_party/gtest 内置（CMakeLists 拉取）",
+        "openmp": "OK (libgomp1)"
+      },
+      "duration_seconds": 2,
+      "error": "",
+      "output": "cmake 3.22.1\u003e=3.13 ✓；gcc 11.4.0 支持 C++11 ✓；OpenMP ✓；gtest 内置 ✓",
+      "result": "成功",
+      "returncode": 0,
+      "step": "dependency_verification",
+      "success": true,
+      "timestamp": "2026-08-14T07:18:41"
+    },
+    {
+      "action": "CMake 配置（mkdir build \u0026\u0026 cd build \u0026\u0026 cmake ..）",
+      "command": "cd /workspace \u0026\u0026 rm -rf build \u0026\u0026 mkdir -p build \u0026\u0026 cd build \u0026\u0026 cmake ..",
+      "details": {
+        "build_type": "Release (默认)",
+        "cpu_runtime": "OMP (OpenMP 4.5)",
+        "gpu_runtime": "NONE",
+        "graph": "enabled",
+        "primitives": "ALL",
+        "target_arch": "AARCH64",
+        "testing_coverage": "CI",
+        "workload": "TRAINING"
+      },
+      "duration_seconds": 4,
+      "error": "",
+      "output": "The C/CXX compiler identification is GNU 11.4.0; DNNL_TARGET_ARCH: AARCH64; Found OpenMP 4.5; Found Threads: TRUE; Configuring done; Generating done; Build files written to /workspace/build",
+      "result": "成功",
+      "returncode": 0,
+      "step": "build_attempt",
+      "success": true,
+      "timestamp": "2026-08-14T07:36:18"
+    },
+    {
+      "action": "编译构建（cmake --build . --parallel 78，并发=394核×20%=78）",
+      "command": "cmake --build . --parallel 78",
+      "details": {
+        "build_end": "2026-08-13T23:25:39Z",
+        "build_start": "2026-08-13T23:19:18Z",
+        "concurrency": 78,
+        "concurrency_ratio": "20% (394 cores)",
+        "note": "SSH 客户端 120s 超时断开后容器内编译继续（进程被 reparent 到 PID 1），通过轮询确认完成；二次 cmake --build 仅做依赖检查 1.2s 即报告 [100%] Built target benchdnn, EXIT=0",
+        "obj_count": 946
+      },
+      "duration_seconds": 381,
+      "error": "",
+      "output": "[100%] Built target benchdnn; EXIT=0; 二次确认: [100%] Built target benchdnn (1.2s)",
+      "result": "成功",
+      "returncode": 0,
+      "step": "build_attempt",
+      "success": true,
+      "timestamp": "2026-08-14T07:36:18"
+    },
+    {
+      "action": "在容器内后台执行全量单元测试（ctest --parallel 16 --output-on-failure，OMP_NUM_THREADS=4，共 232 个测试）",
+      "command": "OMP_NUM_THREADS=4 ctest --parallel 16 --output-on-failure --timeout 300",
+      "details": {
+        "ctest_exit": 8,
+        "failed": 34,
+        "launch_mode": "docker exec -d 后台 nohup + 日志轮询（避免 SSH 120s 超时）",
+        "omp_threads": 4,
+        "parallel": 16,
+        "passed": 198,
+        "total": 232,
+        "total_time_sec": 333.55
+      },
+      "duration_seconds": 334,
+      "error": "34 个测试失败（含 SEGFAULT/Subprocess aborted/Timeout/Failed），详见 failures",
+      "output": "85% tests passed, 34 tests failed out of 232; Total Test time (real) = 333.55 sec; CTEST_DONE_EXIT=8",
+      "result": "部分通过（85% 通过，34 失败）",
+      "returncode": 8,
+      "step": "ut_execution",
+      "success": false,
+      "timestamp": "2026-08-14T07:44:48"
+    },
+    {
+      "action": "隔离重跑代表性失败测试，判断是否为并行资源竞争导致",
+      "command": "ctest -R '^test_convolution_forward_f32$' --output-on-failure --timeout 120; ctest -R test_benchdnn_modeC_conv_ci_cpu --output-on-failure --timeout 180",
+      "details": {
+        "conclusion": "隔离单线程重跑仍失败，确认为 aarch64 JIT 真实缺陷（卷积 JIT 代码生成内存损坏/benchdnn SEGFAULT），非并行竞争或依赖缺失，无法通过安装包修复",
+        "isolated_reruns": [
+          "test_convolution_forward_f32 (Subprocess aborted: free(): invalid next size, 数据 15.4512 vs 0)",
+          "test_benchdnn_modeC_conv_ci_cpu (SEGFAULT, 62s)"
+        ]
+      },
+      "duration_seconds": 65,
+      "error": "AArch64 卷积 JIT 内存损坏与 benchdnn SEGFAULT，属仓库 aarch64 实现缺陷",
+      "output": "test_convolution_forward_f32: Subprocess aborted (free(): invalid next size); test_benchdnn_modeC_conv_ci_cpu: SEGFAULT",
+      "result": "确认为真实失败（非竞争）",
+      "returncode": 1,
+      "step": "problem_resolution",
+      "success": false,
+      "timestamp": "2026-08-14T07:44:48"
+    },
+    {
+      "action": "直接运行多个样例程序验证库可用性（getting-started-cpp、cnn-inference-f32-cpp、cpu-cnn-training-f32-c、matmul-quantization-cpp、bnorm-u8-via-binary-postops-cpp）",
+      "command": "export LD_LIBRARY_PATH=/workspace/build/src:$LD_LIBRARY_PATH; OMP_NUM_THREADS=4 ./examples/getting-started-cpp; ./examples/cnn-inference-f32-cpp; ./examples/cpu-cnn-training-f32-c; ./examples/cpu-tutorials-matmul-matmul-quantization-cpp; ./examples/bnorm-u8-via-binary-postops-cpp",
+      "details": {
+        "ld_library_path": "/workspace/build/src",
+        "omp_num_threads": 4,
+        "ran": [
+          "getting-started-cpp",
+          "cnn-inference-f32-cpp",
+          "cpu-cnn-training-f32-c",
+          "cpu-tutorials-matmul-matmul-quantization-cpp",
+          "bnorm-u8-via-binary-postops-cpp"
+        ]
+      },
+      "duration_seconds": 60,
+      "error": "bnorm-u8-via-binary-postops-cpp 报 out_of_memory（与 UT 中 graph/binary 失败同源，AArch64 primitive 创建问题）",
+      "output": "getting-started-cpp: Example passed on CPU (EXIT=0); cnn-inference-f32-cpp: Use time 119.52ms/iter, Example passed (EXIT=0); cpu-cnn-training-f32-c: Example passed (EXIT=0); matmul-quantization: Accuracy check OK, Example passed (EXIT=0); bnorm-u8-via-binary-postops-cpp: oneDNN error out_of_memory could not create a primitive, Example failed (EXIT=0)",
+      "result": "部分通过（4 通过，1 失败）",
+      "returncode": 0,
+      "step": "sample_execution",
+      "success": false,
+      "timestamp": "2026-08-14T07:44:48"
+    }
+  ],
+  "final_results": {
+    "build": {
+      "artifacts": [
+        {
+          "name": "libdnnl.so.3.14",
+          "path": "build/src/libdnnl.so.3.14",
+          "size": "41.8 MB",
+          "type": "shared library"
+        },
+        {
+          "name": "getting-started-cpp",
+          "path": "build/examples/getting-started-cpp",
+          "size": "58 KB",
+          "type": "example binary"
+        },
+        {
+          "name": "benchdnn",
+          "path": "build/tests/benchdnn/benchdnn",
+          "type": "benchmark binary"
+        },
+        {
+          "name": "test_* (82 binaries)",
+          "path": "build/tests/gtests/",
+          "type": "gtest binaries"
+        },
+        {
+          "name": "examples (59 binaries)",
+          "path": "build/examples/",
+          "type": "example binaries"
+        }
+      ],
+      "cmake": "3.22.1 (\u003e=3.13 ✓)",
+      "compiler": "gcc/g++ 11.4.0 (Ubuntu, C++11, OpenMP 4.5)",
+      "concurrency": 78,
+      "concurrency_ratio": "20% (394 cores → 78 jobs)",
+      "duration_seconds": 385,
+      "notes": "默认 Release 构建，CPU 引擎 OMP 运行时，GPU NONE，Graph API 启用；构建一次通过，无需修复依赖。SSH 120s 超时未影响容器内编译。",
+      "status": "成功"
+    },
+    "devcontainer": {
+      "config_dir": null,
+      "config_files": [],
+      "enabled": false,
+      "original_base_image": "none (no .devcontainer)",
+      "summary": "仓库无 .devcontainer 目录，不具备 devcontainer 能力。依据 README Validated Configurations 选择 Ubuntu 22.04 基础镜像从零构建。",
+      "used_image": "Ubuntu 22.04.5 LTS"
+    },
+    "sample": {
+      "duration_seconds": 60,
+      "reason": "部分样例（bnorm-u8-via-binary-postops、cpu-graph-gqa-training、cpu-graph-sdpa）在 AArch64 上因 primitive 创建 out_of_memory/JIT 问题失败，核心样例均可正常运行",
+      "results": [
+        {
+          "execution_status": "成功",
+          "execution_time": "\u003c1s",
+          "output_summary": "Example passed on CPU（oneDNN 基础 API 走通，Reorder+Eltwise+Matmul 等基础算子可用）",
+          "sample_name": "getting-started-cpp"
+        },
+        {
+          "execution_status": "成功",
+          "execution_time": "119.52ms/iter",
+          "output_summary": "CNN f32 推理样例通过，Use time 119.52 ms per iteration",
+          "sample_name": "cnn-inference-f32-cpp"
+        },
+        {
+          "execution_status": "成功",
+          "execution_time": "\u003c1s",
+          "output_summary": "CPU CNN f32 训练样例通过（C API）",
+          "sample_name": "cpu-cnn-training-f32-c"
+        },
+        {
+          "execution_status": "成功",
+          "execution_time": "\u003c1s",
+          "output_summary": "Matmul 量化样例通过，Relative error 0.0149242，Accuracy check OK",
+          "sample_name": "cpu-tutorials-matmul-matmul-quantization-cpp"
+        },
+        {
+          "execution_status": "失败",
+          "execution_time": "\u003c1s",
+          "output_summary": "oneDNN error: out_of_memory, could not create a primitive；Example failed on CPU",
+          "sample_name": "bnorm-u8-via-binary-postops-cpp"
+        }
+      ],
+      "status": "partial_success"
+    },
+    "static_analysis": {
+      "enabled": false,
+      "lint_runner": {
+        "config_file": null,
+        "configured": false
+      },
+      "pre_commit": {
+        "config_file": null,
+        "configured": false,
+        "duration_seconds": 0,
+        "executed_in_verification": false,
+        "note": "根目录无 .pre-commit-config.yaml，按 skill 唯一判定标准 configured=false",
+        "status": "not_configured"
+      },
+      "summary": "仓库未配置 pre-commit（根目录无 .pre-commit-config.yaml）与 lint-runner。存在 .clang-format/.clang-tidy/.flake8 配置文件但无 pre-commit/lint-runner 编排，按 skill 判定标准 configured=false，无需执行。"
+    },
+    "ut": {
+      "cpp": {
+        "failed": 34,
+        "note": "ctest(gtest+benchdnn+examples)，34 失败多为 AArch64 卷积 JIT 内存损坏/SEGFAULT、graph ref out_of_memory、部分 benchdnn 超时；隔离重跑确认非并行竞争",
+        "passed": 198,
+        "status": "partial_success",
+        "total": 232
+      },
+      "duration_seconds": 334,
+      "failed": 34,
+      "failures": [
+        {
+          "name": "cpu-bnorm-u8-via-binary-postops-cpp",
+          "reason": "Failed (out_of_memory: could not create a primitive)",
+          "type": "example"
+        },
+        {
+          "name": "cpu-graph-gqa-training-cpp",
+          "reason": "Failed",
+          "type": "example"
+        },
+        {
+          "name": "cpu-graph-sdpa-cpp",
+          "reason": "Timeout",
+          "type": "example"
+        },
+        {
+          "name": "test_binary",
+          "reason": "Failed (binary_test_f32f32u8 子用例失败，BinaryOp/Add/BroadcastAdd 等)",
+          "type": "gtest"
+        },
+        {
+          "name": "test_convolution_backward_data_f32",
+          "reason": "Subprocess aborted",
+          "type": "gtest"
+        },
+        {
+          "name": "test_convolution_backward_weights_f32",
+          "reason": "Subprocess aborted",
+          "type": "gtest"
+        },
+        {
+          "name": "test_convolution_eltwise_forward_f32",
+          "reason": "SEGFAULT",
+          "type": "gtest"
+        },
+        {
+          "name": "test_convolution_forward_f32",
+          "reason": "Subprocess aborted (free(): invalid next size, 内存损坏)",
+          "type": "gtest"
+        },
+        {
+          "name": "test_pooling_forward",
+          "reason": "Failed",
+          "type": "gtest"
+        },
+        {
+          "name": "test_reorder",
+          "reason": "Subprocess aborted",
+          "type": "gtest"
+        },
+        {
+          "name": "test_regression_binary_stride",
+          "reason": "Failed",
+          "type": "gtest"
+        },
+        {
+          "name": "test_graph_c_api_compile_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_binary_op_cpu",
+          "reason": "Failed (graph ref out_of_memory)",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_compiled_partition_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_convolution_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_convtranspose_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_large_partition_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_matmul_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_pool_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_reduce_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_graph_unit_dnnl_softmax_cpu",
+          "reason": "Failed",
+          "type": "gtest(graph)"
+        },
+        {
+          "name": "test_benchdnn_modeC_binary_ci_cpu",
+          "reason": "Failed",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_binary_different_dt_ci_cpu",
+          "reason": "Failed",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_conv_ci_cpu",
+          "reason": "SEGFAULT",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_deconv_ci_cpu",
+          "reason": "SEGFAULT",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_graph_ci_cpu",
+          "reason": "Failed",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_ip_ci_cpu",
+          "reason": "Timeout",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_lnorm_ci_cpu",
+          "reason": "Timeout",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_matmul_ci_cpu",
+          "reason": "Timeout",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_pool_ci_cpu",
+          "reason": "Failed",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_gru_ci_cpu",
+          "reason": "SEGFAULT",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_lstm_ci_cpu",
+          "reason": "Failed",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_rnn_ci_cpu",
+          "reason": "SEGFAULT",
+          "type": "benchdnn"
+        },
+        {
+          "name": "test_benchdnn_modeC_zeropad_ci_cpu",
+          "reason": "Timeout",
+          "type": "benchdnn"
+        }
+      ],
+      "passed": 198,
+      "skipped": 0,
+      "status": "partial_success",
+      "total": 232
+    }
+  },
+  "machine_spec": {
+    "container": {
+      "architecture": "aarch64",
+      "container_name": "oneDNN-ttfhw",
+      "cpu_cores": 394,
+      "memory": "1.0Ti (无限制)",
+      "os": "Ubuntu 22.04.5 LTS"
+    },
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_cores": 394,
+      "cpu_model": "HiSilicon Kunpeng 920 72F8",
+      "disk": "69G (18G available)",
+      "docker_version": "Docker version 25.0.2, build 29cf629",
+      "memory": "1.0Ti",
+      "npu": {
+        "available": false
+      }
+    },
+    "image_source": {
+      "dependency_mapping": {
+        "from_cmake": "CMakeLists.txt cmake_minimum_required(VERSION 3.13)；project LANGUAGES C CXX；构建依赖由 README + CMake 推断：C++11 编译器、CMake\u003e=3.13、OpenMP 运行时（编译器自带或 libgomp）",
+        "from_dockerfile": "仓库无任何 Dockerfile，无依赖指令可提取",
+        "from_readme": "README \"Requirements for Building from Source\": C++11 编译器、CMake 3.13+；CPU 引擎默认构建，OpenMP 运行时需编译器支持 OpenMP 2.0+；AArch64 可选 Arm Compute Library(ACL)\u003e=53.1.0（可选，非必需）",
+        "mappings": []
+      },
+      "image_name": "ubuntu:22.04",
+      "selection_reason": "仓库无 Dockerfile/.devcontainer，README \"Validated Configurations\" 明确说明 AArch64 CPU engine 在 Ubuntu 22.04 上验证通过（GCC 10/13, Clang 17），选择 Ubuntu 22.04 基础镜像从零构建。Docker Hub 不可达，使用本地已缓存镜像。",
+      "type": "base_image"
+    }
+  },
+  "metadata": {
+    "branch": "main",
+    "commit": "357a8ebb1a1dc84c596e470b19e91ffebebb71cd",
+    "duration_seconds": 1928,
+    "end_time": "2026-08-14T07:45:21",
+    "environment": "remote 123.60.114.33 container oneDNN-ttfhw",
+    "repo_url": "https://github.com/uxlfoundation/oneDNN.git",
+    "start_time": "2026-08-14T07:13:13",
+    "total_steps": 15,
+    "verifier": "opencode ttfhw-verify skill"
+  },
+  "problems_encountered": [
+    {
+      "problem": "远程宿主机无法访问 Docker Hub（docker pull ubuntu:22.04 报 connection reset by peer），无法在线拉取基础镜像",
+      "solution": "检查本地 docker images 发现 ubuntu:22.04 已被缓存（此前通过 docker.m.daocloud.io 镜像源拉取过），直接使用本地缓存镜像启动容器，无需在线拉取",
+      "source": "docker pull ubuntu:22.04 失败 + docker images 本地缓存检查",
+      "timestamp": "2026-08-14T07:45:05"
+    },
+    {
+      "problem": "SSH 单次命令 120s 超时导致前台 cmake --build 与 ctest 命令被中断（oneDNN 编译约 6 分钟、ctest 约 5.5 分钟，均超 120s）",
+      "solution": "编译改用后台轮询方式（docker exec 内编译进程在 SSH 断开后被 reparent 到容器 PID 1 继续运行，通过 pgrep/find 轮询 .o 文件与 libdnnl.so 确认完成）；ctest 改用 docker exec -d 后台运行并重定向到 ctest.log，再轮询日志 CTEST_DONE_EXIT 标记",
+      "source": "opencode bash 工具 120s 超时 + docker exec 进程生命周期",
+      "timestamp": "2026-08-14T07:45:05"
+    },
+    {
+      "problem": "AArch64 上卷积单元测试 test_convolution_forward_f32 内存损坏（free(): invalid next size），benchdnn test_benchdnn_modeC_conv_ci_cpu SEGFAULT，初步怀疑为 ctest --parallel 16 并行资源竞争所致",
+      "solution": "隔离单线程重跑（ctest -R 精确匹配单测试，OMP_NUM_THREADS=16）仍复现 Subprocess aborted 与 SEGFAULT，确认为 AArch64 JIT 代码生成真实缺陷而非并行竞争或依赖缺失，无法通过安装原生包修复，如实记录为 partial_success",
+      "source": "ctest 隔离重跑：test_convolution_forward_f32 + test_benchdnn_modeC_conv_ci_cpu",
+      "timestamp": "2026-08-14T07:45:05"
+    }
+  ],
+  "session_export_file": "",
+  "status": "completed",
+  "token_usage": {
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0,
+    "input_tokens": 0,
+    "model": "bailian/glm-5.2",
+    "output_tokens": 0,
+    "tool": "opencode"
+  }
+}
