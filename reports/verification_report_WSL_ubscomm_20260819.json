@@ -1,0 +1,240 @@
+{
+  "metadata": {
+    "repo_path": "/home/w30038327/ttfhw/ubscomm",
+    "start_time": "2026-08-19T15:11:00+08:00",
+    "end_time": "2026-08-19T15:35:30+08:00",
+    "duration_seconds": 1470,
+    "total_steps": 6,
+    "note": "本次为全新验证：旧报告已归档至 verification_report/archive/，旧容器已删除，重新拉起容器执行"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "Intel(R) Core(TM) i7-14700",
+      "cpu_cores": 28,
+      "memory": "15Gi",
+      "disk": "1007G (929G 可用)",
+      "docker_version": "Docker version 25.0.3, build 4debf41"
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS)",
+      "architecture": "x86_64",
+      "cpu_cores": 28,
+      "memory": "15Gi",
+      "mount": "/home/w30038327/ttfhw/ubscomm:/workspace"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "README.md §4.3 明确'编译和运行环境仅支持 openEuler' → 选择 openEuler 24.03 LTS"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "value": "x86_64 / aarch64（UT 与平台无关；UB/UBSocket E2E 仅 aarch64 Kunpeng）",
+      "source": "README.md §3 平台兼容性说明"
+    },
+    "recommended_image": {
+      "value": "README §4.3 明确'编译和运行环境仅支持 openEuler'，无 Dockerfile → 选择 openEuler 24.03 LTS",
+      "source": "README.md §4.3 容器/Docker 环境说明"
+    },
+    "dependencies": {
+      "value": ["cmake", "gcc", "gcc-c++", "make", "git", "rdma-core-devel", "openssl-devel", "libboundscheck", "time"],
+      "source": "README.md §4.1 构建依赖（dnf install 列表）"
+    },
+    "build_commands": {
+      "value": [
+        "./build.sh（release，仅 HCOM，默认）",
+        "HCOM_BUILD_TYPE=debug HCOM_BUILD_TESTS=on UMQ_BUILD=on UBSOCKET_BUILD=on UBSOCKET_UT=on ./build.sh（HCOM debug+UT + UMQ + UBSocket + UBSocket UT 全量）",
+        "无完整 URMA SDK 时增加 USE_URMA_STUB=ON（umq_ub 编译需要）"
+      ],
+      "source": "README.md §4.2 编译"
+    },
+    "ut_commands": {
+      "value": [
+        "LD_LIBRARY_PATH=dist/hcom_3rdparty/libboundscheck/lib:dist/hcom/lib ./build/generate_gtest_report.sh（运行 hcom_ut + hcom_test 并合并 XML 报告）",
+        "ctest --test-dir src/ubsocket/build --output-on-failure（UBSocket UT，由构建脚本在 UBSOCKET_UT=on 时自动执行）"
+      ],
+      "source": "README.md §4.2 + src/hcom/README.md §4"
+    },
+    "sample_commands": {
+      "value": [
+        "HCOM_BUILD_EXAMPLE=on ./build.sh（编译 hcom_perf 性能测试工具）",
+        "hcom_perf --case transport_send_lat --role server|client --protocol rdma|UBC -i <ip> -n 1000 --all（E2E 运行需 server+client 配对 + 传输硬件）"
+      ],
+      "source": "src/hcom/README.md §3 + test/hcom/tools/perf_test/README.md §3"
+    },
+    "special_dependencies": {
+      "value": [],
+      "source": "未找到 CANN 等特殊依赖下载链接；gtest 1.12.1/mockcpp 由 build.sh 自动获取；UMQ 无完整 URMA SDK 时文档明确要求 USE_URMA_STUB=ON（README.md §4.2 注意）"
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-19T15:11:00+08:00",
+      "command": "mkdir -p verification_report/archive && mv verification_report/*.json *.md archive/",
+      "success": true,
+      "output": "旧报告 6 份（20260729/20260730/20260731×2/20260819×2）已归档",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-19T15:11:20+08:00",
+      "command": "docker stop/rm ttfhw-ubscomm-env ttfhw-ubscomm-speed",
+      "success": true,
+      "output": "残留容器已删除，docker ps -a 为空",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-19T15:12:00+08:00",
+      "command": "docker run -d --name ttfhw-ubscomm-env -v /home/w30038327/ttfhw/ubscomm:/workspace -w /workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts tail -f /dev/null",
+      "success": true,
+      "output": "容器启动成功，openEuler 24.03 LTS x86_64",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-19T15:13:00+08:00",
+      "command": "dnf makecache && dnf install -y cmake gcc gcc-c++ make git rdma-core-devel openssl-devel libboundscheck time",
+      "success": true,
+      "output": "cmake 3.27.9 / gcc 12.3.1 (openEuler 12.3.1-38.oe2403) / libboundscheck-v1.1.11 安装完成，耗时 4m47s",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-08-19T15:18:00+08:00",
+      "command": "taskset -c 0-15 ./build.sh（HCOM release，默认配置）",
+      "success": true,
+      "output": "[build.sh] ./build.sh succeeds；产物 dist/hcom/{include,lib}：libhcom.so.0.0.1 (25M)、libhcom_static.a (133M)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 47.9
+    },
+    {
+      "timestamp": "2026-08-19T15:19:00+08:00",
+      "command": "taskset -c 0-15 env HCOM_BUILD_TYPE=debug HCOM_BUILD_TESTS=on UMQ_BUILD=on UBSOCKET_BUILD=on UBSOCKET_UT=on USE_URMA_STUB=ON ./build.sh（全量）",
+      "success": true,
+      "output": "[build.sh] ./build.sh succeeds；tmp_build_dir/hcom_ut (128M)、hcom_test (63M)；src/hcom/umq/build/src/libumq.so + qbuf/libumq_buf.so；src/ubsocket/build/csrc/libubsocket.so (17M) + libubsocket.a (63M)；脚本内置 UBSocket ctest 20/20 通过 (2.34s)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 171.2
+    },
+    {
+      "timestamp": "2026-08-19T15:27:00+08:00",
+      "command": "LD_LIBRARY_PATH=/workspace/dist/hcom_3rdparty/libboundscheck/lib:/workspace/dist/hcom/lib ./build/generate_gtest_report.sh",
+      "success": true,
+      "output": "hcom_ut: 940/940 通过，13.9s (47 套件)；hcom_test: 306/306 通过，273.1s (29 套件)；合并 gtest_report.xml tests=1246 failures=0 errors=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 287.0
+    },
+    {
+      "timestamp": "2026-08-19T15:32:30+08:00",
+      "command": "taskset -c 0-15 env HCOM_BUILD_EXAMPLE=on ./build.sh（编译样例 hcom_perf）",
+      "success": true,
+      "output": "[build.sh] ./build.sh succeeds；产物 test/hcom/tools/perf_test/build/hcom_perf",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 52.6
+    },
+    {
+      "timestamp": "2026-08-19T15:34:00+08:00",
+      "command": "./hcom_perf --help",
+      "success": false,
+      "output": "打印用法示例（--protocol rdma|UBC）后 RDMA 驱动初始化失败：No matched ip found with '192.168.100.0/24'，RDMA failed to create ctx，failed to initialize driver 101",
+      "error": "hcom_perf 为 E2E 性能工具，需 RDMA 网卡/Kunpeng UB 硬件，容器无硬件无法执行",
+      "returncode": 101,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-19T15:35:00+08:00",
+      "command": "docker stop ttfhw-ubscomm-env && docker rm ttfhw-ubscomm-env",
+      "success": true,
+      "output": "容器已停止并删除，验证环境清理完毕",
+      "error": "",
+      "returncode": 0
+    }
+  ],
+  "process_timeline": [
+    {"timestamp": "2026-08-19T15:11:00+08:00", "step": "start", "action": "归档旧报告、清理旧容器，全新验证启动", "result": "started"},
+    {"timestamp": "2026-08-19T15:12:00+08:00", "step": "container", "action": "启动 openEuler 24.03 LTS 容器 ttfhw-ubscomm-env（挂载 /workspace）", "result": "success"},
+    {"timestamp": "2026-08-19T15:13:00+08:00", "step": "deps", "action": "dnf 安装 README §4.1 依赖（cmake/gcc/rdma-core-devel/openssl-devel/libboundscheck/time 等）", "result": "success (4m47s)"},
+    {"timestamp": "2026-08-19T15:18:00+08:00", "step": "build", "action": "HCOM release 构建（taskset -c 0-15 限制 16 核 = 28×60%）", "result": "success (47.9s)"},
+    {"timestamp": "2026-08-19T15:19:00+08:00", "step": "build", "action": "全量构建：HCOM debug+UT + UMQ + UBSocket + UBSocket UT（USE_URMA_STUB=ON）", "result": "success (171.2s)"},
+    {"timestamp": "2026-08-19T15:27:00+08:00", "step": "ut", "action": "generate_gtest_report.sh：hcom_ut 940/940 + hcom_test 306/306", "result": "success (287.0s)"},
+    {"timestamp": "2026-08-19T15:32:30+08:00", "step": "sample", "action": "HCOM_BUILD_EXAMPLE=on 编译 hcom_perf", "result": "build success (52.6s)"},
+    {"timestamp": "2026-08-19T15:34:00+08:00", "step": "sample", "action": "hcom_perf 运行尝试（--help）", "result": "fail - 需 RDMA/Kunpeng 硬件，记录跳过"},
+    {"timestamp": "2026-08-19T15:35:00+08:00", "step": "cleanup", "action": "停止并删除验证容器", "result": "success"}
+  ],
+  "final_results": {
+    "build": {
+      "status": "success",
+      "duration_seconds": 271.7,
+      "artifacts": [
+        {"name": "libhcom.so.0.0.1", "path": "dist/hcom/lib/", "size": "25M"},
+        {"name": "libhcom_static.a", "path": "dist/hcom/lib/", "size": "133M"},
+        {"name": "libumq.so", "path": "src/hcom/umq/build/src/", "size": "symlink"},
+        {"name": "libumq_buf.so", "path": "src/hcom/umq/build/src/qbuf/", "size": "symlink"},
+        {"name": "libubsocket.so", "path": "src/ubsocket/build/csrc/", "size": "17M"},
+        {"name": "libubsocket.a", "path": "src/ubsocket/build/csrc/", "size": "63M"},
+        {"name": "hcom_ut", "path": "tmp_build_dir/", "size": "128M"},
+        {"name": "hcom_test", "path": "tmp_build_dir/", "size": "63M"},
+        {"name": "hcom_perf", "path": "test/hcom/tools/perf_test/build/", "size": "-"}
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 289.3,
+      "total": 1266,
+      "passed": 1266,
+      "failed": 0,
+      "failures": [],
+      "details": [
+        {"name": "hcom_ut", "total": 940, "passed": 940, "failed": 0, "suites": 47, "duration_seconds": 13.9},
+        {"name": "hcom_test", "total": 306, "passed": 306, "failed": 0, "suites": 29, "duration_seconds": 273.1},
+        {"name": "UBSocket ctest", "total": 20, "passed": 20, "failed": 0, "suites": 20, "duration_seconds": 2.3}
+      ]
+    },
+    "sample": {
+      "status": "skipped - 需 E2E 硬件",
+      "duration_seconds": 1.0,
+      "results": [
+        {
+          "name": "hcom_perf",
+          "build": "success（HCOM_BUILD_EXAMPLE=on，产物 test/hcom/tools/perf_test/build/hcom_perf）",
+          "run": "failed - RDMA 驱动无匹配硬件（No matched ip found with '192.168.100.0/24'）；文档仅支持 --protocol rdma|UBC，均需物理网卡/Kunpeng UB，单容器无法执行",
+          "source": "src/hcom/README.md §3 + README.md §3 平台兼容性说明"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    "hcom_perf 运行示例仅在 src/hcom/README.md §3 提及'需 server+client 配对 + 传输硬件'，仓库根 README §4 未给出样例执行命令",
+    "gtest 1.12.1/mockcpp v2.7 由 build/install_test_tools.sh 依赖华为内部 git 获取，外部网络环境无该源时需自行提供（本次验证中 build.sh 自动获取成功，未暴露该问题）",
+    "README §4.2 未说明 UBSOCKET_UT=on 时 UBSocket UT 由 build.sh 内置 ctest 自动执行（无需手动 ctest --test-dir）",
+    "README §4.1 依赖列表已更新包含 libboundscheck（本次验证无需额外手工安装，直接可用）"
+  ],
+  "problems_encountered": [
+    {
+      "问题": "旧验证报告与残留容器影响全新验证",
+      "解决方案": "旧报告移至 verification_report/archive/，docker stop/rm 删除旧容器后重新拉起",
+      "来源": "用户要求'排除旧报告影响，重新拉起容器验证'"
+    },
+    {
+      "问题": "dnf 依赖下载速度慢（~100-200kB/s）",
+      "解决方案": "等待完成，总耗时 4m47s，未修改任何代码或仓库文件",
+      "来源": "网络环境限制，非仓库问题"
+    },
+    {
+      "问题": "hcom_perf 运行失败：RDMA 驱动初始化无匹配硬件（failed to initialize driver 101）",
+      "解决方案": "记录为样例运行跳过——hcom_perf 为 E2E 性能工具，需 RDMA 网卡或 Kunpeng UB 硬件，容器内无法满足；与 2026-07-29/31 及历史验证结论一致",
+      "来源": "README.md §3 平台兼容性说明（E2E 需对应传输硬件）+ test/hcom/tools/perf_test/README.md §3"
+    },
+    {
+      "问题": "上午验证中 UBSOCKET_UT=on 强制 coverage 需 lcov 导致失败",
+      "解决方案": "本次验证前仓库已更新 build/build_umq_and_ubsocket.sh：覆盖率默认关闭，仅显式 UBSOCKET_COVERAGE=on 才启用，README §4.2 全量命令直接通过",
+      "来源": "build/build_umq_and_ubsocket.sh（2026-08-19 更新）+ README.md §4.2"
+    }
+  ]
+}
