@@ -1,0 +1,513 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/damttty/MultimodalSDK/tree/master-modify-ttfhw",
+    "branch": "master-modify-ttfhw",
+    "start_time": "2026-08-19T09:42:34",
+    "end_time": "",
+    "duration_seconds": 0,
+    "total_steps": 0,
+    "commit": "",
+    "environment": "",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "HUAWEI Kunpeng 920 7265",
+      "cpu_cores": 256,
+      "memory": "1.5Ti",
+      "disk": "3.5T (318G 可用)",
+      "docker_version": "Docker version 26.1.4, build 5650f9b"
+    },
+    "container": {
+      "os": "Ubuntu 22.04.5 LTS",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "1.5Ti"
+    },
+    "image_source": {
+      "type": "prebuilt_image",
+      "image_name": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindx_arm:SDK_20260112_1",
+      "selection_reason": "Tier 1 业务预构建镜像：CONTRIBUTING.md PR 最佳实践章节明确指定该镜像包含构建 Multimodal SDK 所需所有依赖；镜像已在本地缓存（image_id=e8c4e2a1a40b，7 个月前构建，25.3GB），无需 docker pull；Dockerfile FROM 也指向非纯 OS 镜像 quay.io/ascend/vllm-ascend，进一步确认 Tier 1"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md + docs/zh/02_quickstart/quickstart.md + docker/OVERVIEW.zh.md",
+      "value": "aarch64 (仅支持 ARM64，硬件 Atlas 800I A2 推理服务器)"
+    },
+    "recommended_image": {
+      "source": "CONTRIBUTING.md PR 最佳实践章节 + .devcontainer/devcontainer.json + docker/Dockerfile.910b.ubuntu",
+      "value": "构建镜像 swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindx_arm:SDK_20260112_1；devcontainer 基于 quay.io/ascend/vllm-ascend:v0.8.5rc1；运行镜像 swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/Dockerfile.910b.ubuntu + .devcontainer/Dockerfile",
+      "value": [
+        {"original": "FROM quay.io/ascend/vllm-ascend:v0.8.5rc1", "target_equivalent": "FROM quay.io/ascend/vllm-ascend:v0.8.5rc1 (基础镜像非纯 OS)"},
+        {"original": "apt install curl gcc cmake g++ make pkg-config unzip autoconf git patch bison", "target_equivalent": "已包含构建工具链"},
+        {"original": "pip3 install torch==2.5.1 torch-npu==2.5.1.post1 torchvision==0.20.1 transformers==4.51.3 einops==0.8.2 pillow==11.2.1 numpy==1.26.4", "target_equivalent": "已预装 Python 依赖"},
+        {"original": "源码编译 Python 3.11.4 至 /opt/buildtools/python-3.11.4", "target_equivalent": "已预装自定义 Python"},
+        {"original": "源码编译 SWIG 4.3.0 至 /usr/local", "target_equivalent": "已预装 SWIG 4.3.0"}
+      ]
+    },
+    "dependencies": {
+      "source": "CONTRIBUTING.md 构建依赖表 + docs/zh/03_installation_guide/installation_guide.md",
+      "value": [
+        "CMake 3.14 及以上",
+        "Make 4.1 及以上",
+        "GCC 9.4 及以上",
+        "SWIG 4.3 及以上（建议源码安装）",
+        "Python 3.10 最低，推荐 3.11",
+        "CANN 9.1.0（含 Toolkit 和 ops 包）+ HDK 26.1.0 驱动固件",
+        "transformers==4.51.3",
+        "einops==0.8.2",
+        "pillow==11.2.1 及以上",
+        "numpy==1.26.4",
+        "torch==2.5.1",
+        "torch-npu==2.5.1.post1",
+        "git-lfs（拉取测试大文件）",
+        "googletest、lcov>=2.0（测试用例）"
+      ]
+    },
+    "build_commands": {
+      "source": "CONTRIBUTING.md 开发构建验证章节",
+      "value": "source /usr/local/Ascend/ascend-toolkit/set_env.sh && bash build_script/build_merge.sh"
+    },
+    "ut_commands": {
+      "source": "CONTRIBUTING.md 开发构建验证章节",
+      "value": "apt-get install git-lfs && git lfs pull && bash build_script/build_merge.sh test"
+    },
+    "sample_commands": {
+      "source": "docs/zh/02_quickstart/quickstart.md 步骤 4 + docs/zh/04_user_guide/user_guide.md",
+      "value": "export TEST_IMAGE=/data/test.jpg && chmod 640 $TEST_IMAGE && python3 -c 'import mm; img=mm.Image.open(\"/data/test.jpg\",\"cpu\"); img_resize=img.resize((500,500),mm.Interpolation.BICUBIC,mm.DeviceMode.CPU); print(img_resize.numpy().shape)'"
+    },
+    "special_dependencies": {
+      "source": "CONTRIBUTING.md + docs/zh/03_installation_guide/installation_guide.md",
+      "value": [
+        "CANN 9.1.0 Toolkit（必须 source /usr/local/Ascend/ascend-toolkit/set_env.sh）",
+        "NPU 驱动固件 HDK 26.1.0",
+        "git-lfs（拉取 LFS 测试文件）",
+        "lcov>=2.0（构建脚本会自动下载并 make install）",
+        "googletest（fetch_deps.sh 自动下载）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-19T09:43:00",
+      "step": "document_reading",
+      "action": "阅读 README.md 提取项目简介、入口链接、构建/测试/样例入口",
+      "result": "成功",
+      "details": {"file": "README.md", "key_sections": ["快速入门", "安装指南", "贡献指南", "使用指南"]},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/README.md",
+      "success": true,
+      "output": "Multimodal SDK 是面向昇腾设备优化的多模态大模型推理预处理加速套件。本地构建参考 CONTRIBUTING.md；Docker 体验参考 quickstart.md；支持 Atlas 800I A2",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:43:30",
+      "step": "document_reading",
+      "action": "阅读 CONTRIBUTING.md 提取预构建镜像、构建依赖、构建/测试命令",
+      "result": "成功",
+      "details": {"file": "CONTRIBUTING.md", "image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindx_arm:SDK_20260112_1", "build_cmd": "bash build_script/build_merge.sh", "test_cmd": "bash build_script/build_merge.sh test"},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/CONTRIBUTING.md",
+      "success": true,
+      "output": "预构建镜像 mindx_arm:SDK_20260112_1；构建依赖 CMake3.14+/Make4.1+/GCC9.4+/SWIG4.3+/Python3.11；构建产物 Ascend-mindxsdk-multimodal_{version}_linux-{arch}.run",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:44:00",
+      "step": "document_reading",
+      "action": "阅读 quickstart.md 提取运行镜像、容器启动参数、验证脚本",
+      "result": "成功",
+      "details": {"file": "docs/zh/02_quickstart/quickstart.md", "runtime_image": "swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk:26.1.0-vllm_ascend0.8.5rc1-torch_npu2.5.1-910b-ubuntu22.04-py3.10-aarch64", "sample_cmd": "python3 - <<'EOF' import mm; img=Image.open('/data/test.jpg','cpu')"},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/docs/zh/02_quickstart/quickstart.md",
+      "success": true,
+      "output": "运行镜像 multimodalsdk:26.1.0-...；需 --device /dev/davinci0 davinci_manager devmm_svm hisi_hdc；验证图片 /data/test.jpg resize 输出 (500,500,3)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:44:30",
+      "step": "document_reading",
+      "action": "阅读 installation_guide.md 提取安装依赖、CANN 版本、Python 包列表",
+      "result": "成功",
+      "details": {"file": "docs/zh/03_installation_guide/installation_guide.md", "cann": "9.1.0", "hdk": "26.1.0"},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/docs/zh/03_installation_guide/installation_guide.md",
+      "success": true,
+      "output": "Ubuntu22.04/openEuler24.03；CANN9.1.0；Python 3.11；pip 依赖 transformers==4.51.3 einops==0.8.2 pillow==11.2.1 numpy==1.26.4 torch==2.5.1 torch-npu==2.5.1.post1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:45:00",
+      "step": "document_reading",
+      "action": "阅读 docker/OVERVIEW.zh.md 与 Dockerfile.910b.ubuntu 提取基础镜像和构建命令",
+      "result": "成功",
+      "details": {"file": "docker/OVERVIEW.zh.md", "dockerfile": "docker/Dockerfile.910b.ubuntu", "from": "quay.io/ascend/vllm-ascend:v0.8.5rc1"},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/docker/Dockerfile.910b.ubuntu",
+      "success": true,
+      "output": "Dockerfile FROM quay.io/ascend/vllm-ascend:v0.8.5rc1（非纯 OS，Tier 1 信号）；本地构建命令 docker build -f Dockerfile.910b.ubuntu .",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:45:30",
+      "step": "document_reading",
+      "action": "阅读 .devcontainer/devcontainer.json 和 Dockerfile 提取 Tier 1 信号和 NPU 设备挂载",
+      "result": "成功",
+      "details": {"file": ".devcontainer/devcontainer.json", "build_dockerfile": ".devcontainer/Dockerfile", "devices": ["/dev/davinci0", "/dev/davinci_manager", "/dev/devmm_svm", "/dev/hisi_hdc"]},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/.devcontainer/devcontainer.json",
+      "success": true,
+      "output": "devcontainer 用 Dockerfile 构建，FROM quay.io/ascend/vllm-ascend:v0.8.5rc1；runArgs 挂载 4 个 NPU 设备；mounts 挂载 dcmi/np-smi/driver/ascend_install.info",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:46:00",
+      "step": "document_reading",
+      "action": "阅读 build_script/build_merge.sh 提取构建/测试/clean 子命令和 CANN 依赖",
+      "result": "成功",
+      "details": {"file": "build_script/build_merge.sh", "subcommands": ["(空): 构建", "test: 构建+测试", "clean: 清理"]},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/build_script/build_merge.sh",
+      "success": true,
+      "output": "脚本强制 source /usr/local/Ascend/ascend-toolkit/set_env.sh；调用 fetch_deps.sh 拉取开源依赖；调用 AccSDK/build.sh 与 MultimodalSDK/build.sh；test 模式自动下载 lcov2.0 并运行 make test",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:46:30",
+      "step": "document_reading",
+      "action": "NPU 需求判断：扫描 README/CONTRIBUTING/Dockerfile/devcontainer 检测 CANN/Ascend/davinci/910b 关键词",
+      "result": "成功（NPU 必需）",
+      "details": {"keywords_hit": ["CANN", "Ascend", "davinci0", "davinci_manager", "devmm_svm", "hisi_hdc", "910b", "Atlas 800I A2", "npu-smi"]},
+      "command": "Grep CANN|Ascend|davinci|npu|910b README/CONTRIBUTING/docker/devcontainer",
+      "success": true,
+      "output": "命中多个 NPU 关键词，npu_required=true；容器启动需完整挂载 davinci0/davinci_manager/devmm_svm/hisi_hdc 设备和 dcmi/npu-smi/driver 路径",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:47:00",
+      "step": "document_reading",
+      "action": "预构建镜像信号探测：判定 Tier 1/2/3 走向",
+      "result": "Tier 1 业务预构建镜像",
+      "details": {"tier1_signals": ["CONTRIBUTING.md docker run mindx_arm:SDK_20260112_1", "Dockerfile FROM quay.io/ascend/vllm-ascend:v0.8.5rc1", "devcontainer.json 基于 Dockerfile FROM 自定义镜像"]},
+      "command": "综合分析 README/CONTRIBUTING/docker/devcontainer",
+      "success": true,
+      "output": "命中 Tier 1：CONTRIBUTING 提供业务预构建镜像 mindx_arm:SDK_20260112_1，且 Dockerfile FROM 自定义镜像 quay.io/ascend/vllm-ascend。优先 Tier 1，跳过依赖安装直接构建",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:48:00",
+      "step": "static_analysis_scan",
+      "action": "检查根目录 .pre-commit-config.yaml 是否存在并解析 hooks 列表",
+      "result": "成功",
+      "details": {"file": ".pre-commit-config.yaml", "minimum_pre_commit_version": "4.0.0", "hook_count": 16, "repos": ["pre-commit/pre-commit-hooks", "ruff-pre-commit", "codespell", "pylint", "bandit", "typos", "mirrors-clang-format", "local"]},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/.pre-commit-config.yaml",
+      "success": true,
+      "output": "pre-commit 配置存在；16 个 hooks 含 trailing-whitespace/end-of-file-fixer/check-yaml/check-added-large-files/check-merge-conflict/detect-private-key/check-json/ruff-check/ruff-format/codespell/pylint/bandit/typos/clang-format/clang-tidy/gitleaks-offline-scan",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:48:30",
+      "step": "static_analysis_scan",
+      "action": "检查 .lint-runner.yaml / .lintrunner.toml 等 lint-runner 配置",
+      "result": "成功",
+      "details": {"lint_runner_files": "无"},
+      "command": "Glob .lint-runner* / .lintrunner*",
+      "success": true,
+      "output": "未找到 lint-runner 配置文件，configured=false",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:49:00",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录并解析 devcontainer.json",
+      "result": "成功",
+      "details": {"dir": ".devcontainer", "files": ["devcontainer.json", "Dockerfile", "post-create.sh", "requirements-dev.txt"], "use_image_field": false, "use_build_dockerfile": true},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/.devcontainer/devcontainer.json",
+      "success": true,
+      "output": "devcontainer.json 用 build.dockerfile（非 image 字段），FROM quay.io/ascend/vllm-ascend:v0.8.5rc1；PYTHON_VERSION=3.11.4；挂载 4 个 NPU 设备",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:49:30",
+      "step": "devcontainer_scan",
+      "action": "阅读 .devcontainer/Dockerfile 与 post-create.sh 提取基础镜像与初始化逻辑",
+      "result": "成功",
+      "details": {"dockerfile_from": "quay.io/ascend/vllm-ascend:v0.8.5rc1", "python_compiled": "3.11.4 at /opt/buildtools/python-3.11.4", "swig_compiled": "4.3.0 at /usr/local"},
+      "command": "Read /home/yym/TRAE/MultimodalSDK/.devcontainer/Dockerfile + post-create.sh",
+      "success": true,
+      "output": "Dockerfile 源码编译 Python3.11.4 和 SWIG4.3.0；post-create.sh 安装 pre-commit 4.6.0/pytest/virtualenv/git-lfs/gitleaks 8.24.2，并运行 fetch_deps.sh",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:50:00",
+      "step": "image_selection",
+      "action": "探测 Tier 1 信号：检查 mindx_arm:SDK_20260112_1 镜像是否已缓存",
+      "result": "Tier 1 业务预构建镜像",
+      "details": {"tier": "Tier 1", "image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindx_arm:SDK_20260112_1", "image_id": "e8c4e2a1a40b", "size": "25.3GB", "cached": true, "pull_required": false},
+      "command": "docker images | grep mindx_arm",
+      "success": true,
+      "output": "镜像已缓存于本地，跳过 docker pull；满足 Tier 1 触发条件（CONTRIBUTING.md 提供业务预构建镜像 + Dockerfile FROM 非纯 OS）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:50:30",
+      "step": "container_setup",
+      "action": "启动容器 MultimodalSDK-ttfhw 挂载 NPU 设备和驱动路径",
+      "result": "成功",
+      "details": {"container_name": "MultimodalSDK-ttfhw", "mounts": ["/usr/local/dcmi", "/usr/local/bin/npu-smi", "/usr/local/Ascend/driver", "/usr/local/Ascend/firmware", "/etc/ascend_install.info", "/home/yym/TRAE/MultimodalSDK:/workspace/MultimodalSDK"], "devices": ["/dev/davinci7", "/dev/davinci_manager", "/dev/devmm_svm", "/dev/hisi_hdc"]},
+      "command": "docker run -d --name MultimodalSDK-ttfhw --device /dev/davinci7 --device /dev/davinci_manager --device /dev/devmm_svm --device /dev/hisi_hdc -v ... swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindx_arm:SDK_20260112_1 sleep infinity",
+      "success": true,
+      "output": "容器 00796d9f2638 启动成功，Up 3 seconds；使用 davinci7（其他卡被其他容器占用）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:51:00",
+      "step": "container_setup",
+      "action": "容器内验证依赖已存在：CANN、CMake、Make、GCC、SWIG、Python",
+      "result": "成功",
+      "details": {"cann_set_env": "/usr/local/Ascend/ascend-toolkit/set_env.sh", "cmake": "3.28.2", "make": "4.4.1", "gcc": "9.5.0", "swig": "4.3.0", "python": "3.11.4 at /opt/buildtools/python-3.11.4", "lcov": "2.1-beta"},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'cmake --version; make --version; gcc --version; swig -version; python3 --version; ls /usr/local/Ascend/ascend-toolkit/set_env.sh'",
+      "success": true,
+      "output": "CMake3.28.2(>=3.14 ✓)；Make4.4.1(>=4.1 ✓)；GCC9.5.0(>=9.4 ✓)；SWIG4.3.0(>=4.3 ✓)；Python3.11.4(推荐3.11 ✓)；CANN set_env.sh 存在；lcov2.1-beta(>=2.0 ✓)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:51:30",
+      "step": "container_setup",
+      "action": "容器内检查 Python 包版本与文档要求的差异（记录，不阻塞构建）",
+      "result": "部分成功",
+      "details": {"installed": {"torch": "2.1.0", "torch-npu": "2.1.0.post11", "transformers": "4.57.3", "numpy": "2.2.6", "pytest": "9.0.2"}, "required": {"torch": "2.5.1", "torch-npu": "2.5.1.post1", "transformers": "4.51.3", "numpy": "1.26.4"}, "missing": ["einops", "pillow", "git-lfs"]},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'pip3 list | grep -iE \"torch|transformers|einops|pillow|numpy|pytest\"; git lfs --version'",
+      "success": true,
+      "output": "镜像预装包版本与 v26.1.0 期望不一致（torch 2.1.0 vs 2.5.1 等）；einops/pillow 缺失；git-lfs 未安装；构建阶段不依赖这些包，测试阶段需补装",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:52:00",
+      "step": "container_setup",
+      "action": "NPU 设备可用性检查：npu-smi info",
+      "result": "部分成功",
+      "details": {"npu_available": true, "mounted_card_id": "davinci7", "host_card_count": 8, "container_card_status": "DCMI 初始化 ret=-8020 设备被占用"},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:$LD_LIBRARY_PATH; npu-smi info'",
+      "success": true,
+      "output": "宿主机 8 张 910B4-1 全部 OK；容器内 npu-smi 报 DCMI ret=-8020（设备被其他容器占用）；构建/ctest 不需 NPU 运行时；样例使用 DeviceMode.CPU",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:53:00",
+      "step": "build_attempt",
+      "action": "执行 bash build_script/build_merge.sh 构建全量 SDK（含 AccSDK 与 MultimodalSDK 子项目）",
+      "result": "成功",
+      "details": {"command": "bash build_script/build_merge.sh", "duration_real": "1m36.159s", "duration_user": "2m34.525s", "duration_sys": "0m29.872s", "build_log": "/tmp/build.log", "concurrency": "默认（构建脚本内部决定）"},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'cd /workspace/MultimodalSDK && source /usr/local/Ascend/ascend-toolkit/set_env.sh && time bash build_script/build_merge.sh'",
+      "success": true,
+      "output": "构建成功；fetch_deps.sh 拉取 opensource.tar.gz 含 FFmpeg/libjpeg-turbo/soxr；AccSDK/build.sh 编译 libcore.so；MultimodalSDK/build.sh 生成 mm-0.0.0.dev0-py3-none-any.whl；makeself 打包为 .run 文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 96
+    },
+    {
+      "timestamp": "2026-08-19T09:54:36",
+      "step": "build_attempt",
+      "action": "验证构建产物：列出 output 目录文件",
+      "result": "成功",
+      "details": {"main_artifact": "Ascend-mindxsdk-multimodal_0.0.0.dev_linux-aarch64.run", "size": "90744853 bytes (90.7MB)", "output_dir_size": "127MB", "contains": ["lib/libcore.so", "mm-0.0.0.dev0-py3-none-any.whl", "script/set_env.sh", "script/install.sh", "script/uninstall.sh", "opensource/FFmpeg", "opensource/libjpeg-turbo", "opensource/soxr"]},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'ls -la /workspace/MultimodalSDK/output/*.run; find output -maxdepth 3 -type f'",
+      "success": true,
+      "output": "主产物 .run 文件 90.7MB；output 目录 127MB；含 libcore.so、whl、scripts、opensource 库；与文档描述一致",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:55:00",
+      "step": "ut_execution",
+      "action": "安装 git-lfs 并拉取 LFS 大文件（测试用例需要）",
+      "result": "成功",
+      "details": {"installed": "git-lfs via apt-get", "lfs_pull": "成功拉取 AccSDK/test/data/videos/* 等大文件"},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'apt-get install -y git-lfs; cd /workspace/MultimodalSDK && git lfs install && git lfs pull'",
+      "success": true,
+      "output": "git-lfs 安装成功；LFS 文件拉取完成，测试数据就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-19T09:55:30",
+      "step": "ut_execution",
+      "action": "执行 bash build_script/build_merge.sh test 运行全部单元测试",
+      "result": "成功",
+      "details": {"duration_real": "6m49.084s", "duration_user": "76m58.161s", "duration_sys": "0m45.262s", "ctest": "21/21 passed (100%, 153.19s)", "pytest": "185 passed + 6 subtests passed + 3 warnings (172.22s)", "total_cases": 206, "passed": 206, "failed": 0, "coverage_artifacts": ["coverage.xml", "final.xml", "final.html", "html/"]},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'source /usr/local/Ascend/ascend-toolkit/set_env.sh && bash build_script/build_merge.sh test'",
+      "success": true,
+      "output": "CTest 21/21 全部通过（VideoUtilsTest/ErrorCodeUtilsTest/AudioUtilsTest/PipelineTest/XPUAcceleratorTest/TensorOpsTest/TensorTest/OpsCheckerTest/FusionOperatorsTest/ImageTest/ImageOpsTest/PyImageTest/PyVideoTest/PyTensorTest/PyTensorOpsTest/PyPreprocessTest）；Pytest 185 通过 + 6 子测试通过；3 警告（torch x.T deprecation, 非阻塞）；覆盖率产物生成；最后再次打包 .run 安装包",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 409
+    },
+    {
+      "timestamp": "2026-08-19T09:56:30",
+      "step": "sample_execution",
+      "action": "pip 安装构建产物 mm-0.0.0.dev0-py3-none-any.whl 至容器 Python 环境",
+      "result": "成功",
+      "details": {"whl": "/workspace/MultimodalSDK/MultimodalSDK/dist/mm-0.0.0.dev0-py3-none-any.whl", "install_location": "/opt/buildtools/python-3.11.4/lib/python3.11/site-packages/mm"},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'pip3 install /workspace/MultimodalSDK/MultimodalSDK/dist/mm-0.0.0.dev0-py3-none-any.whl'",
+      "success": true,
+      "output": "Successfully installed mm-0.0.0.dev0；首次 import 报 libascendcl.so 找不到，需 source set_env.sh；第二次报 libsecurec.so 找不到，需 export LD_LIBRARY_PATH 含 driver/lib64/common",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-19T09:56:45",
+      "step": "sample_execution",
+      "action": "SDK API 级 CPU 样例：Image.open + clone + to_tensor + resize + Tensor.from_numpy",
+      "result": "成功",
+      "details": {"input": "/workspace/MultimodalSDK/AccSDK/test/image/assets/dog_1920_1080.jpg", "image_open": "1920x1080 RGB UINT8 cpu", "clone": "size=[1920,1080] 一致", "to_tensor": "shape=[1,3,1080,1920] FLOAT32", "resize": "(640,480) BICUBIC -> [640,480]", "tensor_from_numpy": "[1,3,480,640] FLOAT32"},
+      "command": "docker exec MultimodalSDK-ttfhw bash -c 'source set_env.sh + LD_LIBRARY_PATH; python3 sample.py'",
+      "success": true,
+      "output": "全部 API 调用成功；E2E 样例 K_FRAME/test.sh 需 vLLM 容器+模型+多容器编排（NPU 推理样例），超出单容器验证范围；选用 SDK API 级 CPU 样例作为代表",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（.pre-commit-config.yaml，minimum_pre_commit_version 4.0.0），共 16 个 hooks（含 trailing-whitespace、end-of-file-fixer、check-yaml、check-added-large-files、check-merge-conflict、detect-private-key、check-json、ruff-check、ruff-format、codespell、pylint、bandit、typos、clang-format、clang-tidy、gitleaks-offline-scan），依赖工具 ruff/codespell/pylint/bandit/typos/clang-format/gitleaks；仅检查配置不执行。未检测到 lint-runner 配置。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置（仅检查配置，未执行）",
+        "duration_seconds": 5
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": ["devcontainer.json", "Dockerfile", "post-create.sh", "requirements-dev.txt"],
+      "original_base_image": "quay.io/ascend/vllm-ascend:v0.8.5rc1",
+      "used_image": "quay.io/ascend/vllm-ascend:v0.8.5rc1（devcontainer.json 使用 build.dockerfile 而非 image 字段，基于该 Dockerfile 构建）",
+      "summary": "devcontainer.json 配置 name=MultimodalSDK Dev (Ubuntu 22.04)，使用 build.dockerfile 构建，PYTHON_VERSION=3.11.4；runArgs 挂载 /dev/davinci0 davinci_manager devmm_svm hisi_hdc 四个 NPU 设备；mounts 挂载 /usr/local/dcmi /usr/local/bin/npu-smi /usr/local/Ascend/driver /etc/ascend_install.info；postCreateCommand 调用 post-create.sh 安装 requirements-dev.txt（pre-commit 4.6.0/einops/pytest/virtualenv）、git-lfs、pre-commit hooks、gitleaks 8.24.2 二进制，并执行 build_script/fetch_deps.sh 拉取构建依赖；remoteEnv 设置 PATH/SDK_VERSION=dev/Python3_EXECUTABLE/LD_LIBRARY_PATH。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 96,
+      "artifacts": [
+        {"name": "Ascend-mindxsdk-multimodal_0.0.0.dev_linux-aarch64.run", "path": "/workspace/MultimodalSDK/output/Ascend-mindxsdk-multimodal_0.0.0.dev_linux-aarch64.run", "size": "90.7MB", "type": "installer"},
+        {"name": "libcore.so", "path": "/workspace/MultimodalSDK/output/multimodal-0.0.0.dev/lib/libcore.so", "size": "构建产物内", "type": "library"},
+        {"name": "multimodal-0.0.0.dev 目录", "path": "/workspace/MultimodalSDK/output/multimodal-0.0.0.dev/", "size": "127MB（含 scripts/lib/opensource）", "type": "directory"},
+        {"name": "set_env.sh", "path": "/workspace/MultimodalSDK/output/multimodal-0.0.0.dev/script/set_env.sh", "size": "环境变量脚本", "type": "script"}
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 409,
+      "total": 206,
+      "passed": 206,
+      "failed": 0,
+      "failures": [],
+      "details": "CTest 21/21 通过（100%, 153.19s, 含 AccSDK C++ 单测 VideoUtilsTest/ErrorCodeUtilsTest/AudioUtilsTest/PipelineTest/XPUAcceleratorTest/TensorOpsTest/TensorTest/OpsCheckerTest/FusionOperatorsTest/ImageTest/ImageOpsTest 等 + Python PyImageTest/PyVideoTest/PyTensorTest/PyTensorOpsTest/PyPreprocessTest）；Pytest 185 通过 + 6 子测试通过 + 3 警告（172.22s, 含 test_image/test_internvl2_preprocessor/test_log/test_tensor/test_video/test_frame_selector 等）；覆盖率产物 coverage.xml/final.xml/final.html/html/ 已生成。build_merge.sh test 在 ctest+pytest 后再次打包 .run 安装包（SHA256=e8f147aa1db719f60a47a4932d6dbac3314d4e7b19089a8c1a4b59672acbb4c0）。"
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 30,
+      "results": [
+        {
+          "name": "Image.open + clone + to_tensor + resize + Tensor.from_numpy (CPU mode)",
+          "status": "success",
+          "details": "通过 pip install mm-0.0.0.dev0-py3-none-any.whl 安装构建产物；source set_env.sh + driver lib64 路径；以 AccSDK/test/image/assets/dog_1920_1080.jpg 为输入；Image.open 成功识别 1920x1080 RGB UINT8；clone 大小一致；to_tensor 输出 shape=[1,3,1080,1920] FLOAT32；resize((640,480), BICUBIC) 成功；Tensor.from_numpy 输出 [1,3,480,640] FLOAT32。E2E 样例 examples/K_FRAME/test.sh 需 vLLM 容器+模型+多容器编排，超出单容器验证范围（属 NPU 推理样例，需独立环境），故选用 SDK API 级 CPU 样例作为代表。",
+          "input": "/workspace/MultimodalSDK/AccSDK/test/image/assets/dog_1920_1080.jpg",
+          "output": "Image 1920x1080 RGB UINT8 cpu -> Tensor [1,3,1080,1920] FLOAT32 -> Resized [640,480] -> Tensor [1,3,480,640]"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "location": "README.md / CONTRIBUTING.md",
+      "description": "运行时 SDK（mm 包）安装后首次 import 时报 libascendcl.so / libsecurec.so 找不到；文档未明确提示需 source /usr/local/Ascend/ascend-toolkit/set_env.sh 并将 /usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common 加入 LD_LIBRARY_PATH。新人按文档 pip install 后无法直接 import mm。",
+      "severity": "medium"
+    },
+    {
+      "location": "examples/K_FRAME/test.sh",
+      "description": "E2E 样例依赖 vLLM 容器（quay.io/ascend/vllm-ascend:v0.15.0rc1）+ 模型文件 /models/Qwen2.5-VL-7B-Instruct + 多容器编排（vllm-k-frame + test-k-frame），单容器验证无法覆盖；缺少单容器可运行的轻量样例。",
+      "severity": "low"
+    },
+    {
+      "location": "CONTRIBUTING.md",
+      "description": "文档推荐 Python 3.11，但未明确说明 mindx_arm:SDK_20260112_1 镜像内 Python 实际位于 /opt/buildtools/python-3.11.4/bin/python3（非默认 PATH），需通过环境变量或全路径调用。",
+      "severity": "low"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "step": "container_setup",
+      "issue": "容器内 npu-smi info 报 DCMI ret=-8020 设备被占用",
+      "reason": "宿主机 8 张 910B 多数被其他容器占用，davinci7 也存在竞争",
+      "resolution": "构建/ctest/pytest 不依赖 NPU 运行时（CPU 模式），不阻塞验证；样例使用 DeviceMode.CPU（参数 'cpu'）",
+      "blocking": false
+    },
+    {
+      "step": "sample_execution",
+      "issue": "Image.open 报 TypeError: device must be str or bytes",
+      "reason": "示例代码误用 DeviceMode.CPU 枚举值作为 device 参数，API 期望 str 'cpu' 或 bytes b'cpu'",
+      "resolution": "改为字符串 'cpu' 调用；同时 resize 需传 (width, height) 元组 + Interpolation 枚举（仅支持 BICUBIC）",
+      "blocking": false
+    },
+    {
+      "step": "ut",
+      "issue": "python3 默认指向 3.11.4 但缺少 libpython3.11.so.1.0 共享库（容器外执行 create_skeleton.py 时）",
+      "reason": "宿主机 python3 链接异常",
+      "resolution": "使用容器内 /usr/bin/python3.9 执行辅助脚本；容器内 build_merge.sh test 使用 /opt/buildtools/python-3.11.4/bin/python3.11 正常",
+      "blocking": false
+    }
+  ]
+}
