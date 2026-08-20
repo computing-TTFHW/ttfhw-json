@@ -396,6 +396,34 @@ BoostKit:
       url: "https://gitcode.com/boostkit/KAE.git"
       branch: kae2
       component: BoostKit
+    - name: pandas
+      url: "https://gitcode.com/boostkit/pandas.git"
+      branch: master
+      component: BoostKit
+    - name: zlib
+      url: "https://gitcode.com/boostkit/zlib.git"
+      branch: master
+      component: BoostKit
+    - name: zstd
+      url: "https://gitcode.com/boostkit/zstd.git"
+      branch: dev
+      component: BoostKit
+    - name: LowLatencyLib
+      url: "https://gitcode.com/boostkit/LowLatencyLib.git"
+      branch: master
+      component: BoostKit
+    - name: snappy
+      url: "https://gitcode.com/boostkit/snappy.git"
+      branch: main
+      component: BoostKit
+    - name: Brotli4j
+      url: "https://gitcode.com/boostkit/Brotli4j.git"
+      branch: main
+      component: BoostKit
+    - name: vllm_router
+      url: "https://gitcode.com/boostkit/vllm_router.git"
+      branch: master
+      component: BoostKit
 
 openGauss:
   description: "openGauss 开发者场景验证代码仓列表"
