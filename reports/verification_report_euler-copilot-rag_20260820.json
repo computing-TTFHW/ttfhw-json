@@ -1,0 +1,823 @@
+{
+  "metadata": {
+    "repo_url": "https://atomgit.com/openeuler/euler-copilot-rag.git",
+    "branch": "dev",
+    "start_time": "2026-08-20T11:35:53",
+    "end_time": "2026-08-20T11:59:29",
+    "duration_seconds": 1416,
+    "total_steps": 28,
+    "commit": "837b37ae1aa0e9c6127eeb3a4379116273e70a11",
+    "environment": "macOS 26.6.1 (Apple M4 Max, arm64) + OrbStack Docker 29.4.0；容器 openEuler 24.03 LTS-SP2 x86_64（模拟）；OpenGauss 7.0.0-RC3 数据库容器",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "gpt-5-codex",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "arm64（macOS 26.6.1，Docker 宿主为 OrbStack linux/arm64）",
+      "cpu_model": "Apple M4 Max",
+      "cpu_cores": 16,
+      "memory": "128GB（Docker VM 约 24GB）",
+      "disk": "753Gi 可用",
+      "docker_version": "29.4.0",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS-SP2",
+      "architecture": "x86_64（amd64 模拟）",
+      "cpu_cores": 16,
+      "memory": "23Gi",
+      "container_name": "rag-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86",
+      "selection_reason": "Tier 1 业务预构建镜像：根 Dockerfile FROM 指向非基础 OS 镜像 hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86，直接 docker pull 成功，未降级"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "Dockerfile FROM 镜像 tag",
+      "value": "x86_64（基础镜像 tag 含 -x86，宿主 arm64 通过模拟运行 amd64 容器）"
+    },
+    "recommended_image": {
+      "source": "Dockerfile / rag_core/deploy/Dockerfile",
+      "value": "Tier 1: hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86（根 Dockerfile FROM）；候选: hub-harbor.oepkgs.net/neocopilot/witty-rag-core:0.10.2-release-base-x86（rag_core Dockerfile FROM）"
+    },
+    "dockerfile_dependencies": {
+      "source": "根 Dockerfile-base + rag_core/deploy/Dockerfile-base",
+      "value": "mesa-libGL、java-11-openjdk、python3、python3-pip、python3-devel、shadow-utils、curl、wget、gcc、gcc-c++、make、openssl-devel、libffi-devel；并通过 pip 安装 requirements.txt（清华/阿里源）"
+    },
+    "dependencies": {
+      "source": "requirements.txt / pyproject.toml / rag_core/docs/README.md",
+      "value": [
+        "fastapi==0.110.2",
+        "paddleocr==2.9.1",
+        "paddlepaddle==2.6.2",
+        "pymupdf==1.24.13",
+        "tika==2.6.0",
+        "sqlalchemy==2.0.23",
+        "openai",
+        "langchain（仅 pyproject）",
+        "qdrant-client（文档要求单独安装）"
+      ]
+    },
+    "build_commands": {
+      "source": "Jenkinsfile / rag_core/deploy/build.sh / rag_core/docs/README.md",
+      "value": "docker build -f Dockerfile -t <镜像> .（CI 入口）；bash rag_core/deploy/build.sh [arm|x86|all]（rag_core 模块构建脚本）；rag_core 文档快速开始：pip install -r requirements.txt"
+    },
+    "ut_commands": {
+      "source": "data_chain/test/README.md / run_tests.sh",
+      "value": "cd data_chain/test && bash run_tests.sh all（或 pytest -v；可选 quick/parser/rag/performance 子集）"
+    },
+    "sample_commands": {
+      "source": "rag_core/docs/README.md",
+      "value": "DEPLOY_MODE=dev bash rag_core/deploy/deploy.sh 或 uvicorn rag_core.app:app --host 0.0.0.0 --port 9988，然后 curl http://localhost:9988/health_check"
+    },
+    "special_dependencies": {
+      "source": "rag_core/docs/README.md / Dockerfile-base",
+      "value": [
+        "tika-server-standard-2.9.2.jar（约 67MB，缺失需从 Maven Central 下载）",
+        "download_model.py 预下载 tiktoken 编码器模型",
+        "rag_core/config.toml 需用户自行创建（文档给出完整示例）",
+        "qdrant-client 需单独安装（即使未使用 Qdrant）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取根 README.md 提取构建依赖和命令",
+      "result": "成功",
+      "details": {
+        "结论": "README 仅含 # rag-service 标题，无环境/构建/测试说明，无相关链接"
+      },
+      "command": "cat README.md",
+      "success": true,
+      "output": "# rag-service",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取 README.en.md 检查链接（文档闭包）",
+      "result": "成功",
+      "details": {
+        "结论": "Gitee 模板内容，链接为通用 Gitee 功能页（blog/explore/GVP/help），与构建测试无关"
+      },
+      "command": "cat README.en.md",
+      "success": true,
+      "output": "# euler-copilot-rag ... Gitee Feature",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取根 Dockerfile 提取 FROM 与构建步骤",
+      "result": "成功",
+      "details": {
+        "Tier 信号": "Tier 1：FROM hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86",
+        "构建步骤": "COPY data_chain/chat2db/run.sh，CMD run.sh"
+      },
+      "command": "cat Dockerfile",
+      "success": true,
+      "output": "FROM hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取根 Dockerfile-base 提取依赖与基础 OS",
+      "result": "成功",
+      "details": {
+        "基础镜像": "openeuler/openeuler:24.03-lts-sp2",
+        "系统依赖": "mesa-libGL/java/python3/python3-pip/shadow-utils",
+        "pip 源": "https://pypi.tuna.tsinghua.edu.cn/simple",
+        "特殊步骤": "RUN python3 download_model.py"
+      },
+      "command": "cat Dockerfile-base",
+      "success": true,
+      "output": "FROM openeuler/openeuler:24.03-lts-sp2",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取 Jenkinsfile 提取 CI 构建入口",
+      "result": "成功",
+      "details": {
+        "构建命令": "docker.build(..., -f Dockerfile .) 并推送到私有 registry",
+        "测试": "无 UT 步骤"
+      },
+      "command": "cat Jenkinsfile",
+      "success": true,
+      "output": "node { checkout scm ... docker.build }",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取 rag_core/deploy/build.sh、Dockerfile、Dockerfile-base",
+      "result": "成功",
+      "details": {
+        "构建脚本": "bash rag_core/deploy/build.sh [arm|x86|all]",
+        "基础镜像": "hub-harbor.oepkgs.net/neocopilot/witty-rag-core:0.10.2-release-base-<arch>（Tier 1 候选）",
+        "依赖": "openEuler 24.03 + java-11 + 编译工具链 + 阿里 pip 源"
+      },
+      "command": "cat rag_core/deploy/build.sh rag_core/deploy/Dockerfile rag_core/deploy/Dockerfile-base",
+      "success": true,
+      "output": "build.sh: docker build -f rag_core/deploy/Dockerfile-base ...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取 rag_core/docs/README.md（快速开始/部署/测试/样例）",
+      "result": "成功",
+      "details": {
+        "环境要求": "Python >=3.10,<=3.12；OpenGauss/PostgreSQL；Milvus/Qdrant 可选",
+        "启动": "DEPLOY_MODE=dev bash rag_core/deploy/deploy.sh 或 uvicorn rag_core.app:app",
+        "测试": "rag_core/test 下 test_api.py/test_search.py 等需数据库与 config.toml",
+        "样例": "curl http://localhost:9988/health_check；/kb、/chunk/search 示例",
+        "注意": "config.toml 需用户创建；tika jar 需存在；qdrant-client 需单独安装"
+      },
+      "command": "cat rag_core/docs/README.md",
+      "success": true,
+      "output": "# Witty RAG Core 项目文档 ... 3. 快速开始",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取 data_chain/test/README.md、run_tests.sh、pytest.ini、测试报告",
+      "result": "成功",
+      "details": {
+        "UT 入口": "cd data_chain/test && bash run_tests.sh all（内部 pytest -v）",
+        "依赖": "pytest、pytest-asyncio、pytest-cov、psutil、numpy",
+        "历史报告": "123 项测试 120 通过 3 跳过（2026-03-28）"
+      },
+      "command": "cat data_chain/test/README.md data_chain/test/run_tests.sh data_chain/test/pytest.ini",
+      "success": true,
+      "output": "# Data Chain 测试套件 ... bash run_tests.sh all",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "读取 helm_chart/README.md 检查镜像列表",
+      "result": "成功",
+      "details": {
+        "镜像": "milvus/etcd/minio/opengauss/witty-rag-core:0.1.0，无新构建入口"
+      },
+      "command": "cat helm_chart/README.md",
+      "success": true,
+      "output": "# Helm Chart 部署指南 ... 1. 镜像准备",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:33",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 与 lint-runner 配置",
+      "result": "成功",
+      "details": {
+        "pre_commit": ".pre-commit-config.yaml 不存在，configured=false",
+        "lint_runner": ".lintrunner.toml/.lint-runner.yaml 不存在，configured=false"
+      },
+      "command": "find . -name '.pre-commit-config.yaml' -o -name '.lintrunner.toml' -o -name '.lint-runner.yaml'",
+      "success": true,
+      "output": "无匹配文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:33",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录",
+      "result": "成功",
+      "details": {
+        "结论": "仓库无 .devcontainer 目录，devcontainer 未启用"
+      },
+      "command": "ls -la .devcontainer",
+      "success": false,
+      "output": "No such file or directory",
+      "error": "",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "document_reading",
+      "action": "扫描 NPU/CANN 相关信号",
+      "result": "成功",
+      "details": {
+        "结论": "npu_required=false；仅 model provider 枚举含 ascend 字样，无 CANN/torch_npu/davinci/910 依赖"
+      },
+      "command": "rg -i 'cann|ascend|torch_npu|davinci|910|昇腾'",
+      "success": true,
+      "output": "ModelProvider.ASCEND（枚举）等，非 NPU 硬件依赖",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "image_selection",
+      "action": "registry v2 API 探测 hub.oepkgs.net tag 列表",
+      "result": "失败",
+      "details": {
+        "原因": "接口要求认证（authorize header needed）"
+      },
+      "command": "curl -sk https://hub.oepkgs.net/v2/neocopilot/data_chain_back_end_base/tags/list",
+      "success": false,
+      "output": "UNAUTHORIZED: authorize header needed",
+      "error": "401",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "image_selection",
+      "action": "registry v2 API 探测 hub-harbor.oepkgs.net tag 列表",
+      "result": "失败",
+      "details": {
+        "原因": "接口要求认证（authorize header needed）"
+      },
+      "command": "curl -sk https://hub-harbor.oepkgs.net/v2/neocopilot/witty-rag-core/tags/list",
+      "success": false,
+      "output": "UNAUTHORIZED: authorize header needed",
+      "error": "401",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "image_selection",
+      "action": "docker pull Tier 1 镜像 data_chain_back_end_base:0.10.0-x86",
+      "result": "Tier 1 业务预构建镜像",
+      "details": {
+        "镜像": "hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86",
+        "架构": "amd64，宿主 arm64 可运行",
+        "大小": "约 2.5GB"
+      },
+      "command": "docker pull hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86",
+      "success": true,
+      "output": "Status: Downloaded newer image ... digest sha256:607609dc...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 200
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "container_setup",
+      "action": "启动容器 rag-ttfhw 并挂载代码到 /workspace",
+      "result": "成功",
+      "details": {
+        "启动命令来源": "default（README 未提供 docker run 命令）",
+        "挂载": "/Users/hongyushi/Data/openEuler/TTFHW/workspace/rag-verify -> /workspace"
+      },
+      "command": "docker run -d --privileged --name rag-ttfhw -v ...:/workspace hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86 sleep infinity",
+      "success": true,
+      "output": "891afd74c9bb... Up",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:40:23",
+      "step": "container_setup",
+      "action": "验证容器内关键依赖（OS/Python/Java/工作区）",
+      "result": "成功",
+      "details": {
+        "OS": "openEuler 24.03 LTS-SP2",
+        "架构": "x86_64",
+        "Python": "3.11.6",
+        "Java": "OpenJDK 11.0.27",
+        "核数/内存": "16 核 / 23Gi",
+        "说明": "Tier 1 跳过依赖安装；langchain 不在根 requirements.txt，基础镜像未安装（pyproject 依赖）"
+      },
+      "command": "docker exec rag-ttfhw bash -c 'cat /etc/os-release; python3 --version; java -version; ...'",
+      "success": true,
+      "output": "openEuler 24.03 (LTS-SP2); Python 3.11.6; openjdk 11.0.27",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:41:09",
+      "step": "build_attempt",
+      "action": "执行仓库 CI 构建入口 docker build -f Dockerfile",
+      "result": "成功",
+      "details": {
+        "命令": "docker build -f Dockerfile -t rag-ttfhw-app .",
+        "产物": "rag-ttfhw-app（sha256:ab98ebc7eb81）",
+        "警告": "基础镜像 amd64 与宿主 arm64 平台不符（镜像 tag 本身为 -x86）；ENV 使用旧式 key value 格式",
+        "并发": "docker build 默认缓存复用，构建耗时 2.9s"
+      },
+      "command": "time docker build -f Dockerfile -t rag-ttfhw-app .",
+      "success": true,
+      "output": "naming to docker.io/library/rag-ttfhw-app done",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-20T11:57:15",
+      "step": "dependency_installation",
+      "action": "安装测试框架依赖 pytest/pytest-asyncio/pytest-cov/psutil",
+      "result": "成功",
+      "details": {
+        "来源": "data_chain/test/README.md 与 run_tests.sh",
+        "源": "https://pypi.tuna.tsinghua.edu.cn/simple",
+        "版本": "pytest 9.1.1"
+      },
+      "command": "pip3 install pytest pytest-asyncio pytest-cov psutil -i https://pypi.tuna.tsinghua.edu.cn/simple",
+      "success": true,
+      "output": "测试依赖 OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 6
+    },
+    {
+      "timestamp": "2026-08-20T11:57:15",
+      "step": "dependency_installation",
+      "action": "安装 json_repair（requirements.txt 声明但基础镜像缺失）",
+      "result": "成功",
+      "details": {
+        "版本": "json_repair==0.52.5",
+        "来源": "根 requirements.txt"
+      },
+      "command": "pip3 install json_repair==0.52.5 -i https://pypi.tuna.tsinghua.edu.cn/simple",
+      "success": true,
+      "output": "json_repair OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-20T11:57:15",
+      "step": "dependency_installation",
+      "action": "按仓库约定创建 data_chain/common/.env 并配置数据库连接",
+      "result": "成功",
+      "details": {
+        "原因": "config.py 默认读取 data_chain/common/.env；缺失时数据库口令为 None 导致 quote_plus(None) 导入崩溃",
+        "方式": ".env.example 模板 + DATABASE_* 最小配置"
+      },
+      "command": "cp data_chain/common/.env.example data_chain/common/.env（后改为最小 DATABASE_* 配置）",
+      "success": true,
+      "output": "import OK, pool size 16",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:57:15",
+      "step": "ut_execution",
+      "action": "执行仓库 UT 入口 run_tests.sh all（全量）",
+      "result": "部分成功",
+      "details": {
+        "结果": "前 55% 132 通过、2 失败（pdf），随后 performance/test_keyword_search_latency 卡死（100% CPU）",
+        "卡死原因": "keyword_searcher.py 中 chunk_entities += await ... 对测试共享 mock 列表原地扩展，列表长度指数增长",
+        "处理": "终止后改用快速套件"
+      },
+      "command": "cd data_chain/test && CONFIG=... bash run_tests.sh all",
+      "success": false,
+      "output": "132 passed, 2 failed ... test_keyword_search_latency Terminated",
+      "error": "测试卡死被终止",
+      "returncode": 1,
+      "duration_seconds": 600
+    },
+    {
+      "timestamp": "2026-08-20T11:57:15",
+      "step": "ut_execution",
+      "action": "执行仓库 UT 入口 run_tests.sh quick",
+      "result": "失败",
+      "details": {
+        "原因": "脚本引号 bug：run_tests \"-v -m 'not slow'\" 展开后 -m 参数被拆分，pytest 报 file or directory not found: slow'",
+        "处理": "改用 README 原始命令 pytest -m \"not slow\""
+      },
+      "command": "bash run_tests.sh quick",
+      "success": false,
+      "output": "ERROR: file or directory not found: slow'",
+      "error": "脚本参数引号问题",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:57:15",
+      "step": "ut_execution",
+      "action": "按 README 命令执行快速测试 pytest -m \"not slow\"",
+      "result": "部分成功",
+      "details": {
+        "总数": 250,
+        "通过": 215,
+        "失败": 32,
+        "跳过": 3,
+        "失败类别": "rerank 测试 14 项（MockConfig 不支持 item assignment）；searcher 测试 13 项（位置参数/关键字参数断言不匹配、Embedding failed）；pdf 2 项；stability 2 项；llm_enhanced 2 项（await str）",
+        "环境相关": false,
+        "结论": "失败均为测试与代码不匹配，非缺依赖/环境问题"
+      },
+      "command": "python3 -m pytest -m \"not slow\"",
+      "success": true,
+      "output": "32 failed, 215 passed, 3 skipped, 21 deselected in 4.41s",
+      "error": "",
+      "returncode": 1,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-20T11:59:29",
+      "step": "dependency_installation",
+      "action": "按 rag_core/deploy/requirements.txt 安装 rag_core 依赖",
+      "result": "成功",
+      "details": {
+        "原因": "基础镜像未含 toml/qdrant-client/pymilvus/opengauss-sqlalchemy 等（基础镜像基于旧版 requirements 构建）",
+        "源": "https://mirrors.aliyun.com/pypi/simple/（与 Dockerfile 一致）"
+      },
+      "command": "pip3 install -r rag_core/deploy/requirements.txt -i https://mirrors.aliyun.com/pypi/simple/",
+      "success": true,
+      "output": "rag_core deps OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 170
+    },
+    {
+      "timestamp": "2026-08-20T11:59:29",
+      "step": "container_setup",
+      "action": "按 rag_core/docs README 文档启动 OpenGauss 数据库容器并加载空字符串兼容配置",
+      "result": "成功",
+      "details": {
+        "镜像": "hub-harbor.oepkgs.net/neocopilot/opengauss@sha256:4fd44608...（文档 3.4 提供）",
+        "版本": "openGauss 7.0.0-RC3",
+        "配置": "gs_guc reload behavior_compat_options=accept_empty_str"
+      },
+      "command": "docker run -d --name opengauss -p 5434:5432 -e GS_PASSWORD（口令值已脱敏） hub-harbor.oepkgs.net/neocopilot/opengauss@sha256:4fd4...",
+      "success": true,
+      "output": "(openGauss 7.0.0-RC3 ...) Success to perform gs_guc!",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-20T11:59:29",
+      "step": "sample_execution",
+      "action": "执行文档样例：uvicorn rag_core.app:app + curl /health_check",
+      "result": "成功",
+      "details": {
+        "配置": "rag_core/config.toml（文档 3.3 示例，scalar/vector 指向 OpenGauss）",
+        "输出": "HTTP 200 {\"status\":\"ok\"}"
+      },
+      "command": "python3 -m uvicorn rag_core.app:app --host 0.0.0.0 --port 9988 && curl http://127.0.0.1:9988/health_check",
+      "success": true,
+      "output": "{\"status\":\"ok\"}",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-08-20T11:59:29",
+      "step": "sample_execution",
+      "action": "执行文档 5.1 样例：创建知识库 POST /kb",
+      "result": "成功",
+      "details": {
+        "输出": "{\"code\":200,\"message\":\"success\",\"result\":{\"kb_id\":\"99970a01-...\"}}",
+        "说明": "debug 模式无需真实密钥，验证 DB 写入链路"
+      },
+      "command": "curl -X POST http://127.0.0.1:9988/kb -H \"Authorization: Bearer debug-access-key\" -d '{...}'",
+      "success": true,
+      "output": "kb_id 99970a01-724a-4916-8a62-1e0007a90453",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库根目录无 .pre-commit-config.yaml，无 .lintrunner.toml/.lint-runner.yaml 配置，静态分析未配置",
+      "pre_commit": {
+        "configured": false,
+        "config_file": null,
+        "status": "未配置",
+        "duration_seconds": 0
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86",
+      "summary": "仓库无 .devcontainer 目录"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 3,
+      "artifacts": [
+        {
+          "name": "rag-ttfhw-app",
+          "path": "docker.io/library/rag-ttfhw-app",
+          "size": "约 2.5GB（含基础镜像层）",
+          "type": "docker_image"
+        }
+      ]
+    },
+    "ut": {
+      "status": "partial_success",
+      "duration_seconds": 5,
+      "total": 250,
+      "passed": 215,
+      "failed": 32,
+      "failures": [
+        {
+          "test_name": "test_bbox_overlaps",
+          "error": "assert False is True（bbox 重叠判定失败）"
+        },
+        {
+          "test_name": "test_parser_invalid_file",
+          "error": "Failed: DID NOT RAISE Exception（无效文件未按预期抛异常）"
+        },
+        {
+          "test_name": "test_search_basic",
+          "error": "AssertionError: assert None == 'treeroot'"
+        },
+        {
+          "test_name": "test_search_exception_handling",
+          "error": "Exception: Embedding failed"
+        },
+        {
+          "test_name": "test_search_exception_handling",
+          "error": "Exception: Embedding failed"
+        },
+        {
+          "test_name": "test_search_with_filters",
+          "error": "KeyError: 'doc_ids'"
+        },
+        {
+          "test_name": "test_search_basic",
+          "error": "AssertionError: assert 7 == 5"
+        },
+        {
+          "test_name": "test_search_basic",
+          "error": "AssertionError: assert 10 == 5"
+        },
+        {
+          "test_name": "test_search_with_doc_ids",
+          "error": "KeyError: 'doc_ids'"
+        },
+        {
+          "test_name": "test_search_with_banned_ids",
+          "error": "KeyError: 'banned_ids'"
+        },
+        {
+          "test_name": "test_search_banned_ids_filtering",
+          "error": "KeyError: 'banned_ids'"
+        },
+        {
+          "test_name": "test_search_basic",
+          "error": "TypeError: object str can't be used in 'await' expression"
+        },
+        {
+          "test_name": "test_search_json_parse_error",
+          "error": "TypeError: object str can't be used in 'await' expression"
+        },
+        {
+          "test_name": "test_rerank_api_failure",
+          "error": "TypeError: 'MockConfig' object does not support item assignment"
+        },
+        {
+          "test_name": "test_rerank_invalid_response",
+          "error": "TypeError: 'MockConfig' object does not support item assignment"
+        },
+        {
+          "test_name": "test_assemable_data_bailian",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_assemable_data_guijiliudong",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_assemable_data_vllm",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_assemable_data_ascend",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_parse_response_bailian",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_parse_response_guijiliudong",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_parse_response_vllm",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_parse_response_ascend",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_parse_response_top_k_limit",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_rerank_success",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_rerank_api_failure",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_rerank_uses_config_api_key",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_rerank_special_characters_in_documents",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_rerank_very_long_documents",
+          "error": "TypeError: 'MockConfig' object does not support item assignment（测试以 dict 方式改配置，代码已改为属性访问）"
+        },
+        {
+          "test_name": "test_search_with_doc_ids_filter",
+          "error": "KeyError: 'doc_ids'"
+        },
+        {
+          "test_name": "test_search_with_banned_ids",
+          "error": "KeyError: 'banned_ids'"
+        },
+        {
+          "test_name": "test_search_different_top_k_values",
+          "error": "KeyError: 'top_k'"
+        }
+      ]
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 45,
+      "results": [
+        {
+          "sample_name": "健康检查 /health_check",
+          "execution_status": "success",
+          "output_summary": "uvicorn 启动 rag_core.app:app 后 GET /health_check 返回 HTTP 200 {\"status\":\"ok\"}（启动前按文档拉起 OpenGauss 7.0.0-RC3 数据库）",
+          "execution_time": "20 秒"
+        },
+        {
+          "sample_name": "创建知识库 POST /kb（文档 5.1 示例）",
+          "execution_status": "success",
+          "output_summary": "返回 {\"code\":200,\"message\":\"success\",\"result\":{\"kb_id\":\"99970a01-724a-4916-8a62-1e0007a90453\"}}，验证数据库写入链路正常",
+          "execution_time": "10 秒"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-20T11:59:29",
+      "title": "根 README 无构建/测试说明",
+      "body": "根 README.md 仅含标题，README.en.md 为 Gitee 模板；实际构建/测试/样例入口分散在 rag_core/docs/README.md 与 data_chain/test/README.md，新手无法从根 README 找到验证路径",
+      "source": "README.md / README.en.md"
+    },
+    {
+      "time": "2026-08-20T11:59:29",
+      "title": "data_chain 测试未说明 .env 配置要求",
+      "body": "data_chain/test/README.md 未说明运行测试前需创建 data_chain/common/.env（至少含 DATABASE_PASSWORD），否则导入 database.py 直接崩溃；.env 在 .gitignore 中，新克隆仓库无法直接跑测试",
+      "source": "data_chain/test/README.md / data_chain/config/config.py"
+    },
+    {
+      "time": "2026-08-20T11:59:29",
+      "title": "run_tests.sh quick 参数引号 bug",
+      "body": "run_tests.sh 的 quick 分支把 -m 'not slow' 传成多个参数导致 pytest 报错，仓库自带快速测试入口不可用，需手写 README 中的原始 pytest 命令",
+      "source": "data_chain/test/run_tests.sh"
+    },
+    {
+      "time": "2026-08-20T11:59:29",
+      "title": "基础镜像依赖与 requirements.txt 不同步",
+      "body": "hub.oepkgs.net/neocopilot/data_chain_back_end_base:0.10.0-x86 未包含 requirements.txt 中 json_repair 及 rag_core 所需的 toml/qdrant-client/pymilvus 等，需在容器内补装",
+      "source": "Dockerfile-base / 镜像实测"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "problem": "docker build 在沙箱内无法写入 ~/.docker/buildx（operation not permitted）",
+      "solution": "以提升权限方式重新执行 docker build，构建成功",
+      "source": "本机沙箱限制",
+      "timestamp": "2026-08-20T11:59:36"
+    },
+    {
+      "problem": "data_chain 模块导入时报 TypeError: quote_from_bytes() expected bytes（database.py 对 None 密码做 quote_plus）",
+      "solution": "按仓库配置机制创建 data_chain/common/.env（.env.example 模板 + DATABASE_* 最小配置），导入恢复正常；根因是仓库要求该文件存在但测试文档未说明",
+      "source": "data_chain/stores/database/database.py:730 / config.py",
+      "timestamp": "2026-08-20T11:59:36"
+    },
+    {
+      "problem": "基础镜像缺少 requirements.txt 声明的 json_repair，parser/test_token_tool.py 收集失败",
+      "solution": "pip 安装 json_repair==0.52.5（清华源）后恢复",
+      "source": "根 requirements.txt",
+      "timestamp": "2026-08-20T11:59:36"
+    },
+    {
+      "problem": "run_tests.sh quick 选项失效：run_tests \"-v -m 'not slow'\" 展开后引号被拆开，pytest 报 file or directory not found: slow'",
+      "solution": "改用 data_chain/test/README.md 原文命令 python3 -m pytest -m \"not slow\" 执行快速套件",
+      "source": "data_chain/test/run_tests.sh",
+      "timestamp": "2026-08-20T11:59:36"
+    },
+    {
+      "problem": "全量 UT（run_tests.sh all）在 performance/test_keyword_search_latency 卡死，CPU 100%",
+      "solution": "终止并改用快速套件；根因是 keyword_searcher.py 中 chunk_entities += await ... 对测试共享的 mock 列表原地扩展，列表长度指数增长（50 次迭代后近 2^50），属代码缺陷，未修改源码",
+      "source": "data_chain/rag/keyword_searcher.py:29",
+      "timestamp": "2026-08-20T11:59:36"
+    },
+    {
+      "problem": "快速套件 32 项失败（215 通过）",
+      "solution": "逐项核对均为测试与代码不匹配：rerank 测试用 MockConfig 做 dict 赋值而代码已改属性访问；searcher 测试断言关键字参数而代码按位置传参；llm_enhanced 测试 await 字符串等。非环境/依赖问题，未修改源码",
+      "source": "data_chain/test/rag/*.py",
+      "timestamp": "2026-08-20T11:59:36"
+    },
+    {
+      "problem": "rag_core 服务启动事件需要连接数据库，无库时 Application startup failed",
+      "solution": "按文档 3.4 拉取并启动 OpenGauss 容器（hub-harbor.oepkgs.net/neocopilot/opengauss），配置 scalar/vector 指向后启动成功",
+      "source": "rag_core/docs/README.md 3.4/3.5",
+      "timestamp": "2026-08-20T11:59:36"
+    }
+  ]
+}

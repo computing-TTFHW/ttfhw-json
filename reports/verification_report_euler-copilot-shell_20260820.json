@@ -1,0 +1,240 @@
+{
+  "metadata": {
+    "repo_url": "https://atomgit.com/openeuler/euler-copilot-shell.git",
+    "branch": "feat/witty-cli",
+    "start_time": "2026-08-20T11:30:00",
+    "end_time": "2026-08-20T11:47:56",
+    "duration_seconds": 1076,
+    "total_steps": 25,
+    "commit": "21904eed1001ea0a3fd8ad28b28f6c97fe276186",
+    "environment": "macOS 宿主机 OrbStack Docker 容器（openEuler 24.03 LTS / aarch64 / 16 核 / 24GB），容器名 shell-ttfhw，宿主工作目录 /private/tmp/shell-verify 挂载为 /workspace",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "gpt-5",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "arm64",
+      "cpu_model": "Apple M4 Max",
+      "cpu_cores": 16,
+      "memory": "128 GB",
+      "disk": "3.6 Ti（可用 751 Gi）",
+      "docker_version": "29.4.0",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS",
+      "architecture": "aarch64",
+      "cpu_cores": 16,
+      "memory": "24 GB",
+      "container_name": "shell-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "Tier 3 基础 OS 从零安装：仓库无预构建镜像、无 Dockerfile、无 devcontainer；README 明确目标平台为 openEuler 24.03 LTS，故选用 openEuler 24.03 LTS 基础镜像。本环境无独立 SSH 远程机器，容器由宿主机 OrbStack Docker 运行，宿主工作目录 /private/tmp/shell-verify 挂载为容器 /workspace。",
+      "dependency_mapping": {
+        "from_dockerfile": "无 Dockerfile",
+        "from_readme": "环境要求：Go 1.26+、OpenCode 1.17+（运行期）、Bash>=4.0",
+        "mappings": [
+          {
+            "original": "go 1.26+",
+            "target": "官方 tarball go1.26.7.linux-arm64.tar.gz（openEuler 仓库无 go 1.26）",
+            "source": "README.md 环境要求 + go.mod"
+          },
+          {
+            "original": "bash >= 4.0",
+            "target": "容器自带 bash 5.2.15",
+            "source": "README.md 环境要求"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md 目标平台",
+      "value": "x86_64 / aarch64（目标 openEuler 24.03 LTS，本次容器为 aarch64）"
+    },
+    "recommended_image": {
+      "source": "README.md 环境要求 + 仓库无 Dockerfile/预构建镜像",
+      "value": "hub.oepkgs.net/openeuler/openeuler:24.03-lts（Tier 3 基础 OS 从零安装）"
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库无 Dockerfile",
+      "value": "无 Dockerfile"
+    },
+    "dependencies": {
+      "source": "README.md 环境要求 + go.mod",
+      "value": [
+        "go 1.26+（openEuler 仓库无此版本，需官方 tarball）",
+        "git",
+        "bash >= 4.0（容器自带 bash 5.2.15）",
+        "opencode 1.17+（运行期依赖，构建/UT 非必需）"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md 构建章节",
+      "value": "bash scripts/build.sh（产物 build/<GOOS>-<GOARCH>/witty 与 wittyd，CGO_ENABLED=0）"
+    },
+    "ut_commands": {
+      "source": "README.md 测试章节",
+      "value": "go test -count=1 ./...；TERM=xterm-256color go test -v -tags=pty ./test/pty/；go test -v -tags=integration ./test/integration/（opencode server 不可达时自动跳过）"
+    },
+    "sample_commands": {
+      "source": "README.md 快速使用章节",
+      "value": "witty version（冒烟）；witty doctor（环境诊断，需要 opencode）"
+    },
+    "special_dependencies": {
+      "source": "README.md 环境要求 + packaging/euler-copilot-shell.spec",
+      "value": [
+        "Go 1.26 官方工具链 tarball（openEuler 仓库仅到 1.21/1.25）",
+        "opencode CLI（运行期依赖，未安装时 witty doctor 会提示）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-20T11:47:30",
+      "step": "sample_execution",
+      "action": "执行 README 快速使用样例 witty version",
+      "result": "成功",
+      "details": {
+        "样例": "witty version",
+        "输出": "version: dev / commit: none / date: unknown"
+      },
+      "command": "docker exec shell-ttfhw sh -lc 'cd /workspace && ./build/linux-arm64/witty version'",
+      "success": true,
+      "output": "version: dev\ncommit: none\ndate: unknown",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-20T11:47:35",
+      "step": "sample_execution",
+      "action": "执行 README 快速使用样例 witty doctor 环境诊断",
+      "result": "成功",
+      "details": {
+        "样例": "witty doctor",
+        "输出": "3 OK / 3 WARN / 0 FAIL / 1 SKIP，连接 opencode 1.17.13 成功"
+      },
+      "command": "docker exec shell-ttfhw sh -lc 'cd /workspace && ./build/linux-arm64/witty doctor'",
+      "success": true,
+      "output": "[OK] server reachable: connected to http://127.0.0.1:4096 (opencode 1.17.13)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库未配置 pre-commit（无 .pre-commit-config.yaml）与 lint-runner（无 .lint-runner.yaml/.lintrunner.toml），按技能要求仅记录配置存在性，不安装不执行。",
+      "pre_commit": {
+        "configured": false,
+        "config_file": null,
+        "status": "未配置",
+        "duration_seconds": 0,
+        "executed_in_verification": false
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "无",
+      "summary": "仓库根目录无 .devcontainer 目录，未发现 devcontainer.json，无 devcontainer 容器配置。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 12,
+      "artifacts": [
+        {
+          "name": "witty",
+          "path": "build/linux-arm64/witty",
+          "size": "16M",
+          "type": "binary"
+        },
+        {
+          "name": "wittyd",
+          "path": "build/linux-arm64/wittyd",
+          "size": "5.9M",
+          "type": "binary"
+        }
+      ],
+      "compiler": "go1.26.7 linux/arm64（CGO_ENABLED=0 静态链接）",
+      "concurrency_ratio": "20%（go build 由工具链内部并行，脚本不接受 -j）",
+      "notes": "使用 README 提供的 bash scripts/build.sh 构建，首次构建含 Go module 下载；产物为 build/linux-arm64/witty（16M）与 wittyd（5.9M），均为 ELF 64-bit aarch64 静态链接。witty version 冒烟输出 version: dev。"
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 190,
+      "total": 382,
+      "passed": 382,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 2,
+      "results": [
+        {
+          "sample_name": "witty version",
+          "execution_status": "success",
+          "output_summary": "version: dev / commit: none / date: unknown（README 快速使用验证安装命令）",
+          "execution_time": "1s"
+        },
+        {
+          "sample_name": "witty doctor",
+          "execution_status": "success",
+          "output_summary": "环境诊断完成：3 OK / 3 WARN / 0 FAIL / 1 SKIP；server reachable（opencode 1.17.13）、/doc HTTP 200；WARN 均为非交互容器的环境性提示（无配置文件、TERM 未设置、非 TTY）",
+          "execution_time": "1s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-20T11:40:00",
+      "title": "README 测试章节未说明 go test ./... 需要先安装 opencode",
+      "body": "README 环境要求把 OpenCode 1.17+ 列为运行期依赖，但测试章节只给出 go test -count=1 ./...，未提示该命令在未安装 opencode 时 internal/app 与 internal/cli 的 5 个用例会直接失败（ensure opencode server: opencode binary not found）而非跳过。",
+      "source": "README.md 测试章节"
+    },
+    {
+      "time": "2026-08-20T11:46:00",
+      "title": "集成测试章节未说明 opencode server 认证行为",
+      "body": "README 说明集成测试在 127.0.0.1:4096 不可达时自动跳过，但未说明当该端口存在带 Basic 认证（OPENCODE_SERVER_PASSWORD）的 opencode server 时，集成测试 transport 客户端（未配置密码）会收到 401 而全部跳过；需以无认证方式启动 opencode serve 才能完整执行。",
+      "source": "README.md 测试章节 + test/integration/opencode_integration_test.go"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-20T11:40:00",
+      "problem": "go test -count=1 ./... 中 internal/app 与 internal/cli 共 5 个用例失败：ensure opencode server: opencode binary not found。原因是仓库运行期依赖 opencode CLI（README 环境要求 OpenCode 1.17+）未安装，测试 New() 自动拉起 opencode server 失败。",
+      "solution": "按 README 运行期依赖安装 opencode-1.17.13-1.oe2403sp3.aarch64 RPM（与 witty-openeuler 开发 VM 版本一致），重试 go test -count=1 ./... 全部通过。",
+      "source": "README.md 环境要求 + go test 输出"
+    },
+    {
+      "timestamp": "2026-08-20T11:46:00",
+      "problem": "集成测试执行时 127.0.0.1:4096 上由前一轮测试自动拉起的 opencode server 启用了 Basic 认证（401），而集成测试 transport 客户端未配置密码，按 README 将自动跳过。",
+      "solution": "按 witty-integration-test 技能流程在同一环境重启 opencode serve --port 4096（不设置 OPENCODE_SERVER_PASSWORD），健康检查返回 {\"healthy\":true,\"version\":\"1.17.13\"} 后集成测试 6 个用例全部执行并通过。",
+      "source": "test/integration/opencode_integration_test.go + internal/server/process.go"
+    }
+  ]
+}
