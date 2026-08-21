@@ -26,11 +26,11 @@
       component: "UBS Core"
     - name: memfabric_hybrid
       url: "https://gitcode.com/Ascend/memfabric_hybrid.git"
-      branch: master
+      branch: develop
       component: "UBS Core"
     - name: memcache
       url: "https://gitcode.com/Ascend/memcache.git"
-      branch: master
+      branch: develop
       component: "UBS Core"
     - name: OmniStateStore
       url: "https://gitcode.com/openeuler/OmniStateStore.git"
