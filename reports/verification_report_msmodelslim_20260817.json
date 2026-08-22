@@ -7,7 +7,7 @@
     "duration_seconds": 1798,
     "total_steps": 20,
     "commit": "376e2fad43bc999f9a49b48bdbc3eef06ffdd83a",
-    "environment": "m00818315@192.168.9.128:22 /tmp/ttfhw-mskpp3/（远程 aarch64 Kunpeng-920 256核/2.0Ti + 8×NPU 910B3 + Docker mindstudio-build:26.2.0-0801）",
+    "environment": "<xxxxx>@192.168.9.128:22 /tmp/ttfhw-mskpp3/（远程 aarch64 Kunpeng-920 256核/2.0Ti + 8×NPU 910B3 + Docker mindstudio-build:26.2.0-0801）",
     "verifier": "opencode / ttfhw-verify-smart"
   },
   "token_usage": {
@@ -316,7 +316,7 @@
         "repo_dir": "/tmp/ttfhw-mskpp3/msmodelslim-verify",
         "commit": "376e2fad43bc999f9a49b48bdbc3eef06ffdd83a"
       },
-      "command": "ssh m00818315@192.168.9.128 \"mkdir -p /tmp/ttfhw-mskpp3 && git clone --depth 1 --branch master https://gitcode.com/Ascend/msmodelslim.git msmodelslim-verify\"",
+      "command": "ssh <xxxxx>@192.168.9.128 \"mkdir -p /tmp/ttfhw-mskpp3 && git clone --depth 1 --branch master https://gitcode.com/Ascend/msmodelslim.git msmodelslim-verify\"",
       "success": true,
       "output": "Updating files: 100% (3263/3263), done. clone 成功",
       "error": "",
@@ -334,7 +334,7 @@
         "image": "swr.cn-north-4.myhuaweicloud.com/mindstudio-image/mindstudio-build:26.2.0-0801",
         "mounts": [
           "/tmp/ttfhw-mskpp3:/workspace",
-          "/home/m00818315:/home/m00818315",
+          "/home/<xxxxx>:/home/<xxxxx>",
           "NPU 设备 davinci0-7/davinci_manager/devmm_svm/hisi_hdc + driver/firmware/npu-smi"
         ]
       },

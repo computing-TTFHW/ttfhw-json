@@ -124,7 +124,7 @@
     },
     {
       "timestamp": "2026-07-06T02:04:00",
-      "command": "cd /home/workspace/manifest && echo 'Y' | python3 init.py -user zhaozepeng -psw '******'",
+      "command": "cd /home/workspace/manifest && echo 'Y' | python3 init.py -user <xxxxx> -psw '******'",
       "success": true,
       "output": "环境初始化完成：bingo 0.7.37、Conan 2.30.0、Node.js v20.18.0、npm 10.8.2 已安装，Conan 远程仓库已配置并登录成功",
       "error": "",

@@ -134,7 +134,7 @@
     },
     {
       "timestamp": "2026-07-30T22:08:00",
-      "command": "python3 init.py -user zhaozepeng -psw 'zhaozepeng123'",
+      "command": "python3 init.py -user <xxxxx> -psw '<xxxxx>'",
       "success": true,
       "output": "初始化完成：bingo 0.7.61, Conan 2.31.1, Node.js v20.18.0, npm 10.8.2",
       "error": "",
@@ -143,9 +143,9 @@
     },
     {
       "timestamp": "2026-07-30T22:12:00",
-      "command": "conan remote login openubmc_opensource zhaozepeng -p 'zhaozepeng123'",
+      "command": "conan remote login openubmc_opensource <xxxxx> -p '<xxxxx>'",
       "success": true,
-      "output": "Authenticated in remote 'openubmc_opensource' with user 'zhaozepeng'",
+      "output": "Authenticated in remote 'openubmc_opensource' with user '<xxxxx>'",
       "error": "",
       "returncode": 0,
       "duration_seconds": 5

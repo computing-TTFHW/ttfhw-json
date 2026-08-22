@@ -115,7 +115,7 @@
     },
     {
       "timestamp": "2026-08-17T06:06:00",
-      "command": "cd /home/manifest && python3 init.py -user zhaozepeng -psw zhaozepeng123 --no_build",
+      "command": "cd /home/manifest && python3 init.py -user <xxxxx> -psw <xxxxx> --no_build",
       "success": true,
       "output": "openUBMC开发者环境初始化完成！bingo 版本为: 0.7.71, Conan 版本 2.31.2, Node.js v20.18.0",
       "error": "BMC Studio 安装失败（dpkg 许可协议问题，不影响构建）",
@@ -142,9 +142,9 @@
     },
     {
       "timestamp": "2026-08-17T06:12:00",
-      "command": "conan remote login openubmc_opensource zhaozepeng -p ***",
+      "command": "conan remote login openubmc_opensource <xxxxx> -p ***",
       "success": true,
-      "output": "Authenticated in remote 'openubmc_opensource' with user 'zhaozepeng'",
+      "output": "Authenticated in remote 'openubmc_opensource' with user '<xxxxx>'",
       "error": "",
       "returncode": 0,
       "duration_seconds": 2
@@ -292,7 +292,7 @@
       "step": "dependency_installation",
       "action": "配置 Conan 远程仓库认证",
       "result": "成功",
-      "details": {"remote": "openubmc_opensource", "user": "zhaozepeng"}
+      "details": {"remote": "openubmc_opensource", "user": "<xxxxx>"}
     },
     {
       "timestamp": "2026-08-17T06:13:00",

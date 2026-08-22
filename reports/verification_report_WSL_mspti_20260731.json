@@ -7,7 +7,7 @@
     "duration_seconds": 3092,
     "total_steps": 12,
     "commit": "bed060b",
-    "environment": "远端 SSH 机器 m00818315@192.168.9.128（aarch64 Kunpeng-920），容器 ttfhw-mspti-baseos-env",
+    "environment": "远端 SSH 机器 <xxxxx>@192.168.9.128（aarch64 Kunpeng-920），容器 ttfhw-mspti-baseos-env",
     "verifier": "QoderCN"
   },
   "token_usage": {
@@ -98,11 +98,11 @@
       "details": {
         "host_type": "remote_ssh",
         "remote_host": "192.168.9.128",
-        "remote_user": "m00818315",
+        "remote_user": "<xxxxx>",
         "remote_port": 22,
         "remote_workdir": "/tmp/ttfhw-mspti/"
       },
-      "command": "ssh m00818315@192.168.9.128 'uname -m; docker version'",
+      "command": "ssh <xxxxx>@192.168.9.128 'uname -m; docker version'",
       "success": true,
       "output": "SSH 连接正常，Docker 29.6.1，aarch64，256核，2TB内存，17T可用",
       "error": "",

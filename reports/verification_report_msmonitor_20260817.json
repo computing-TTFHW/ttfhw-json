@@ -7,7 +7,7 @@
     "duration_seconds": 1288,
     "total_steps": 34,
     "commit": "4d5c4c7304e7e990777987e87ed85909e4545705",
-    "environment": "m00818315@192.168.9.128:22 /tmp/ttfhw-msmonitor5/ (aarch64, Kunpeng-920, 256核, 2.0Ti内存, 8x 910B3 NPU)",
+    "environment": "<xxxxx>@192.168.9.128:22 /tmp/ttfhw-msmonitor5/ (aarch64, Kunpeng-920, 256核, 2.0Ti内存, 8x 910B3 NPU)",
     "verifier": "opencode / ttfhw-verify-smart"
   },
   "token_usage": {
@@ -402,7 +402,7 @@
         "npu_model": "910B3",
         "all_npu_ok": true
       },
-      "command": "ssh m00818315@192.168.9.128 'uname -m && lscpu && sudo npu-smi info'",
+      "command": "ssh <xxxxx>@192.168.9.128 'uname -m && lscpu && sudo npu-smi info'",
       "success": true,
       "output": "aarch64, Kunpeng-920, 256核, 2.0Ti内存, 8x 910B3 NPU全部OK, Docker 29.6.1",
       "error": "",
@@ -419,7 +419,7 @@
         "pull_status": "Image is up to date",
         "already_cached": true
       },
-      "command": "ssh m00818315@192.168.9.128 'docker pull swr.cn-north-4.myhuaweicloud.com/mindstudio-image/mindstudio-build:26.2.0-0801'",
+      "command": "ssh <xxxxx>@192.168.9.128 'docker pull swr.cn-north-4.myhuaweicloud.com/mindstudio-image/mindstudio-build:26.2.0-0801'",
       "success": true,
       "output": "Status: Image is up to date for swr.cn-north-4.myhuaweicloud.com/mindstudio-image/mindstudio-build:26.2.0-0801",
       "error": "",
@@ -436,7 +436,7 @@
         "commit": "4d5c4c7304e7e990777987e87ed85909e4545705",
         "branch": "master"
       },
-      "command": "ssh m00818315@192.168.9.128 'cd /tmp/ttfhw-msmonitor5 && git clone --depth 1 --branch master https://gitcode.com/Ascend/msmonitor.git msmonitor-verify'",
+      "command": "ssh <xxxxx>@192.168.9.128 'cd /tmp/ttfhw-msmonitor5 && git clone --depth 1 --branch master https://gitcode.com/Ascend/msmonitor.git msmonitor-verify'",
       "success": true,
       "output": "Cloning into 'msmonitor-verify'... commit: 4d5c4c7304e7e990777987e87ed85909e4545705",
       "error": "",

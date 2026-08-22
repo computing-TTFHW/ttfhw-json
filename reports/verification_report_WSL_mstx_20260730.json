@@ -94,7 +94,7 @@
       "details": {
         "host_type": "remote_ssh",
         "remote_host": "192.168.9.128",
-        "remote_user": "m00818315",
+        "remote_user": "<xxxxx>",
         "remote_port": 22,
         "remote_workdir": "/tmp/ttfhw-mstx/"
       },

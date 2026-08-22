@@ -88,13 +88,13 @@
       "details": {
         "host_type": "remote_ssh",
         "remote_host": "192.168.9.128",
-        "remote_user": "m00818315",
+        "remote_user": "<xxxxx>",
         "ssh_port": 22,
         "remote_workdir": "/tmp/ttfhw-msprobe2/"
       },
       "command": "",
       "success": true,
-      "output": "用户选择远端 SSH 环境: m00818315@192.168.9.128:22, 工作目录 /tmp/ttfhw-msprobe2/",
+      "output": "用户选择远端 SSH 环境: <xxxxx>@192.168.9.128:22, 工作目录 /tmp/ttfhw-msprobe2/",
       "error": "",
       "returncode": 0,
       "duration_seconds": 0
@@ -638,7 +638,7 @@
       "timestamp": "2026-07-31T19:50:58",
       "problem": "SSH 连接在长时间构建监控期间偶发 Connection reset",
       "solution": "重新建立 SSH 连接后继续监控, 构建进程通过 nohup 在后台运行不受影响",
-      "source": "ssh m00818315@192.168.9.128"
+      "source": "ssh <xxxxx>@192.168.9.128"
     }
   ]
 }

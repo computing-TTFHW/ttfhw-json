@@ -7,7 +7,7 @@
     "duration_seconds": 3846,
     "total_steps": 16,
     "commit": "8796365",
-    "environment": "远端SSH: m00818315@192.168.9.128 (aarch64, Kunpeng-920, 256核, 2TB RAM)"
+    "environment": "远端SSH: <xxxxx>@192.168.9.128 (aarch64, Kunpeng-920, 256核, 2TB RAM)"
   },
   "token_usage": {
     "tool": "opencode",
@@ -85,11 +85,11 @@
       "timestamp": "2026-08-01T00:08:01",
       "step": "environment_selection",
       "action": "确认容器运行环境为远端SSH机器",
-      "result": "远端SSH: m00818315@192.168.9.128:22, 工作目录 /tmp/ttfhw-msserviceprofiler/",
+      "result": "远端SSH: <xxxxx>@192.168.9.128:22, 工作目录 /tmp/ttfhw-msserviceprofiler/",
       "details": {
         "host_type": "remote_ssh",
         "remote_host": "192.168.9.128",
-        "remote_user": "m00818315",
+        "remote_user": "<xxxxx>",
         "remote_port": 22,
         "remote_workdir": "/tmp/ttfhw-msserviceprofiler/"
       },
@@ -434,7 +434,7 @@
       "action": "停止并删除远端验证容器ttfhw-msserviceprofiler-baseos-env",
       "result": "成功",
       "details": {},
-      "command": "ssh m00818315@192.168.9.128 docker rm -f ttfhw-msserviceprofiler-baseos-env",
+      "command": "ssh <xxxxx>@192.168.9.128 docker rm -f ttfhw-msserviceprofiler-baseos-env",
       "success": true,
       "output": "",
       "error": "",

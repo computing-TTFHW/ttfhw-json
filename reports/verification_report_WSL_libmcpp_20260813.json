@@ -125,7 +125,7 @@
     },
     {
       "timestamp": "2026-08-13T10:32:00",
-      "command": "cd /home/workspace/manifest && echo 'Y' | python3 init.py -user zhaozepeng -psw 'zhaozepeng123'",
+      "command": "cd /home/workspace/manifest && echo 'Y' | python3 init.py -user <xxxxx> -psw '<xxxxx>'",
       "success": true,
       "output": "openUBMC开发者环境初始化完成！\nbingo 0.7.71\nConan 2.31.2\nNode.js v20.18.0\nnpm 10.8.2",
       "error": "",

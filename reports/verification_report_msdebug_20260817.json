@@ -632,7 +632,7 @@
   "problems_encountered": [
     {
       "title": "容器/workspace目录权限问题",
-      "problem": "容器以mindstudio用户运行，但/workspace挂载目录(owner=m00818315)无写入权限，导致build_log.txt等文件创建失败(BUILD_EXIT_CODE=1)",
+      "problem": "容器以mindstudio用户运行，但/workspace挂载目录(owner=<xxxxx>)无写入权限，导致build_log.txt等文件创建失败(BUILD_EXIT_CODE=1)",
       "solution": "使用docker exec -u root执行chown -R mindstudio:mindstudio /workspace修复权限，后续构建正常执行",
       "source": "container_setup",
       "timestamp": "2026-08-17T17:19:36"

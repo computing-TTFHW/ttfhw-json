@@ -133,7 +133,7 @@
     },
     {
       "timestamp": "2026-07-06T22:10:40",
-      "command": "echo 'Y' | python3 init.py -user zhaozepeng -psw 'zhao***123'",
+      "command": "echo 'Y' | python3 init.py -user <xxxxx> -psw 'zhao***123'",
       "success": true,
       "output": "初始化完成：bingo 0.7.37、Conan 2.30.0、Node.js v20.18.0、npm 10.8.2、bmc-studio 1.2.0 已安装，Conan 远程仓库已登录",
       "error": "",

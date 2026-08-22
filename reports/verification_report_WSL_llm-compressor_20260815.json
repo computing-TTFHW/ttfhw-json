@@ -7,7 +7,7 @@
     "duration_seconds": 2663,
     "total_steps": 23,
     "commit": "93ce856c48625a004a55ec957ca361a141a70b56",
-    "environment": "远端 SSH 机器 m00818315@192.168.9.128（Kunpeng-920 aarch64，Ubuntu，Docker 29.6.1），容器 ttfhw-llm-compressor-baseos-env（ubuntu:24.04 arm64）",
+    "environment": "远端 SSH 机器 <xxxxx>@192.168.9.128（Kunpeng-920 aarch64，Ubuntu，Docker 29.6.1），容器 ttfhw-llm-compressor-baseos-env（ubuntu:24.04 arm64）",
     "verifier": "QoderCN (ttfhw-verify-baseos skill)"
   },
   "token_usage": {
@@ -96,15 +96,15 @@
       "timestamp": "2026-08-15T10:04:06",
       "step": "environment_selection",
       "action": "通过交互问答确认本次验证的容器运行环境",
-      "result": "用户选择远端 SSH 机器：m00818315@192.168.9.128:22，远端工作目录 /tmp/ttfhw-llm-comp3/",
+      "result": "用户选择远端 SSH 机器：<xxxxx>@192.168.9.128:22，远端工作目录 /tmp/ttfhw-llm-comp3/",
       "details": {
         "host_type": "remote_ssh",
-        "ssh_host": "m00818315@192.168.9.128",
+        "ssh_host": "<xxxxx>@192.168.9.128",
         "ssh_port": 22,
         "remote_workdir": "/tmp/ttfhw-llm-comp3/",
         "passwordless": true
       },
-      "command": "ssh -o BatchMode=yes m00818315@192.168.9.128 echo SSH_OK",
+      "command": "ssh -o BatchMode=yes <xxxxx>@192.168.9.128 echo SSH_OK",
       "success": true,
       "output": "SSH_OK; Linux msprof aarch64; docker 29.6.1",
       "error": "",
@@ -213,7 +213,7 @@
       "action": "在远端宿主机拉取 ubuntu:24.04 官方基础镜像并启动验证容器 ttfhw-llm-compressor-baseos-env",
       "result": "容器启动成功，/etc/os-release 确认为 Ubuntu 24.04.4 LTS（aarch64）",
       "details": {
-        "host": "m00818315@192.168.9.128",
+        "host": "<xxxxx>@192.168.9.128",
         "image": "ubuntu:24.04",
         "image_digest": "sha256:561618e2c15bf2397621dd04f96926663a3b5616c189cf7e38db7e82f5c538ea",
         "container_id": "4d84bd5f5bbf",
@@ -506,9 +506,9 @@
       "action": "校验通过后清理远端验证容器 docker rm -f ttfhw-llm-compressor-baseos-env",
       "result": "容器已删除，无残留",
       "details": {
-        "host": "m00818315@192.168.9.128"
+        "host": "<xxxxx>@192.168.9.128"
       },
-      "command": "ssh m00818315@192.168.9.128 docker rm -f ttfhw-llm-compressor-baseos-env",
+      "command": "ssh <xxxxx>@192.168.9.128 docker rm -f ttfhw-llm-compressor-baseos-env",
       "success": true,
       "output": "ttfhw-llm-compressor-baseos-env（已删除，残留容器数 0）",
       "error": "",

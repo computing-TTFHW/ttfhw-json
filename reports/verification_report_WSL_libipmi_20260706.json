@@ -143,7 +143,7 @@
     },
     {
       "timestamp": "2026-07-06T01:40:35",
-      "command": "echo 'Y' | python3 init.py -user zhaozepeng -psw 'zhaozepeng123'",
+      "command": "echo 'Y' | python3 init.py -user <xxxxx> -psw '<xxxxx>'",
       "success": true,
       "output": "init.py 一键初始化完成：安装 bingo 0.7.37、Conan 2.30.0、Node.js v20.18.0、bmc-studio 1.2.0，配置 Conan 远程仓库并登录成功",
       "error": "",
@@ -152,9 +152,9 @@
     },
     {
       "timestamp": "2026-07-06T01:40:50",
-      "command": "conan remote login openubmc_opensource zhaozepeng -p zhaozepeng123",
+      "command": "conan remote login openubmc_opensource <xxxxx> -p <xxxxx>",
       "success": true,
-      "output": "Authenticated in remote 'openubmc_opensource' with user 'zhaozepeng'",
+      "output": "Authenticated in remote 'openubmc_opensource' with user '<xxxxx>'",
       "error": "",
       "returncode": 0,
       "duration_seconds": 3

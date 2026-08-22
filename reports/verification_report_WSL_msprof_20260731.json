@@ -87,13 +87,13 @@
       "details": {
         "host_type": "remote_ssh",
         "remote_host": "192.168.9.128",
-        "remote_user": "m00818315",
+        "remote_user": "<xxxxx>",
         "remote_port": 22,
         "remote_workdir": "/tmp/ttfhw-msprof/"
       },
       "command": "",
       "success": true,
-      "output": "用户选择远程 SSH 服务器：m00818315@192.168.9.128:22，工作目录 /tmp/ttfhw-msprof/",
+      "output": "用户选择远程 SSH 服务器：<xxxxx>@192.168.9.128:22，工作目录 /tmp/ttfhw-msprof/",
       "error": "",
       "returncode": 0,
       "duration_seconds": 0
@@ -232,7 +232,7 @@
         "container_workdir": "/home/mindstudio/msprof",
         "repo_clone_commit": "765a14155"
       },
-      "command": "python3 build_image.py && docker run -d --name ttfhw-msprof-verify --privileged -v /home/m00818315:/home/m00818315:rw mindstudio-build:1.0.0-arm64 sleep infinity",
+      "command": "python3 build_image.py && docker run -d --name ttfhw-msprof-verify --privileged -v /home/<xxxxx>:/home/<xxxxx>:rw mindstudio-build:1.0.0-arm64 sleep infinity",
       "success": true,
       "output": "镜像构建成功（35.1min），容器启动成功，代码克隆完成（commit 765a14155）",
       "error": "",

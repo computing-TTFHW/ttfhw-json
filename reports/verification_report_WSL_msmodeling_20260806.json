@@ -100,7 +100,7 @@
       "result": "远端SSH机器",
       "details": {
         "host_type": "remote_ssh",
-        "ssh_target": "m00818315@192.168.9.128:22",
+        "ssh_target": "<xxxxx>@192.168.9.128:22",
         "remote_workdir": "/tmp/ttfhw-msmodeling/",
         "note": "JSON报告全程在本地维护，远端通过ssh执行docker命令"
       },
@@ -424,7 +424,7 @@
       "action": "在远端SSH机器上启动 build_image.py 构建镜像（后台执行，PID=150686）",
       "result": "构建已启动，正在执行",
       "details": {
-        "remote_host": "m00818315@192.168.9.128",
+        "remote_host": "<xxxxx>@192.168.9.128",
         "workdir": "/tmp/ttfhw-msmodeling",
         "build_command": "python3 build_image.py -t 1.0.0 --force -c <CANN_toolkit_aarch64> -c <CANN_ops_aarch64>",
         "img_tag": "1.0.0",
@@ -442,7 +442,7 @@
           "cann_urls_reachable": true
         }
       },
-      "command": "ssh m00818315@192.168.9.128 \"cd /tmp/ttfhw-msmodeling/docker && python3 build_image.py -t 1.0.0 --force -c <toolkit> -c <ops>\"",
+      "command": "ssh <xxxxx>@192.168.9.128 \"cd /tmp/ttfhw-msmodeling/docker && python3 build_image.py -t 1.0.0 --force -c <toolkit> -c <ops>\"",
       "success": true,
       "output": "构建已启动，步骤1/5: 构建 GCC11 基础镜像",
       "error": "",
@@ -468,7 +468,7 @@
       "step": 4,
       "action": "container_start",
       "result": "PASS",
-      "details": "Container started via ctr_in.py with mindstudio-build:1.0.0-arm64. Container name: msmodeling-verify. Shell: interactive (screen session). Mount: /home/m00818315:/home/m00818315:rw. User remapped to mindstudio(uid 1005:1005)",
+      "details": "Container started via ctr_in.py with mindstudio-build:1.0.0-arm64. Container name: msmodeling-verify. Shell: interactive (screen session). Mount: /home/<xxxxx>:/home/<xxxxx>:rw. User remapped to mindstudio(uid 1005:1005)",
       "command": "./ctr_in.py mindstudio-build:1.0.0-arm64 msmodeling-verify",
       "success": true,
       "output": "Container e95e0e22986f started, openEuler 24.03 LTS-SP3 aarch64, Python 3.11.15, GCC 11.2.0",

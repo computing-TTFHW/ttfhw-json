@@ -30,7 +30,7 @@
       "architecture": "aarch64",
       "cpu_cores": 256,
       "memory": "2.0 TiB (unlimited)",
-      "container_name": "m00818315_20260729_180724"
+      "container_name": "<xxxxx>_20260729_180724"
     },
     "image_source": {
       "type": "base_image",
@@ -89,7 +89,7 @@
       "action": "confirm container execution environment",
       "result": "SSH_OK, Docker 29.6.1, aarch64, 256 cores, 2TB RAM",
       "details": {},
-      "command": "ssh m00818315@192.168.9.128 docker version",
+      "command": "ssh <xxxxx>@192.168.9.128 docker version",
       "success": true,
       "output": "SSH_OK, Docker 29.6.1, aarch64, 256 cores, 2TB RAM",
       "error": "",
@@ -169,11 +169,11 @@
       "timestamp": "2026-07-29T18:07:00",
       "step": "build_environment_complete",
       "action": "Image build completed and container started via ctr_in.py",
-      "result": "Build total: 2348.2s (39.1min). Steps: sysroot 9.5s, GCC11 793.1s, Python 916.9s, rename 0.4s, CANN download 179.5s, final image 448.9s. Container m00818315_20260729_180724 started. Verified: openEule",
+      "result": "Build total: 2348.2s (39.1min). Steps: sysroot 9.5s, GCC11 793.1s, Python 916.9s, rename 0.4s, CANN download 179.5s, final image 448.9s. Container <xxxxx>_20260729_180724 started. Verified: openEule",
       "details": {},
       "command": "python3 build_image.py -t 1.0.0-arm64 --force -c <toolkit> -c <ops>; ctr_in.py mindstudio-build:1.0.0-arm64",
       "success": true,
-      "output": "Build total: 2348.2s (39.1min). Steps: sysroot 9.5s, GCC11 793.1s, Python 916.9s, rename 0.4s, CANN download 179.5s, final image 448.9s. Container m00818315_20260729_180724 started. Verified: openEuler 24.03 LTS-SP3, GCC 11.2.0, Python 3.11.15, CANN 9.1.0-beta.3.",
+      "output": "Build total: 2348.2s (39.1min). Steps: sysroot 9.5s, GCC11 793.1s, Python 916.9s, rename 0.4s, CANN download 179.5s, final image 448.9s. Container <xxxxx>_20260729_180724 started. Verified: openEuler 24.03 LTS-SP3, GCC 11.2.0, Python 3.11.15, CANN 9.1.0-beta.3.",
       "error": "",
       "returncode": 0,
       "duration_seconds": 2348

@@ -136,7 +136,7 @@
     },
     {
       "timestamp": "2026-08-13T06:05:00",
-      "command": "echo 'Y' | python3 init.py -user zhaozepeng -psw 'zhaozepeng123'",
+      "command": "echo 'Y' | python3 init.py -user <xxxxx> -psw '<xxxxx>'",
       "success": false,
       "output": "bingo 0.7.71 安装成功，Conan 2.31.2 登录成功，Node.js v20.18.0 安装成功",
       "error": "SDK 下载失败: Connection broken: IncompleteRead(44040192 bytes read, 503244482 more expected)",

@@ -35,7 +35,7 @@
       "architecture": "aarch64",
       "cpu_cores": 256,
       "memory": "2.0Ti (无限制)",
-      "container_name": "m00818315_20260731_231518"
+      "container_name": "<xxxxx>_20260731_231518"
     }
   },
   "document_reading_summary": {
@@ -89,10 +89,10 @@
       "result": "成功",
       "details": {
         "host_type": "remote_ssh",
-        "remote_host": "m00818315@192.168.9.128:22",
+        "remote_host": "<xxxxx>@192.168.9.128:22",
         "remote_workdir": "/tmp/ttfhw-msprof-analyze/"
       },
-      "command": "ssh m00818315@192.168.9.128 docker version",
+      "command": "ssh <xxxxx>@192.168.9.128 docker version",
       "success": true,
       "output": "Docker 29.6.1, aarch64, 256 cores, 2TB RAM",
       "error": "",
@@ -313,7 +313,7 @@
       "action": "使用 ctr_in.py 启动交互式容器并克隆目标仓库",
       "result": "成功",
       "details": {
-        "container_name": "m00818315_20260731_231518",
+        "container_name": "<xxxxx>_20260731_231518",
         "image": "mindstudio-build:1.0.0-arm64",
         "os": "openEuler 24.03 (LTS-SP3)",
         "gcc": "11.2.0",
@@ -380,10 +380,10 @@
     {
       "timestamp": "2026-07-31T23:24:45",
       "step": "cleanup",
-      "action": "停止并删除远端容器 m00818315_20260731_231518",
+      "action": "停止并删除远端容器 <xxxxx>_20260731_231518",
       "result": "成功",
       "details": {},
-      "command": "ssh m00818315@192.168.9.128 docker rm -f m00818315_20260731_231518",
+      "command": "ssh <xxxxx>@192.168.9.128 docker rm -f <xxxxx>_20260731_231518",
       "success": true,
       "output": "",
       "error": "",
