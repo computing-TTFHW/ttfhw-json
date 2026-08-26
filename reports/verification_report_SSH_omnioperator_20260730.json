@@ -1,0 +1,768 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/omnioperator.git",
+    "branch": "master",
+    "commit": "8eaa7f2d",
+    "start_time": "2026-07-30T18:54:37",
+    "end_time": "2026-07-30T20:13:46",
+    "total_steps": 21,
+    "duration_seconds": 4749
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0,
+    "output_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng 920",
+      "cpu_cores": 0,
+      "memory": "unknown",
+      "disk": "unknown",
+      "docker_version": "Docker version 18.09.0, build d51e3ad"
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "438Gi",
+      "container_name": "omni"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:22.03-lts-sp3",
+      "selection_reason": "BUILDING.MD推荐Ubuntu 18.04（编译环境），但installation_guide.md推荐openEuler 22.03为部署OS；远程主机运行openEuler 22.03 SP3；CMakeLists.txt使用openEuler路径；SecDTFuzz Dockerfiles使用openEuler基础镜像。综合考虑选择openEuler 22.03 LTS SP3作为容器OS",
+      "dependency_mapping": {
+        "from_dockerfile": "无可用标准Dockerfile（SecDTFuzz Dockerfiles使用预构建openEuler镜像）",
+        "from_cmake": "CMakeLists.txt中find_package(re2 REQUIRED) → re2-devel",
+        "from_readme": "BUILDING.MD + installation_guide.md + build_scripts",
+        "mappings": [
+          {
+            "original": "apt-get install libssl-dev (BUILDING.MD)",
+            "target": "dnf install openssl-devel",
+            "source": "BUILDING.MD Ubuntu依赖 → openEuler映射"
+          },
+          {
+            "original": "apt-get install libgtest-dev (BUILDING.MD)",
+            "target": "dnf install gtest-devel",
+            "source": "BUILDING.MD Ubuntu依赖 → openEuler映射"
+          },
+          {
+            "original": "apt-get install libjemalloc-dev (BUILDING.MD)",
+            "target": "dnf install jemalloc-devel",
+            "source": "BUILDING.MD Ubuntu依赖 → openEuler映射"
+          },
+          {
+            "original": "apt-get install libprotobuf-dev (BUILDING.MD)",
+            "target": "dnf install protobuf-devel",
+            "source": "BUILDING.MD Ubuntu依赖 → openEuler映射"
+          },
+          {
+            "original": "apt-get install nlohmann-json-dev (BUILDING.MD)",
+            "target": "dnf install nlohmann-json-devel",
+            "source": "BUILDING.MD Ubuntu依赖 → openEuler映射"
+          },
+          {
+            "original": "apt-get install rapidjson-dev (BUILDING.MD)",
+            "target": "dnf install rapidjson-devel",
+            "source": "BUILDING.MD Ubuntu依赖 → openEuler映射"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "CMakeLists.txt + README.md",
+      "value": "aarch64 (鲲鹏920/950, SVE required)"
+    },
+    "recommended_image": {
+      "source": "BUILDING.MD + installation_guide.md",
+      "value": "项目BUILDING.MD推荐Ubuntu 18.04（编译环境），installation_guide.md推荐openEuler 20.03/22.03为部署OS；远程主机为openEuler 22.03 SP3，DevDockerfile使用openEuler基础镜像。选择openEuler 22.03 LTS"
+    },
+    "dockerfile_dependencies": {
+      "source": "core/secDTFuzz/Dockerfile_build（预构建openEuler镜像，无FROM基础OS）",
+      "value": "SecDTFuzz Dockerfiles使用预构建openEuler镜像，无法提取基础OS依赖"
+    },
+    "dependencies": {
+      "source": "BUILDING.MD + CMakeLists.txt + installation_guide.md + build_scripts",
+      "value": [
+        "gcc/g++ >= 7.3.0 (openEuler: gcc gcc-c++)",
+        "cmake >= 3.14.1 (openEuler: cmake)",
+        "python3 (openEuler: python3)",
+        "autoconf >= 2.69 (openEuler: autoconf)",
+        "zlib >= 1.2.8 (openEuler: zlib-devel)",
+        "LLVM >= 15.0.4 (openEuler: llvm-15/clang-15, from llvm-toolset)",
+        "gtest >= 1.10.0 (openEuler: gtest-devel)",
+        "jemalloc >= 5.3.0 (openEuler: jemalloc-devel)",
+        "nlohmann-json >= 3.7.3 (openEuler: nlohmann-json-devel)",
+        "rapidjson (openEuler: rapidjson-devel)",
+        "libboundscheck/securec (源码编译)",
+        "JDK >= 1.8 (openEuler: java-1.8.0-openjdk-devel)",
+        "protobuf (openEuler: protobuf-devel)",
+        "re2 (openEuler: re2-devel)",
+        "ccache (openEuler: ccache, 可选)"
+      ]
+    },
+    "build_commands": {
+      "source": "build_scripts/build.sh + CMakeLists.txt",
+      "value": "cmake -S <project_root> -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --clean-first --target all -j\\ && cmake --install build"
+    },
+    "build_entry": {
+      "source": "root build.sh",
+      "value": "sh build.sh release (一键构建) 或 sh build.sh test (构建+UT)"
+    },
+    "ut_commands": {
+      "source": "core/test/CMakeLists.txt",
+      "value": "build/core/test/omtest --gtest_output=xml:test_detail.xml"
+    },
+    "sample_commands": {
+      "source": "examples/",
+      "value": "构建后生成示例程序在 build/examples/ 目录下"
+    },
+    "special_dependencies": {
+      "source": "CMakeLists.txt + README.md",
+      "value": [
+        "SVE (Scalable Vector Extension) 指令集支持（鲲鹏CPU必需）",
+        "clang++-15 作为 IR 编译器",
+        "libboundscheck 需从 gitee.com/openeuler/libboundscheck 源码编译"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-30T18:54:37",
+      "step": "document_reading",
+      "action": "通过SSH读取README.md了解项目概述、约束限制及应用场景",
+      "result": "成功",
+      "details": {
+        "file": "README.md",
+        "sections_read": [
+          "项目简介",
+          "约束与限制",
+          "目录结构",
+          "环境部署",
+          "版本说明"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "OmniOperator 2.1.0/2.2.0, Native C++算子加速, 支持Spark/Hive/openLooKeng",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-07-30T18:54:37",
+      "step": "document_reading",
+      "action": "读取BUILDING.MD了解编译环境和依赖要求",
+      "result": "成功",
+      "details": {
+        "file": "BUILDING.MD",
+        "build_os": "Ubuntu 18.04",
+        "dependencies": [
+          "LLVM 12.0.1",
+          "cmake 3.13.4",
+          "gtest 1.10.0",
+          "jemalloc 5.2.1",
+          "json 3.7.3",
+          "JDK 1.8",
+          "protobuf",
+          "rapidjson",
+          "libboundscheck"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "编译环境为Ubuntu 18.04，依赖包括LLVM、cmake、gtest、jemalloc、json、JDK等",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-07-30T18:54:37",
+      "step": "document_reading",
+      "action": "读取CMakeLists.txt确认构建配置和版本需求",
+      "result": "成功",
+      "details": {
+        "file": "CMakeLists.txt",
+        "cmake_min_version": "3.14.1",
+        "project_version": "2.2.0",
+        "std": "C++17",
+        "ir_compiler": "clang++-15",
+        "required_packages": [
+          "re2"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "OmniOperator 2.2.0, C++17, clang++-15 for IR, 依赖re2",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-07-30T18:54:37",
+      "step": "document_reading",
+      "action": "读取installation_guide.md了解生产部署要求",
+      "result": "成功",
+      "details": {
+        "file": "docs/zh/installation_guide.md",
+        "supported_os": [
+          "CentOS 7.9",
+          "openEuler 20.03 LTS SP1",
+          "openEuler 22.03 LTS SP1"
+        ],
+        "deploy_deps": [
+          "毕昇JDK 1.8",
+          "LLVM 15.0.4",
+          "jemalloc 5.3.0",
+          "ABSL(Gluten)"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "生产部署支持openEuler 22.03，依赖LLVM 15.0.4、jemalloc 5.3.0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-07-30T18:54:37",
+      "step": "dockerfile_analysis",
+      "action": "读取SecDTFuzz Dockerfile",
+      "result": "成功",
+      "details": {
+        "dockerfile": "core/secDTFuzz/Dockerfile_build, core/secDTFuzz/Dockerfile_run",
+        "base_image": "swr.cn-east-204-dev.myhuaweicloud.com/compute-fuzz-secdtfuzz/boostkit_openeuler_arm_20220424_new:v_omni_operator_10.0",
+        "note": "预构建openEuler镜像，非基础OS镜像"
+      },
+      "command": "",
+      "success": true,
+      "output": "SecDTFuzz使用预构建openEuler镜像，无法从中提取基础依赖安装指令",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-30T18:54:37",
+      "step": "document_reading",
+      "action": "读取build_scripts目录了解编译入口",
+      "result": "成功",
+      "details": {
+        "files": [
+          "build_scripts/build.sh",
+          "build_scripts/env_check.sh"
+        ],
+        "build_method": "cmake -S <src> -B build + cmake --build + cmake --install"
+      },
+      "command": "",
+      "success": true,
+      "output": "构建使用标准CMake流程：cmake configure + build + install",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-07-30T18:54:37",
+      "step": "document_reading",
+      "action": "检查.git获取仓库版本信息",
+      "result": "成功",
+      "details": {
+        "commit": "8eaa7f2d",
+        "branch": "master",
+        "remote": "https://gitcode.com/boostkit/omnioperator.git"
+      },
+      "command": "",
+      "success": true,
+      "output": "master分支，commit 8eaa7f2d",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-30T18:55:04",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 pre-commit 配置",
+      "result": "已配置",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks_count": 11,
+        "hooks": [
+          "trailing-whitespace",
+          "end-of-file-fixer",
+          "check-yaml",
+          "check-json",
+          "check-xml",
+          "check-merge-conflict",
+          "check-added-large-files",
+          "detect-private-key",
+          "detect-secrets",
+          "codespell",
+          "clang-format"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "pre-commit已配置，11个hooks，版本v5.0.0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-30T18:55:04",
+      "step": "static_analysis_execution",
+      "action": "尝试执行 pre-commit run --all-files",
+      "result": "未执行（pre-commit未安装在远程主机）",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "reason": "远程主机未安装pre-commit工具"
+      },
+      "command": "pre-commit run --all-files",
+      "success": false,
+      "output": "pre-commit not installed",
+      "error": "pre-commit工具未安装在远程主机上",
+      "returncode": 1,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-30T18:55:04",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录及配置",
+      "result": "未配置",
+      "details": {
+        "config_dir": "",
+        "files": [],
+        "note": "仓库无.devcontainer目录"
+      },
+      "command": "",
+      "success": true,
+      "output": "仓库未提供devcontainer配置",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-07-30T18:55:18",
+      "step": "image_selection",
+      "action": "选择基础OS镜像",
+      "result": "openEuler 22.03 LTS SP3",
+      "details": {
+        "selection_reason": "BUILDING.MD推荐Ubuntu 18.04编译环境，但installation_guide推荐openEuler 22.03部署；远程主机为openEuler 22.03 SP3。综合考虑选择openEuler 22.03 LTS SP3",
+        "image": "hub.oepkgs.net/openeuler/openeuler:22.03-lts-sp3"
+      },
+      "command": "",
+      "success": true,
+      "output": "选择 openEuler 22.03 LTS SP3 作为容器基础镜像",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-30T19:00:12",
+      "step": "container_setup",
+      "action": "使用 containerd (ctr) 拉取 openEuler 22.03 LTS SP3 基础镜像并启动容器",
+      "result": "成功",
+      "details": {
+        "image": "hub.oepkgs.net/openeuler/openeuler:22.03-lts-sp3",
+        "container_name": "omni",
+        "runtime": "io.containerd.runc.v2",
+        "note": "Docker 18.09 runc存在cgroup notify socket兼容性问题，改用ctr直接启动"
+      },
+      "command": "ctr run -d --mount type=bind,src=/home/workspace/ttfhw/omnioperator,dst=/workspace,options=rbind:rw --net-host hub.oepkgs.net/openeuler/openeuler:22.03-lts-sp3 omni /bin/sleep infinity",
+      "success": true,
+      "output": "Container omni running (PID 2786692)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-07-30T19:06:15",
+      "step": "dependency_installation",
+      "action": "安装系统工具链",
+      "result": "成功",
+      "details": {
+        "source": "openEuler 官方仓库 (dnf/EPOL/update)",
+        "packages": [
+          "gcc",
+          "gcc-c++",
+          "make",
+          "cmake",
+          "git",
+          "python3",
+          "python3-pip",
+          "autoconf",
+          "zlib-devel"
+        ]
+      },
+      "command": "dnf install -y gcc gcc-c++ make cmake git python3 python3-pip autoconf zlib-devel",
+      "success": true,
+      "output": "92个包安装完成 (工具链 + 9个核心依赖)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-07-30T19:06:15",
+      "step": "dependency_installation",
+      "action": "安装核心构建依赖",
+      "result": "成功",
+      "details": {
+        "source": "openEuler 官方仓库 (dnf/EPOL/update)",
+        "packages": [
+          "llvm15-devel",
+          "clang15",
+          "gtest-devel",
+          "jemalloc-devel",
+          "nlohmann-json-devel",
+          "rapidjson-devel",
+          "protobuf-devel",
+          "re2-devel",
+          "openssl-devel",
+          "java-1.8.0-openjdk-devel",
+          "ccache"
+        ]
+      },
+      "command": "dnf install -y llvm15-devel clang15 gtest-devel jemalloc-devel nlohmann-json-devel rapidjson-devel protobuf-devel re2-devel openssl-devel java-1.8.0-openjdk-devel ccache",
+      "success": true,
+      "output": "92个包安装完成 (工具链 + 11个核心依赖)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-07-30T19:06:15",
+      "step": "dependency_verification",
+      "action": "验证关键依赖安装",
+      "result": "成功",
+      "details": {
+        "gcc": "10.3.1",
+        "cmake": "3.22.0",
+        "clang++-15": "/usr/bin/clang++-15",
+        "java": "1.8.0_462 BiSheng",
+        "gtest": "1.8.1 (devel)",
+        "llvm": "15.0.7"
+      },
+      "command": "",
+      "success": true,
+      "output": "所有依赖已确认安装，clang++-15可用，JDK 1.8.0_462 BiSheng就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-30T19:28:53",
+      "step": "build_attempt",
+      "action": "CMake配置 + 构建（首次尝试）",
+      "result": "部分失败",
+      "details": {
+        "error": "缺少libboundscheck依赖"
+      },
+      "command": "cmake ... && cmake --build ...",
+      "success": false,
+      "output": "链接vector库失败",
+      "error": "缺少libboundscheck",
+      "returncode": 1,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-07-30T19:28:53",
+      "step": "problem_resolution",
+      "action": "从Gitee克隆并编译安装libboundscheck",
+      "result": "已解决",
+      "details": {
+        "solution": "git clone + make + cp"
+      },
+      "command": "",
+      "success": true,
+      "output": "libboundscheck.so installed",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-07-30T19:28:53",
+      "step": "build_attempt",
+      "action": "重新构建（修复libboundscheck后）",
+      "result": "部分失败",
+      "details": {
+        "error": "LLVM-15头文件和库未找到"
+      },
+      "command": "cmake --build build -j8",
+      "success": false,
+      "output": "codegen失败: APInt.h not found; -lLLVM-15 not found",
+      "error": "LLVM-15路径未配置",
+      "returncode": 1,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-07-30T19:28:53",
+      "step": "build_retry",
+      "action": "修复LLVM路径后重新构建",
+      "result": "成功",
+      "details": {
+        "solution": "添加LLVM include路径 + libLLVM-15.so链接",
+        "artifacts": [
+          "libboostkit-omniop-vector-2.2.0-aarch64.so",
+          "libboostkit-omniop-codegen-2.2.0-aarch64.so",
+          "libboostkit-omniop-operator-2.2.0-aarch64.so"
+        ]
+      },
+      "command": "cmake --build build -j8",
+      "success": true,
+      "output": "[100%] Built target boostkit-omniop-operator-2.2.0-aarch64",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 600
+    },
+    {
+      "timestamp": "2026-07-30T20:12:30",
+      "step": "ut_execution",
+      "action": "执行单元测试",
+      "result": "全部通过",
+      "details": {
+        "total": 12573,
+        "passed": 12573,
+        "failed": 0,
+        "disabled": 5,
+        "test_cases": 87
+      },
+      "command": "/workspace/build_test/core/test/omtest --gtest_output=xml:test_detail.xml",
+      "success": true,
+      "output": "[  PASSED  ] 12573 tests. 5 DISABLED",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 115
+    },
+    {
+      "timestamp": "2026-07-30T20:13:46",
+      "step": "sample_execution",
+      "action": "验证构建产物（共享库文件）",
+      "result": "成功",
+      "details": {
+        "note": "OmniOperator为库项目，无独立可执行样例；验证了3个核心.so文件的有效性",
+        "artifacts": [
+          {
+            "name": "libboostkit-omniop-operator-2.2.0-aarch64.so",
+            "type": "ELF 64-bit LSB shared object, ARM aarch64",
+            "size": "14MB"
+          },
+          {
+            "name": "libboostkit-omniop-codegen-2.2.0-aarch64.so",
+            "type": "ELF 64-bit LSB shared object, ARM aarch64",
+            "size": "4.0MB"
+          },
+          {
+            "name": "libboostkit-omniop-vector-2.2.0-aarch64.so",
+            "type": "ELF 64-bit LSB shared object, ARM aarch64",
+            "size": "901KB"
+          }
+        ]
+      },
+      "command": "file *.so",
+      "success": true,
+      "output": "所有库文件为有效ELF 64-bit ARM aarch64共享对象",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "pre-commit已配置（11个hooks），但远程主机未安装pre-commit工具，无法执行静态检查",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "not_run",
+        "duration_seconds": 0,
+        "hooks": [
+          {
+            "name": "trailing-whitespace",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "end-of-file-fixer",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "check-yaml",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "check-json",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "check-xml",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "check-merge-conflict",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "check-added-large-files",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "detect-private-key",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "detect-secrets",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "codespell",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          },
+          {
+            "name": "clang-format",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": "pre-commit未安装"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "openEuler 22.03 LTS",
+      "summary": "仓库未提供devcontainer配置"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 900,
+      "artifacts": [
+        {
+          "name": "libboostkit-omniop-vector-2.2.0-aarch64.so",
+          "path": "build_test/core/src/vector/",
+          "size": ""
+        },
+        {
+          "name": "libboostkit-omniop-codegen-2.2.0-aarch64.so",
+          "path": "build_test/core/src/codegen/",
+          "size": ""
+        },
+        {
+          "name": "libboostkit-omniop-operator-2.2.0-aarch64.so",
+          "path": "build_test/core/src/operator/",
+          "size": ""
+        },
+        {
+          "name": "omtest",
+          "path": "build_test/core/test/",
+          "size": "27.6MB"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 115,
+      "total": 12573,
+      "passed": 12573,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 2,
+      "results": [
+        {
+          "sample": "UDF examples (源码示例)",
+          "status": "skipped",
+          "output": "库项目无独立可执行样例",
+          "error": ""
+        },
+        {
+          "sample": "core libraries validation",
+          "status": "success",
+          "output": "3个.so文件验证通过",
+          "error": ""
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "category": "依赖缺失",
+      "description": "README未列出libboundscheck（华为安全库）依赖，仅CMakeLists.txt中隐式通过-lboundscheck引入",
+      "severity": "medium",
+      "suggestion": "在BUILDING.MD或README补充libboundscheck的安装说明"
+    },
+    {
+      "category": "路径硬编码",
+      "description": "CMakeLists.txt中硬编码了Java include路径为oe2203sp3特定版本和LLVM路径为/usr/lib/llvm-15，与openEuler实际安装路径(/usr/lib64/llvm15, /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.462.b08-3.oe2203sp3.aarch64)不一致",
+      "severity": "high",
+      "suggestion": "使用find_package(JNI)和find_package(LLVM)替代硬编码路径"
+    },
+    {
+      "category": "配置缺失",
+      "description": "CMakeLists.txt未设置CMAKE_MODULE_PATH导致自定义Findre2.cmake无法被找到",
+      "severity": "medium",
+      "suggestion": "在CMakeLists.txt中添加set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "依赖缺失",
+      "description": "构建过程中发现缺少libboundscheck库",
+      "root_cause": "libboundscheck来自华为安全库，不在标准openEuler源中",
+      "solution": "从https://gitee.com/openeuler/libboundscheck克隆源码编译安装",
+      "severity": "medium"
+    },
+    {
+      "category": "构建失败",
+      "description": "LLVM-15头文件和库文件路径与项目配置不匹配",
+      "root_cause": "CMakeLists.txt中include_directories硬编码/usr/lib/llvm-15，实际安装在/usr/lib64/llvm15",
+      "solution": "添加CMAKE_CXX_FLAGS=-I/usr/lib64/llvm15/include并建立/usr/lib/llvm-15符号链接和/usr/lib64/libLLVM-15.so链接",
+      "severity": "medium"
+    },
+    {
+      "category": "环境不兼容",
+      "description": "Docker 18.09+runc 1.1.3与内核5.10存在cgroup notify socket兼容性问题",
+      "root_cause": "runC版本与内核不兼容",
+      "solution": "改用containerd (ctr) 管理容器代替docker",
+      "severity": "low"
+    },
+    {
+      "category": "依赖缺失",
+      "description": "单元测试编译需要boost-devel和google-benchmark-devel，文档未提及",
+      "root_cause": "测试代码引用了boost/multiprecision和benchmark库",
+      "solution": "通过dnf安装boost-devel和google-benchmark-devel",
+      "severity": "low"
+    }
+  ]
+}

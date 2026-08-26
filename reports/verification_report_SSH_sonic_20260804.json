@@ -1,0 +1,357 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/sonic.git",
+    "branch": "master",
+    "commit": "ba8b7aa",
+    "start_time": "2026-08-04T22:20:00",
+    "end_time": "2026-08-04T23:10:00",
+    "total_steps": 10,
+    "duration_seconds": 3000,
+    "environment": "远端 SSH 机器 root@192.168.25.93:22",
+    "verifier": "opencode (ttfhw-verify-baseos)"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng 920 256 cores",
+      "cpu_cores": 256,
+      "memory": "438Gi total",
+      "disk": "183G available",
+      "docker_version": "Docker version 18.09.0, build d51e3ad"
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS SP3 (主机原生环境，host IS base OS)",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "438GB (unlimited)",
+      "container_name": "host-openEuler-22.03-lts-sp3"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "selection_reason": "README 要求 Go 1.18~1.26（ARM64 需 go1.20+），OS 不限（Linux/MacOS/Windows）。主机 openEuler 22.03 LTS SP3 (aarch64) 自带 go 1.17.3 过旧，从 aliyun 镜像下载 go 1.23.4/1.25.5。Docker 不可用，采用 host IS base OS。",
+      "dependency_mapping": {
+        "from_dockerfile": "仓库无 Dockerfile",
+        "from_readme": "README Requirement：Go 1.18~1.26（ARM64 需 go1.20+）；依赖 module 通过 GOPROXY 获取",
+        "mappings": [
+          {
+            "original": "Go 1.18~1.26",
+            "target": "go 1.23.4 / 1.25.5（aliyun 镜像下载，openEuler dnf 仅 golang 1.17.3）",
+            "source": "README.md"
+          },
+          {
+            "original": "github.com 依赖 module",
+            "target": "GOPROXY=https://goproxy.cn,direct（github 直连不可达）",
+            "source": "go.mod"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md",
+      "value": "aarch64 支持（README 注明 ARM64 需 go1.20+；native 有 neon/SVE 实现，仓库 commit 'update sonic arm version'）"
+    },
+    "recommended_image": {
+      "source": "README.md",
+      "value": "未指定 OS（Go 1.18~1.26，Linux/MacOS/Windows；ARM64 需 go1.20+）"
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库无 Dockerfile",
+      "value": []
+    },
+    "dependencies": {
+      "source": "go.mod + README.md",
+      "value": [
+        "Go 1.18~1.26（ARM64 需 go1.20+；注意 Go1.24.0 不支持）",
+        "github.com/bytedance/gopkg, cloudwego/base64x, klauspost/cpuid/v2, golang.org/x/arch 等 Go module",
+        "loader 子模块（go.work replace 指向 ./loader）"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md + go.work + scripts/",
+      "value": "go build ./...（仓库为 go.work workspace，含 . external_jsonlib_test fuzz generic_test issue_test loader 6 个 module）"
+    },
+    "ut_commands": {
+      "source": ".github/workflows/test-arm64.yml",
+      "value": "GOMAXPROCS=4 go test $(go list ./... | grep -v -E 'loader|jit|avx|x86|sse')（CI 在 arm64 上排除 amd64 专用包）"
+    },
+    "sample_commands": {
+      "source": "README.md 使用示例",
+      "value": "编写 Go 程序调用 sonic.Marshal/Unmarshal 验证 JSON 编解码往返"
+    },
+    "special_dependencies": {
+      "source": "scripts/ + internal/native/ + 实测",
+      "value": [
+        "amd64 专用包（internal/native/sse、internal/native/avx2、internal/decoder/jitdec）在 arm64 上 go build ./... 会失败：这些包的 .go 文件无后缀且缺少 amd64 build 标签（如 internal/native/sse/native_export.go），被 arm64 编译时报 _text_* 未定义",
+        "CI 的 test-arm64.yml 通过 grep 排除 sse/avx/jit/loader 包规避此问题",
+        "scripts/build-arm.sh 用 clang 从 native/*.c 生成 internal/native/neon 的 Go 汇编（目标 aarch64-apple-macos11）",
+        "arm64 解码走 internal/decoder/optdec + internal/native/neon"
+      ]
+    }
+  },
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库无 .pre-commit-config.yaml（CI 用 .github/workflows/lint.yml 等）",
+      "pre_commit": {
+        "configured": false,
+        "config_file": "",
+        "status": "not_run",
+        "duration_seconds": 0,
+        "hooks": []
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "summary": "仓库无 devcontainer/Dockerfile 配置"
+    },
+    "build": {
+      "status": "failed",
+      "duration_seconds": 600,
+      "artifacts": []
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 480,
+      "total": 20,
+      "passed": 20,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 5,
+      "results": [
+        {
+          "sample": "Go sonic.Marshal/Unmarshal 往返样例",
+          "status": "success",
+          "output": "json={\"name\":\"sonic\",\"arch\":\"arm64\",\"nums\":[1,2,3]}; name=sonic; arch=arm64; nums_len=3 nums_0=1; SONIC_SAMPLE_OK",
+          "error": ""
+        }
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-04T22:20:00",
+      "step": "document_reading",
+      "action": "读取 README.md、README_ZH_CN.md、go.mod、go.work、scripts/build-arm.sh、.github/workflows/test-arm64.yml",
+      "result": "成功",
+      "details": {
+        "go_work": "含 . external_jsonlib_test fuzz generic_test issue_test loader 6 个 module",
+        "arm_ci": "test-arm64.yml 用 go test 排除 loader/jit/avx/x86/sse 包",
+        "files_read": [
+          "README.md",
+          "README_ZH_CN.md",
+          "go.mod",
+          "go.work",
+          "scripts/build-arm.sh",
+          ".github/workflows/test-arm64.yml"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "sonic Go JSON 库，JIT+SIMD 加速；ARM64 需 go1.20+",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-04T22:22:00",
+      "step": "dependency_installation",
+      "action": "安装新版 Go（主机 go 1.17.3 过旧，不满足 ARM64 需 go1.20+）",
+      "result": "成功",
+      "details": {
+        "download": "mirrors.aliyun.com/golang/go1.23.4.linux-arm64.tar.gz (67MB)",
+        "installed_path": "/opt/go/bin/go 1.23.4（后升级 1.25.5 供 pre-commit golangci-lint 使用）",
+        "goproxy": "GOPROXY=https://goproxy.cn,direct（github 直连不可达，proxy.golang.org 亦不可达）"
+      },
+      "command": "wget https://mirrors.aliyun.com/golang/go1.23.4.linux-arm64.tar.gz && tar xzf",
+      "success": true,
+      "output": "go version go1.23.4 linux/arm64",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-08-04T22:30:00",
+      "step": "build_attempt",
+      "action": "go build ./...（首次，带 GOFLAGS=-mod=mod）",
+      "result": "失败",
+      "details": {
+        "error": "go: -mod may only be set to readonly or vendor when in workspace mode",
+        "fix": "移除 GOFLAGS=-mod=mod（workspace 模式不支持）"
+      },
+      "command": "go build ./...",
+      "success": false,
+      "output": "workspace 模式拒绝 -mod=mod",
+      "error": "-mod 标志与 workspace 冲突",
+      "returncode": 1,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-04T22:33:00",
+      "step": "build_attempt",
+      "action": "go build ./...（修正后）",
+      "result": "失败",
+      "details": {
+        "error": "internal/native/sse、internal/native/avx2：_text_f64toa 等未定义；internal/decoder/jitdec：_IC/_Assembler/_R9 未定义",
+        "root_cause": "amd64 专用包的 native_export.go/asm_stubs_amd64_go121.go 缺少 amd64 build 标签，在 arm64 上被编译"
+      },
+      "command": "go build ./...",
+      "success": false,
+      "output": "sse/avx2/jitdec 包编译失败",
+      "error": "amd64 专用文件缺 build 标签（fork 回归，CI 通过 grep 排除规避）",
+      "returncode": 1,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-04T22:35:00",
+      "step": "problem_resolution",
+      "action": "定位并验证根因：在 /tmp/sonic_fix 副本给 4 个 amd64 文件加 build 标签后重试",
+      "result": "部分确认",
+      "details": {
+        "verified": "加标签后 sse/avx2 错误消除；jitdec 剩余错误（pools.go 引用 _FP_offs 等）确认该包整体为 amd64 专用，arm64 无法编译",
+        "conclusion": "go build .（根库）在 arm64 上成功，说明 sonic 库本体可用；go build ./... 仅因 amd64 专用包未隔离而失败"
+      },
+      "command": "go list -json .../internal/decoder/api | grep GoFiles",
+      "success": true,
+      "output": "arm64 上 api 包只编译 decoder.go/decoder_arm64.go/stream.go，走 optdec+neon 路径",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-04T22:40:00",
+      "step": "build_attempt",
+      "action": "go build .（仅根库 sonic）",
+      "result": "成功",
+      "details": {
+        "note": "sonic 库本体在 arm64 上可正常编译"
+      },
+      "command": "go build .",
+      "success": true,
+      "output": "ROOT_RC=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-04T22:45:00",
+      "step": "ut_execution",
+      "action": "按 CI test-arm64.yml 方式运行 go test（排除 loader/jit/avx/x86/sse 包）",
+      "result": "成功",
+      "details": {
+        "method": "GOMAXPROCS=4 go test $(go list ./... | grep -v -E 'loader|jit|avx|x86|sse')",
+        "ok_packages": 20,
+        "fail": 0,
+        "no_test_files": "若干包无测试文件"
+      },
+      "command": "go test $(go list ./... | grep -v -E 'loader|jit|avx|x86|sse')",
+      "success": true,
+      "output": "20 个包 ok，0 FAIL（含 sonic 本体 66.8s、ast、encoder、native/neon、utf8 等）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 480
+    },
+    {
+      "timestamp": "2026-08-04T22:55:00",
+      "step": "sample_execution",
+      "action": "编写 Go 样例调用 sonic.Marshal/Unmarshal 并运行",
+      "result": "成功",
+      "details": {
+        "module": "replace github.com/bytedance/sonic => /home/workspace/ttfhw/sonic",
+        "goproxy": "goproxy.cn"
+      },
+      "command": "go run .",
+      "success": true,
+      "output": "json={\"name\":\"sonic\",\"arch\":\"arm64\",\"nums\":[1,2,3]}; SONIC_SAMPLE_OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-04T23:00:00",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit / devcontainer",
+      "result": "无本地 pre-commit",
+      "details": {
+        "pre_commit": "无 .pre-commit-config.yaml",
+        "ci": ".github/workflows/lint.yml（Go lint）"
+      },
+      "command": "ls -d .pre-commit-config.yaml .devcontainer",
+      "success": false,
+      "output": "无本地静态分析配置",
+      "error": "",
+      "returncode": 1,
+      "duration_seconds": 1
+    }
+  ],
+  "documentation_gaps": [
+    {
+      "category": "arm64 构建缺陷（amd64 包未隔离）",
+      "description": "commit ba8b7aa（update sonic arm version）中 internal/native/sse/native_export.go、internal/native/avx2/native_export.go、internal/decoder/jitdec/asm_stubs_amd64_go121.go 等 amd64 专用文件缺少 amd64 build 标签，导致 arm64 上 go build ./... 直接失败。",
+      "severity": "critical",
+      "suggestion": "为这些文件补充 //go:build amd64（或给 jitdec 包整体加 amd64 约束）；在 CI 增加 arm64 go build ./... 校验。"
+    },
+    {
+      "category": "README 未提供构建/测试命令",
+      "description": "README 只有 API 与 benchmark，没有 'How to build/test' 章节；arm64 的构建注意事项（go1.20+、GOPROXY、排除 amd64 包）均未说明。",
+      "severity": "medium",
+      "suggestion": "增加安装/构建/测试章节，明确 go1.20+（ARM64）、GOPROXY 设置及 go test 的包排除写法。"
+    },
+    {
+      "category": "Go 版本矩阵说明不全",
+      "description": "README 说支持 Go 1.18~1.26 且 Go1.24.0 不支持，但未说明 build-arm.sh 生成的 neon 汇编需要特定 Go（funcdata_go117/118/120/121/123/126.go 分版本），初学者无法判断版本搭配。",
+      "severity": "low",
+      "suggestion": "补充各 Go 版本与内部 funcdata/汇编的兼容性矩阵。"
+    },
+    {
+      "category": "scripts/build-arm.sh 目标平台写成 macOS",
+      "description": "build-arm.sh 用 clang -target aarch64-apple-macos11 生成 neon 汇编，初学者在 Linux 上运行会困惑；且该脚本为代码生成工具，文档未说明其用途。",
+      "severity": "low",
+      "suggestion": "在 README 说明 build-arm.sh 是 native 汇编生成工具（供维护者使用），并说明 Linux 下用法。"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "Go 版本过旧",
+      "description": "主机 go 1.17.3 不满足 sonic ARM64 需 go1.20+ 的要求",
+      "root_cause": "openEuler 22.03 dnf 仓库只有 golang 1.17.3",
+      "solution": "从 aliyun 镜像下载 go 1.23.4/1.25.5 二进制到 /opt/go",
+      "severity": "medium"
+    },
+    {
+      "category": "构建失败",
+      "description": "go build ./... 在 arm64 上失败（sse/avx2/jitdec 未定义符号）",
+      "root_cause": "fork 中 amd64 专用包文件缺 amd64 build 标签",
+      "solution": "记录为仓库缺陷；sonic 本体 go build . 与按 CI 排除方式 go test 均可正常通过",
+      "severity": "high"
+    },
+    {
+      "category": "Go module 网络不可达",
+      "description": "proxy.golang.org 不可达，module 下载失败",
+      "root_cause": "外网限制，proxy.golang.org i/o timeout",
+      "solution": "GOPROXY=https://goproxy.cn,direct（可达）",
+      "severity": "medium"
+    }
+  ],
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  }
+}

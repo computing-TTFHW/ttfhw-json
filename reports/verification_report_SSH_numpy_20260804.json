@@ -1,0 +1,560 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/numpy.git",
+    "branch": "master",
+    "commit": "1714407",
+    "start_time": "2026-08-04T16:39:00",
+    "end_time": "2026-08-04T19:15:00",
+    "total_steps": 16,
+    "duration_seconds": 9360,
+    "environment": "远端 SSH 机器 root@192.168.25.93:22",
+    "verifier": "opencode (ttfhw-verify-baseos)"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng 920 256 cores",
+      "cpu_cores": 256,
+      "memory": "438Gi total",
+      "disk": "183G available",
+      "docker_version": "Docker version 18.09.0, build d51e3ad"
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS SP3 (主机原生环境，host IS base OS)",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "438GB (unlimited)",
+      "container_name": "host-openEuler-22.03-lts-sp3"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "selection_reason": "README 环境要求推荐 Linux ARM64/aarch64，重点目标为鲲鹏服务器，Python 3.14、GCC 12.2.1/12.3.1；主机为 openEuler 22.03 LTS SP3 aarch64 且提供 gcc-toolset-12（GCC 12.3.1），满足 GCC 版本要求。Docker 18.09 runc notify.sock bug 无法启动容器（与历史验证一致），故采用 host IS base OS。",
+      "dependency_mapping": {
+        "from_dockerfile": "仓库无根目录 Dockerfile（devcontainer/setup.sh 用 micromamba + conda 环境；.gitcode/pipline/container_setup.md 定义 Linux ARM CI 容器）",
+        "from_readme": "README 环境要求：Python 3.14（CI 用 3.11.15）、GCC 12.2.1/12.3.1、Meson/meson-python、ASV、spin/pytest",
+        "from_cmake": "无 CMake（Meson 构建）",
+        "mappings": [
+          {
+            "original": "conda create -n numpy-ci python=3.11.15 (container_setup.md)",
+            "target": "从 python.org/华为云镜像编译安装 Python 3.11.15（openEuler 官方源无 Python 3.11+）",
+            "source": ".gitcode/pipline/container_setup.md"
+          },
+          {
+            "original": "conda install openblas pkg-config (container_setup.md)",
+            "target": "pip install scipy-openblas32（LP64），spin config-openblas --with-scipy-openblas=32 生成 .pc",
+            "source": ".gitcode/pipline/common.sh"
+          },
+          {
+            "original": "GCC 12.3.1 (README)",
+            "target": "dnf install gcc-toolset-12-gcc gcc-toolset-12-gcc-c++（openEuler 提供，GCC 12.3.1）",
+            "source": "README_CN.md"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README_CN.md 环境要求",
+      "value": "aarch64（ARM64/鲲鹏服务器为主，x86_64 可做 baseline 对比）"
+    },
+    "recommended_image": {
+      "source": "README_CN.md + .gitcode/pipline/container_setup.md",
+      "value": "Linux ARM64 环境（openEuler 22.03 LTS SP3 主机兼容；文档未指定具体发行版，CI 推荐 Python 3.11.15 conda 环境）"
+    },
+    "dockerfile_dependencies": {
+      "source": ".gitcode/pipline/container_setup.md（无根 Dockerfile）",
+      "value": [
+        {
+          "original": "conda create -y -n numpy-ci python=3.11.15",
+          "target_equivalent": "编译安装 Python 3.11.15（/usr/local/python311）"
+        },
+        {
+          "original": "conda install -y -c conda-forge openblas pkg-config compilers patchelf",
+          "target_equivalent": "dnf install gcc-toolset-12-gcc gcc-toolset-12-gcc-c++ gcc-gfortran + pip install scipy-openblas32"
+        },
+        {
+          "original": "系统层依赖 bash/git/gcc/g++/gfortran/pkg-config/make/util-linux/patchelf",
+          "target_equivalent": "dnf install git gcc gcc-c++ gcc-gfortran make pkg-config"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "pyproject.toml + requirements/build_requirements.txt + README_CN.md",
+      "value": [
+        "Python >= 3.11（推荐 3.14；CI 用 3.11.15）",
+        "GCC 12.2.1 / 12.3.1（GCC 10 不支持 label 后声明）",
+        "meson-python >= 0.18.0",
+        "Cython >= 3.0.6",
+        "ninja",
+        "spin==0.15",
+        "build",
+        "OpenBLAS（LP64，CI 用 scipy-openblas32）",
+        "测试：pytest==7.4.0、hypothesis==6.142.2、pytest-cov、pytest-xdist、pytest-timeout、mypy==1.18.2"
+      ]
+    },
+    "build_commands": {
+      "source": "README_CN.md + building_with_meson.md + .gitcode/pipline/full.sh",
+      "value": "python -m spin config-openblas --with-scipy-openblas=32 && python -m spin build -j 8（构建到 build/，安装到 build-install/）"
+    },
+    "ut_commands": {
+      "source": "README_CN.md + .gitcode/pipline/full.sh",
+      "value": "spin test -m full（完整功能测试；也可 python -m pytest numpy/path/to/test_file.py）"
+    },
+    "sample_commands": {
+      "source": "README_CN.md（功能测试/示例）+ numpy 官方文档",
+      "value": "import numpy 后运行 array/dot/fft/linalg 基础示例验证（作为样例验证）"
+    },
+    "special_dependencies": {
+      "source": "pyproject.toml + meson.build + .gitcode/pipline/common.sh",
+      "value": [
+        "需 git submodule update --init（vendored-meson、highway、pocketfft、svml 等 7 个子模块）",
+        "GCC 版本必须 >= 12（GCC 10 编译 ufunc_object.c 报 label/declaration 错误）",
+        "GCC 12 编译的扩展运行时需 LD_LIBRARY_PATH 指向 gcc-toolset-12 libstdc++（GLIBCXX_3.4.29）",
+        "测试依赖固定版本：pytest==7.4.0（pytest 9.x 会大量 ERROR）",
+        "spin 不支持 -q 参数"
+      ]
+    }
+  },
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库有 ruff.toml、.clang-format，但无 .pre-commit-config.yaml；lint 由 .gitcode/pipline/lint.sh 承担",
+      "pre_commit": {
+        "configured": false,
+        "config_file": "",
+        "status": "not_run",
+        "duration_seconds": 0,
+        "hooks": []
+      },
+      "lint_runner": {
+        "configured": true,
+        "config_file": "ruff.toml + .gitcode/pipline/lint.sh"
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        ".devcontainer/devcontainer.json",
+        ".devcontainer/setup.sh"
+      ],
+      "original_base_image": "micromamba/conda 环境（setup.sh 安装 micromamba + environment.yml）",
+      "used_image": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "summary": "devcontainer 使用 micromamba + environment.yml 创建 numpy-dev conda 环境；因 Docker 不可用改用 host IS base OS 直接构建"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 720,
+      "artifacts": [
+        {
+          "name": "numpy 2.4.3 构建产物（build-install）",
+          "path": "build-install/usr/lib/python3.11/site-packages/numpy",
+          "size": "约 80MB（含 _multiarray_umath 等 412 个目标编译产物）"
+        },
+        {
+          "name": "_multiarray_umath.cpython-311-aarch64-linux-gnu.so",
+          "path": "build-install/usr/lib/python3.11/site-packages/numpy/_core/",
+          "size": "核心扩展模块"
+        },
+        {
+          "name": "libnpymath.a / libhighway.a 等",
+          "path": "build/",
+          "size": "静态库"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 455,
+      "total": 52470,
+      "passed": 50855,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 20,
+      "results": [
+        {
+          "sample": "array/reshape 基础示例",
+          "status": "success",
+          "output": "sample1 array: (3, 5)",
+          "error": ""
+        },
+        {
+          "sample": "dot 矩阵乘",
+          "status": "success",
+          "output": "sample2 dot: (3, 3)",
+          "error": ""
+        },
+        {
+          "sample": "FFT",
+          "status": "success",
+          "output": "sample3 fft: (5,)",
+          "error": ""
+        },
+        {
+          "sample": "linalg eigvals",
+          "status": "success",
+          "output": "sample4 linalg: (3,)",
+          "error": ""
+        },
+        {
+          "sample": "sort",
+          "status": "success",
+          "output": "sample5 sort: [0 1 2 3 4]",
+          "error": ""
+        }
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-04T16:39:00",
+      "step": "document_reading",
+      "action": "读取 README.md、README_CN.md、building_with_meson.md、pyproject.toml、meson.build、requirements/*、.gitcode/pipline/*、.devcontainer/*",
+      "result": "成功",
+      "details": {
+        "repo_type": "完整源码仓（NumPy 2.4.3，Meson 构建，2418 文件）",
+        "version": "numpy 2.4.3",
+        "doc_recommend": "Python 3.14 / GCC 12.2.1+ / Meson / spin"
+      },
+      "command": "",
+      "success": true,
+      "output": "BoostKit NumPy 鲲鹏性能优化仓，完整源码可独立构建",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-04T16:41:00",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit / devcontainer",
+      "result": "无 pre-commit；有 devcontainer",
+      "details": {
+        "pre_commit": ".pre-commit-config.yaml 不存在",
+        "devcontainer": ".devcontainer/devcontainer.json + setup.sh",
+        "lint": "ruff.toml + .gitcode/pipline/lint.sh"
+      },
+      "command": "ls .pre-commit-config.yaml .devcontainer",
+      "success": true,
+      "output": "devcontainer 配置存在（micromamba 环境）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-08-04T16:41:30",
+      "step": "dependency_installation",
+      "action": "dnf 安装构建基础依赖",
+      "result": "成功",
+      "details": {
+        "packages": "gcc gcc-c++ gcc-gfortran make pkg-config python3-devel zlib-devel libffi-devel openssl-devel bzip2-devel ncurses-devel readline-devel sqlite-devel"
+      },
+      "command": "dnf install -y ...",
+      "success": true,
+      "output": "Complete!",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-04T16:43:00",
+      "step": "dependency_verification",
+      "action": "检查 Python/gcc/meson 版本",
+      "result": "Python 3.9.9 过旧，GCC 10.3.1 过旧，无 meson",
+      "details": {
+        "python": "3.9.9（numpy 要求 >=3.11）",
+        "gcc": "10.3.1（numpy 要求 12.x）",
+        "meson": "未安装",
+        "openEuler_dnf_python": "无 python3.11+",
+        "openEuler_dnf_golang_analog": "版本过旧问题"
+      },
+      "command": "python3 --version; gcc --version; meson --version",
+      "success": true,
+      "output": "需下载新版 Python 3.11.15 与使用 gcc-toolset-12",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-04T17:38:00",
+      "step": "problem_resolution",
+      "action": "从 python.org/华为云镜像下载并编译安装 Python 3.11.15",
+      "result": "成功（首次 python.org 下载极慢，改用 repo.huaweicloud.com 镜像）",
+      "details": {
+        "method": "wget Python-3.11.15.tgz（华为云镜像）-> ./configure --enable-shared -> make -j8 -> make install",
+        "install_prefix": "/usr/local/python311",
+        "note": "期间 SSH 连接多次超时（MACs 参数解决），编译在 nohup 后台完成"
+      },
+      "command": "tar -xzf Python-3.11.15.tgz && ./configure --prefix=/usr/local/python311 --enable-shared && make -j8 && make install",
+      "success": true,
+      "output": "Python 3.11.15 + pip 24.0 安装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1320
+    },
+    {
+      "timestamp": "2026-08-04T18:02:00",
+      "step": "dependency_installation",
+      "action": "pip 安装 meson-python/Cython/ninja/spin/build/pytest",
+      "result": "成功",
+      "details": {
+        "versions": "meson-python 0.20.0, Cython 3.2.9, ninja 1.13.0, spin 0.15, build 1.5.1, pytest 9.1.1(后续降级)"
+      },
+      "command": "pip3.11 install meson-python Cython ninja spin build pytest",
+      "success": true,
+      "output": "构建工具全部就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 300
+    },
+    {
+      "timestamp": "2026-08-04T18:05:00",
+      "step": "dependency_installation",
+      "action": "安装 OpenBLAS（dnf 与 scipy-openblas32）",
+      "result": "dnf openblas 无 .pc 文件，改用 scipy-openblas32 wheel",
+      "details": {
+        "dnf_openblas": "0.3.18（无 openblas.pc，不满足 pkg-config 要求）",
+        "solution": "pip install scipy-openblas32（0.3.34.0.0，LP64），spin config-openblas --with-scipy-openblas=32 生成 .openblas/scipy-openblas.pc"
+      },
+      "command": "dnf install openblas openblas-devel; pip install scipy-openblas32",
+      "success": true,
+      "output": "scipy-openblas32 0.3.34 就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-08-04T18:06:00",
+      "step": "problem_resolution",
+      "action": "初始化 git submodule",
+      "result": "成功",
+      "details": {
+        "submodules": "vendored-meson/meson, doc/source/_static/scipy-mathjax, numpy/_core/src/umath/svml, x86-simd-sort, highway, pocketfft, pythoncapi-compat",
+        "note": "首次 submodule update 超时，分目录初始化成功"
+      },
+      "command": "git submodule update --init --recursive",
+      "success": true,
+      "output": "7 个子模块全部就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 480
+    },
+    {
+      "timestamp": "2026-08-04T18:12:00",
+      "step": "build_attempt",
+      "action": "spin build -j8（GCC 10.3.1）",
+      "result": "失败",
+      "details": {
+        "error": "ufunc_object.c:4459: error: a label can only be part of a statement and a declaration is not a statement",
+        "root_cause": "numpy 2.4 代码使用 label 后直接声明，需 GCC >= 12（README 推荐 12.2.1/12.3.1）"
+      },
+      "command": "python3.11 -m spin build -j8",
+      "success": false,
+      "output": "ninja: build stopped: subcommand failed",
+      "error": "GCC 10.3.1 不支持 label 后声明",
+      "returncode": 1,
+      "duration_seconds": 300
+    },
+    {
+      "timestamp": "2026-08-04T18:18:00",
+      "step": "problem_resolution",
+      "action": "安装 gcc-toolset-12（GCC 12.3.1）",
+      "result": "成功",
+      "details": {
+        "gcc": "/opt/openEuler/gcc-toolset-12/root/usr/bin/gcc (GCC 12.3.1)",
+        "note": "openEuler 22.03 dnf 提供 gcc-toolset-12"
+      },
+      "command": "dnf install -y gcc-toolset-12-gcc gcc-toolset-12-gcc-c++",
+      "success": true,
+      "output": "GCC 12.3.1 就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-04T18:20:00",
+      "step": "build_retry",
+      "action": "清空 build 后用 GCC 12.3.1 重新 spin build -j8",
+      "result": "成功",
+      "details": {
+        "targets": "412/412 目标全部完成",
+        "install": "meson.py install --destdir ../build-install",
+        "time": "约 12 分钟"
+      },
+      "command": "CC=gcc CXX=g++ python3.11 -m spin build -j8",
+      "success": true,
+      "output": "412/412 链接完成，安装到 build-install",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 720
+    },
+    {
+      "timestamp": "2026-08-04T18:48:00",
+      "step": "problem_resolution",
+      "action": "解决 import numpy 失败（GLIBCXX_3.4.29）",
+      "result": "成功",
+      "details": {
+        "error": "ImportError: /usr/lib64/libstdc++.so.6: version GLIBCXX_3.4.29 not found",
+        "root_cause": "GCC 12 编译的扩展需要新 libstdc++，运行时链接了系统旧版",
+        "solution": "export LD_LIBRARY_PATH=/opt/openEuler/gcc-toolset-12/root/usr/lib64"
+      },
+      "command": "LD_LIBRARY_PATH=... python3.11 -c 'import numpy'",
+      "success": true,
+      "output": "numpy 2.4.3 import 成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-04T18:50:00",
+      "step": "ut_execution",
+      "action": "spin test -m quick（smoke）",
+      "result": "pytest 版本不兼容",
+      "details": {
+        "error": "pytest.PytestRemovedIn10Warning 大量 ERROR（68 errors）",
+        "root_cause": "pytest 9.1.1 过新，numpy 测试要求 pytest==7.4.0"
+      },
+      "command": "python3.11 -m spin test -m quick -j4",
+      "success": false,
+      "output": "1 skipped, 68 errors",
+      "error": "pytest 9.1.1 与 numpy 2.4.3 测试不兼容",
+      "returncode": 1,
+      "duration_seconds": 40
+    },
+    {
+      "timestamp": "2026-08-04T18:52:00",
+      "step": "problem_resolution",
+      "action": "按 requirements/test_requirements.txt 安装 pytest==7.4.0",
+      "result": "成功",
+      "details": {
+        "pytest": "7.4.0",
+        "hypothesis": "6.142.2"
+      },
+      "command": "pip install pytest==7.4.0 hypothesis==6.142.2",
+      "success": true,
+      "output": "pytest 7.4.0 就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-08-04T18:57:00",
+      "step": "ut_execution",
+      "action": "spin test -m full -j4 执行完整测试套件",
+      "result": "成功",
+      "details": {
+        "total": "52470（50855 passed + 582 skipped + 33 xfailed + 1535 xpassed）",
+        "failed": 0,
+        "duration": "454.76s（7分34秒）"
+      },
+      "command": "python3.11 -m spin test -m full -j4",
+      "success": true,
+      "output": "50855 passed, 582 skipped, 33 xfailed, 1535 xpassed in 454.76s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 455
+    },
+    {
+      "timestamp": "2026-08-04T19:12:00",
+      "step": "sample_execution",
+      "action": "运行 numpy 功能样例（array/dot/fft/linalg/sort）",
+      "result": "成功",
+      "details": {
+        "samples": "array reshape、dot、fft、linalg.eigvals、sort 全部正常"
+      },
+      "command": "python3.11 /tmp/np_sample.py",
+      "success": true,
+      "output": "NP_SAMPLE_OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    }
+  ],
+  "documentation_gaps": [
+    {
+      "category": "GCC 版本要求未强调",
+      "description": "README 环境要求写 GCC 12.2.1/12.3.1，但未说明 GCC 10（如 openEuler 22.03 默认 gcc 10.3.1）会直接编译失败（ufunc_object.c label/declaration 错误）。初学者用系统默认 gcc 会卡在构建。",
+      "severity": "high",
+      "suggestion": "在 README 显著标注必须使用 GCC >= 12，并说明 openEuler 用 dnf install gcc-toolset-12-gcc gcc-toolset-12-gcc-c++ 及 export PATH/LD_LIBRARY_PATH"
+    },
+    {
+      "category": "libstdc++ 运行路径未说明",
+      "description": "GCC 12 编译出的扩展在运行时需 LD_LIBRARY_PATH 包含 gcc-toolset-12 lib64（否则报 GLIBCXX_3.4.29 not found），README/文档未说明该运行依赖。",
+      "severity": "high",
+      "suggestion": "在安装/使用文档补充 export LD_LIBRARY_PATH=/opt/openEuler/gcc-toolset-12/root/usr/lib64 与 import 验证步骤"
+    },
+    {
+      "category": "测试依赖版本未显式标注",
+      "description": "测试需 pytest==7.4.0（pytest 9.x 会导致 68 个 ERROR），该版本约束只在 requirements/test_requirements.txt 中，README 功能测试章节未提示，直接 spin test -m full 会失败。",
+      "severity": "medium",
+      "suggestion": "在 README 功能测试章节说明先 pip install -r requirements/test_requirements.txt 再运行测试"
+    },
+    {
+      "category": "Python 版本获取方式未说明",
+      "description": "README 推荐 Python 3.14/3.11，但 openEuler 22.03 官方源无 Python 3.11+，需从 python.org/华为云镜像源码编译，文档未给出获取与安装方法。",
+      "severity": "medium",
+      "suggestion": "补充在 openEuler 上编译安装 Python 3.11/3.14 的具体步骤或推荐 conda/miniconda"
+    },
+    {
+      "category": "submodule 初始化未说明",
+      "description": "spin 构建要求 vendored-meson 等 git submodule 已初始化，README 未提及需先执行 git submodule update --init，初学者直接 spin build 会报 'vendored-meson/meson submodule does not exist'。",
+      "severity": "medium",
+      "suggestion": "在构建章节开头补充 git submodule update --init --recursive"
+    },
+    {
+      "category": "OpenBLAS 准备方式缺失",
+      "description": "构建需要 pkg-config 可发现 OpenBLAS，CI 用 scipy-openblas32 + spin config-openblas，README 未给出对初学者友好的 openblas 准备方法（dnf 的 openblas 无 .pc 文件，直接构建会找不到 BLAS）。",
+      "severity": "medium",
+      "suggestion": "在构建章节补充 pip install scipy-openblas32 && python -m spin config-openblas --with-scipy-openblas=32"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "工具链版本不足",
+      "description": "主机 Python 3.9.9 不满足 numpy >=3.11，GCC 10.3.1 不满足 GCC>=12 要求",
+      "root_cause": "openEuler 22.03 默认工具链过旧",
+      "solution": "编译安装 Python 3.11.15（华为云镜像）；dnf 安装 gcc-toolset-12（GCC 12.3.1）",
+      "severity": "high"
+    },
+    {
+      "category": "构建失败",
+      "description": "GCC 10 编译 ufunc_object.c 报 'a label can only be part of a statement and a declaration is not a statement'",
+      "root_cause": "numpy 2.4 代码使用 C99 label 后直接声明，需 GCC >= 12",
+      "solution": "改用 gcc-toolset-12 的 GCC 12.3.1 重建",
+      "severity": "high"
+    },
+    {
+      "category": "运行依赖缺失",
+      "description": "import numpy 报 GLIBCXX_3.4.29 not found",
+      "root_cause": "GCC 12 编译的扩展链接到新 libstdc++，运行时 LD_LIBRARY_PATH 未包含 gcc-toolset-12 lib64",
+      "solution": "export LD_LIBRARY_PATH=/opt/openEuler/gcc-toolset-12/root/usr/lib64",
+      "severity": "medium"
+    },
+    {
+      "category": "测试环境不兼容",
+      "description": "pytest 9.1.1 下 numpy 测试 68 个 ERROR（PytestRemovedIn10Warning）",
+      "root_cause": "pytest 版本过新，numpy 2.4.3 需 pytest==7.4.0",
+      "solution": "按 requirements/test_requirements.txt 安装 pytest==7.4.0",
+      "severity": "medium"
+    },
+    {
+      "category": "SSH 连接中断",
+      "description": "验证期间 SSH 多次 connection timed out（端口 22 可连但握手超时）",
+      "root_cause": "远端 sshd 或网络波动；python.org 下载占用带宽",
+      "solution": "改用 -o MACs=hmac-sha2-256 -c aes128-ctr 参数连接成功；下载改用华为云镜像",
+      "severity": "low"
+    }
+  ],
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  }
+}

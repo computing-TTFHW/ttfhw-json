@@ -1,0 +1,577 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/omnistatestore.git",
+    "branch": "master",
+    "commit": "2cd9105b37bd590aeface998be63e25cd17d2e59",
+    "start_time": "2026-07-31T14:21:23",
+    "end_time": "2026-07-31T15:39:29",
+    "total_steps": 14,
+    "duration_seconds": 4686.995797,
+    "environment": "SSH remote: root@192.168.25.93 openEuler 22.03 LTS SP3 aarch64",
+    "verifier": "opencode"
+  },
+  "token_usage": {},
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng-920",
+      "cpu_cores": 256,
+      "memory": "438Gi",
+      "disk": "433G total, 197G available",
+      "docker_version": "Docker version 18.09.0"
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS SP3（直接使用宿主 OS，Docker 不可用）",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "438Gi",
+      "note": "Docker 18.09.0 OCI runtime create 失败（bind invalid argument），宿主 OS 即为项目推荐的 openEuler 22.03 LTS SP3，直接在宿主上构建"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:22.03-lts（未使用容器，直接使用匹配的宿主 OS）",
+      "selection_reason": "项目 docs/zh/installation_guide.md 表2 明确推荐 openEuler 22.03 LTS SP3，优先使用项目推荐的 OS。远程机器 Docker 18.09.0 OCI runtime 不可用（bind invalid argument），但宿主 OS 恰好为 openEuler 22.03 LTS SP3，与项目推荐完全一致，直接在宿主上构建。",
+      "dependency_mapping": {
+        "from_dockerfile": "无 Dockerfile，无需依赖映射。依赖直接通过 dnf 从 openEuler 官方仓库安装。",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "docs/zh/installation_guide.md 表1 - 鲲鹏920系列处理器 + docs/zh/quick_start.md - Kunpeng-920",
+      "value": "aarch64 (鲲鹏920)"
+    },
+    "recommended_image": {
+      "source": "docs/zh/installation_guide.md 表2 - OS: openEuler 22.03 LTS SP3",
+      "value": "openEuler 22.03 LTS SP3（项目推荐）"
+    },
+    "dockerfile_dependencies": {
+      "source": "无仓库根目录 Dockerfile 及 .devcontainer 目录",
+      "value": []
+    },
+    "dependencies": {
+      "source": "docs/zh/quick_start.md + docs/zh/installation_guide.md + CMakeLists.txt + scripts/build.sh",
+      "value": [
+        "cmake >= 3.14.1（文档要求 3.22.0）",
+        "gcc >= 10.3.1（需支持 gcc-ar, gcc-ranlib）",
+        "make",
+        "JDK 1.8.0_432（需设置 JAVA_HOME，用于 JNI 编译）",
+        "lz4（3rdparty/lz4 源码编译）",
+        "spdlog（3rdparty/spdlog 源码编译）",
+        "libboundscheck（3rdparty/secure 源码编译）",
+        "googletest（3rdparty/googletest 源码编译，UT 用）",
+        "glibc >= 2.10",
+        "git（用于 git submodule update）"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/zh/quick_start.md + scripts/build.sh",
+      "value": "bash scripts/build.sh -t release（Release 构建）；bash scripts/build.sh -t debug --ut（Debug+UT 构建）"
+    },
+    "ut_commands": {
+      "source": "docs/zh/quick_start.md + test/run_dt.sh",
+      "value": "先 bash scripts/build.sh -t debug --ut 编译，再 sh test/run_dt.sh 运行测试"
+    },
+    "sample_commands": {
+      "source": "README.md - 无独立样例，通过 WordCount.jar + Flink 验证",
+      "value": "无独立样例程序，通过 test/run_dt.sh 执行 DT 测试验证功能"
+    },
+    "special_dependencies": {
+      "source": "scripts/build.sh + CMakeLists.txt",
+      "value": [
+        "JAVA_HOME 环境变量（指向 JDK 1.8.0_432 安装路径）",
+        "git submodule update --init --recursive（初始化 3rdparty 子模块）",
+        "gcc-ar / gcc-ranlib（需在 /usr/bin/ 下可用）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-07-31T14:21:51",
+      "step": "document_reading",
+      "action": "远程 SSH 连接 root@192.168.25.93，克隆仓库并读取 README.md / README.en.md / docs/zh/installation_guide.md / docs/zh/quick_start.md / CMakeLists.txt / scripts/build.sh / .pre-commit-config.yaml / 3rdparty 结构",
+      "result": "成功",
+      "details": {
+        "files_read": [
+          "README.md",
+          "README.en.md",
+          "docs/zh/installation_guide.md",
+          "docs/zh/quick_start.md",
+          "CMakeLists.txt",
+          "scripts/build.sh",
+          ".pre-commit-config.yaml"
+        ],
+        "project_type": "C/C++ CMake 项目，Flink 状态存储后端 OmniStateStore",
+        "target_arch": "aarch64（鲲鹏920）",
+        "recommended_os": "openEuler 22.03 LTS SP3",
+        "build_system": "CMake + shell 脚本（scripts/build.sh）",
+        "3rdparty_libs": [
+          "googletest",
+          "lz4",
+          "secure(libboundscheck)",
+          "spdlog"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "OmniStateStore 基于 CMake 3.14.1+，GCC 10.3.1+，需 JDK 1.8。3rdparty 含 googletest/lz4/spdlog/secure。构建命令: bash scripts/build.sh -t release",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-07-31T14:22:33",
+      "step": "static_analysis_scan",
+      "action": "读取 .pre-commit-config.yaml，检查 pre-commit hooks 配置",
+      "result": "已配置",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks_count": 5,
+        "hooks": [
+          "run-build",
+          "run-build-test",
+          "clang-format",
+          "clang-tidy",
+          "clang-tidy-test"
+        ],
+        "note": "pre-commit 中 run-build hook 引用 bash build.sh 但实际脚本为 scripts/build.sh，存在文档不一致问题"
+      },
+      "command": "",
+      "success": true,
+      "output": "5个hook: run-build, run-build-test, clang-format, clang-tidy, clang-tidy-test",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-31T14:22:33",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 和 Dockerfile 配置",
+      "result": "未配置",
+      "details": {
+        "config_dir": "",
+        "files": [],
+        "original_base_image": "无",
+        "will_use": "openEuler 22.03 LTS"
+      },
+      "command": "",
+      "success": true,
+      "output": "仓库无 Dockerfile 及 .devcontainer 目录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-07-31T14:22:33",
+      "step": "dockerfile_analysis",
+      "action": "无 Dockerfile，分析 git submodules 确定 3rdparty 依赖版本",
+      "result": "成功",
+      "details": {
+        "submodules": {
+          "googletest": "v1.16.0",
+          "lz4": "v1.10.0",
+          "libboundscheck": "v1.1.16",
+          "spdlog": "v1.15.3"
+        }
+      },
+      "command": "",
+      "success": true,
+      "output": "4个submodule: googletest v1.16.0, lz4 v1.10.0, libboundscheck v1.1.16, spdlog v1.15.3",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-07-31T14:26:28",
+      "step": "image_selection",
+      "action": "选择 openEuler 22.03 LTS 基础镜像（项目推荐的 OS）",
+      "result": "openEuler 22.03 LTS（Docker 不可用，直接在匹配的宿主 OS 上构建）",
+      "details": {
+        "selection_reason": "项目 docs/zh/installation_guide.md 表2 推荐 openEuler 22.03 LTS SP3",
+        "docker_status": "Docker 18.09.0 的 OCI runtime create 失败（listen unixgram notify.sock: bind: invalid argument），无法运行容器",
+        "host_os": "openEuler 22.03 LTS SP3，恰好匹配项目推荐 OS"
+      },
+      "command": "docker pull hub.oepkgs.net/openeuler/openeuler:22.03-lts && docker run -d ... (失败)",
+      "success": false,
+      "output": "Docker OCI runtime start failed: bind invalid argument",
+      "error": "Docker 18.09.0 OCI runtime 不兼容当前内核，无法启动容器；直接在宿主 OS 上构建",
+      "returncode": 126,
+      "duration_seconds": 35
+    },
+    {
+      "timestamp": "2026-07-31T14:26:28",
+      "step": "container_setup",
+      "action": "确认构建环境：宿主 openEuler 22.03 LTS SP3；GCC 10.3.1；CMake 3.22.0；JDK 1.8.0_462（/usr/lib/jvm/java-1.8.0-openjdk）；JAVA_HOME 未设置需手动设置",
+      "result": "成功",
+      "details": {
+        "gcc_version": "10.3.1",
+        "cmake_version": "3.22.0",
+        "jdk_version": "1.8.0_462",
+        "jdk_path": "/usr/lib/jvm/java-1.8.0-openjdk",
+        "java_home_set": false,
+        "git_version": "2.33.0",
+        "preinstalled": [
+          "lz4-1.9.3"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "宿主环境满足项目要求：GCC 10.3.1, CMake 3.22.0, JDK 1.8.0_462, Git 2.33.0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 8
+    },
+    {
+      "timestamp": "2026-07-31T14:28:13",
+      "step": "dependency_verification",
+      "action": "检查宿主环境依赖安装状态：GCC 10.3.1、CMake 3.22.0、JDK 1.8.0_462、Git 2.33.0、lz4 1.9.3、gcc-ar/ranlib 均已就位",
+      "result": "成功",
+      "details": {
+        "preinstalled_packages": {
+          "gcc": "10.3.1-53.oe2203sp3",
+          "gcc-c++": "10.3.1-53.oe2203sp3",
+          "cmake": "3.22.0-11.oe2203sp3",
+          "make": "4.3-5.oe2203sp3",
+          "git": "2.33.0-20.oe2203sp3",
+          "java-1.8.0-openjdk-devel": "1.8.0.462.b08-3.oe2203sp3",
+          "lz4": "1.9.3-3.oe2203sp3",
+          "maven": "3.6.3-2.oe2203sp3",
+          "gcc-ar": "/usr/bin/gcc-ar",
+          "gcc-ranlib": "/usr/bin/gcc-ranlib"
+        },
+        "needed_manual_setup": [
+          "JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk"
+        ],
+        "source": "openEuler 22.03 LTS SP3 系统预装 + dnf 仓库"
+      },
+      "command": "rpm -qa | grep -E 'gcc-c++|cmake|make|git|java-1.8.0-openjdk-devel|lz4|maven'",
+      "success": true,
+      "output": "所有系统依赖已预装在宿主 openEuler 22.03 LTS SP3 上，无需额外 dnf install",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-07-31T14:28:13",
+      "step": "dependency_installation",
+      "action": "初始化 git submodules（googletest v1.16.0, lz4 v1.10.0, libboundscheck v1.1.16, spdlog v1.15.3）",
+      "result": "成功",
+      "details": {
+        "submodules": {
+          "googletest": "6910c9d9 (v1.16.0)",
+          "lz4": "ebb370ca (v1.10.0)",
+          "libboundscheck": "1ae16ab9 (v1.1.16)",
+          "spdlog": "6fa36017 (v1.15.3)"
+        }
+      },
+      "command": "git submodule update --init --recursive",
+      "success": true,
+      "output": "4 submodules cloned and checked out successfully",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 25
+    },
+    {
+      "timestamp": "2026-07-31T14:38:44",
+      "step": "build_attempt",
+      "action": "首次构建尝试（未设置 JAVA_HOME）",
+      "result": "失败",
+      "details": {
+        "error": "jni.h: No such file or directory",
+        "files_affected": [
+          "src/core/common/fs/hdfs/hadoop_file_system.h:14",
+          "src/core/lsm_store/lazy/snapshot_downloader.h:15"
+        ]
+      },
+      "command": "bash scripts/build.sh -t release",
+      "success": false,
+      "output": "cmake 配置成功，make 阶段因 jni.h 缺失编译失败",
+      "error": "JAVA_HOME 未设置，CMakeLists.txt 中 /include 路径解析为空路径，导致 JNI 头文件找不到",
+      "returncode": 1,
+      "duration_seconds": 600
+    },
+    {
+      "timestamp": "2026-07-31T14:42:00",
+      "step": "problem_resolution",
+      "action": "设置 JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk，清理 build/dist 目录后重新构建",
+      "result": "已解决",
+      "details": {
+        "solution": "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk",
+        "root_cause": "CMakeLists.txt 中使用 /include 作为 include 路径，JAVA_HOME 未设置导致路径无效"
+      },
+      "command": "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk && rm -rf build dist && bash scripts/build.sh -t release",
+      "success": true,
+      "output": "JAVA_HOME 设置为 /usr/lib/jvm/java-1.8.0-openjdk",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 720
+    },
+    {
+      "timestamp": "2026-07-31T14:54:33",
+      "step": "build_retry",
+      "action": "设置 JAVA_HOME 后重新构建 Release 包",
+      "result": "成功",
+      "details": {
+        "concurrency": 8,
+        "build_type": "Release",
+        "artifacts": {
+          "jar_files": {
+            "flink-1.16.1": "flink-boost-statebackend-1.1.0-SNAPSHOT-for-flink-1.16.1.jar (1.8MB)",
+            "flink-1.16.3": "flink-boost-statebackend-1.1.0-SNAPSHOT-for-flink-1.16.3.jar (1.8MB)",
+            "flink-1.17.1": "flink-boost-statebackend-1.1.0-SNAPSHOT-for-flink-1.17.1.jar (1.8MB)",
+            "flink-1.20.0": "flink-boost-statebackend-1.1.0-SNAPSHOT-for-flink-1.20.0.jar (1.8MB)"
+          },
+          "native_libs": [
+            "libboundscheck.so (133KB)",
+            "libboundscheck.a (146KB)",
+            "liblz4.a (243KB)",
+            "libspdlog.a (1.3MB)"
+          ],
+          "package": "BoostKit-omnistatestore_1.1.0_aarch64_release.tar.gz (7MB)",
+          "jni_so": "libockdbjni-linux64.so (built in build/ dir)"
+        },
+        "build_time": "~12 min (cmake + make + maven packaging)"
+      },
+      "command": "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk && bash scripts/build.sh -t release",
+      "success": true,
+      "output": "构建成功，生成 4 个 Flink JAR 包和 1 个 tar.gz 发布包",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 720
+    },
+    {
+      "timestamp": "2026-07-31T15:20:00",
+      "step": "ut_build",
+      "action": "配置 Debug+UT 构建（BUILD_TESTS=ON），安装 libaio-devel 缺失依赖",
+      "result": "成功",
+      "details": {
+        "missing_dep": "libaio-devel (链接 bss_ut 时缺少 -laio)",
+        "solution": "dnf install -y libaio-devel",
+        "cmake_flags": "-DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON",
+        "test_binary": "build_ut/test/llt/bss_ut"
+      },
+      "command": "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk && cd build_ut && cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON && make bss_ut -j4",
+      "success": true,
+      "output": "bss_ut 编译链接成功（需安装 libaio-devel）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 900
+    },
+    {
+      "timestamp": "2026-07-31T15:38:48",
+      "step": "ut_execution",
+      "action": "执行单元测试 bss_ut（308 tests from 30 test suites）",
+      "result": "全部通过",
+      "details": {
+        "total": 308,
+        "passed": 308,
+        "failed": 0,
+        "total_time_ms": 393001,
+        "binary": "build_ut/test/llt/bss_ut",
+        "test_suites": 30
+      },
+      "command": "cd build_ut && timeout 900 ./test/llt/bss_ut",
+      "success": true,
+      "output": "[==========] 308 tests from 30 test suites ran. (393001 ms total)\n[  PASSED  ] 308 tests.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 395
+    },
+    {
+      "timestamp": "2026-07-31T15:39:02",
+      "step": "sample_execution",
+      "action": "OmniStateStore 为 Flink 状态后端插件，无独立可执行样例程序。通过 308 个单元测试已验证功能正确性。完整样例验证需部署 Flink 集群并运行 WordCount.jar。",
+      "result": "已跳过（无独立样例）",
+      "details": {
+        "sample": "无独立样例程序",
+        "verification_method": "单元测试 308/308 通过 + Release 包产物验证",
+        "note": "README 中样例验证需要在  下运行 WordCount.jar，需要完整 Flink 环境"
+      },
+      "command": "",
+      "success": true,
+      "output": "OmniStateStore 作为 Flink 插件，无独立样例程序。通过单元测试和 Release 包产物验证功能正确性。",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-07-31T15:39:29",
+      "step": "report_generation",
+      "action": "生成验证报告 JSON",
+      "result": "成功",
+      "details": {
+        "output_path": "/home/tang/json/verification_report_SSH_omnistatestore_20260731.json",
+        "total_steps": 14,
+        "duration_seconds_value": 4686.995797
+      },
+      "command": "",
+      "success": true,
+      "output": "报告已生成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "pre-commit 已配置 5 个 hooks（run-build, run-build-test, clang-format, clang-tidy, clang-tidy-test），全部为 local system hooks",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置（未实际执行）",
+        "duration_seconds": 0,
+        "hooks": [
+          {
+            "name": "run-build",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "run-build-test",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "clang-format",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "clang-tidy",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": ""
+          },
+          {
+            "name": "clang-tidy-test",
+            "status": "skipped",
+            "duration_seconds": 0,
+            "error": ""
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "openEuler 22.03 LTS",
+      "summary": "仓库无 Dockerfile 及 .devcontainer，按照文档推荐使用 openEuler 22.03 LTS"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 1320,
+      "artifacts": [
+        {
+          "name": "flink-boost-statestore-1.16.1",
+          "path": "dist/BoostKit-omnistatestore_1.1.0/java/jars/flink-boost-statebackend-1.1.0-SNAPSHOT-for-flink-1.16.1.jar",
+          "size": "1.8MB"
+        },
+        {
+          "name": "flink-boost-statestore-1.16.3",
+          "path": "dist/BoostKit-omnistatestore_1.1.0/java/jars/flink-boost-statebackend-1.1.0-SNAPSHOT-for-flink-1.16.3.jar",
+          "size": "1.8MB"
+        },
+        {
+          "name": "flink-boost-statestore-1.17.1",
+          "path": "dist/BoostKit-omnistatestore_1.1.0/java/jars/flink-boost-statebackend-1.1.0-SNAPSHOT-for-flink-1.17.1.jar",
+          "size": "1.8MB"
+        },
+        {
+          "name": "flink-boost-statestore-1.20.0",
+          "path": "dist/BoostKit-omnistatestore_1.1.0/java/jars/flink-boost-statebackend-1.1.0-SNAPSHOT-for-flink-1.20.0.jar",
+          "size": "1.8MB"
+        },
+        {
+          "name": "release-package",
+          "path": "dist/BoostKit-omnistatestore_1.1.0_aarch64_release.tar.gz",
+          "size": "7MB"
+        },
+        {
+          "name": "libockdbjni-linux64.so",
+          "path": "build/src/core/jni/libockdbjni-linux64.so",
+          "size": "N/A"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 1295,
+      "total": 308,
+      "passed": 308,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "results": [
+        {
+          "sample": "N/A (OmniStateStore 为 Flink 插件，无独立样例)",
+          "status": "skipped",
+          "output": "通过 308 个单元测试验证功能",
+          "error": ""
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "category": "文档不一致",
+      "description": ".pre-commit-config.yaml 中 run-build hook 引用 bash build.sh，但实际构建脚本为 scripts/build.sh",
+      "severity": "medium",
+      "suggestion": "将 .pre-commit-config.yaml 中的 entry: bash build.sh 改为 entry: bash scripts/build.sh"
+    },
+    {
+      "category": "文档缺失",
+      "description": "README.md 和 docs/zh/quick_start.md 构建命令中未说明需要设置 JAVA_HOME 环境变量才能编译 JNI 模块",
+      "severity": "high",
+      "suggestion": "在 docs/zh/quick_start.md 的「编译构建」章节补充 JAVA_HOME 环境变量设置说明"
+    },
+    {
+      "category": "文档缺失",
+      "description": "docs/zh/quick_start.md 未说明运行单元测试需要 libaio-devel 依赖（链接 bss_ut 时需要 -laio）",
+      "severity": "medium",
+      "suggestion": "在环境要求表（表2）或编译依赖表中补充 libaio-devel 依赖说明"
+    },
+    {
+      "category": "文档缺失",
+      "description": "test/run_dt.sh 依赖 hdt 工具，但 hdt 未预装在 openEuler 系统中，文档未说明如何安装 hdt",
+      "severity": "high",
+      "suggestion": "在 README 或 quick_start.md 中补充 hdt 工具的安装说明，或提供备用的测试运行方式"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "构建失败",
+      "description": "未设置 JAVA_HOME 导致 JNI 头文件 jni.h 找不到，C++ 编译失败（见 build_attempt #1）",
+      "root_cause": "CMakeLists.txt 使用 /include 路径，但 JAVA_HOME 环境变量未设置，路径解析为空。开源项目未在 README 中说明此前提条件。",
+      "solution": "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk",
+      "severity": "high"
+    },
+    {
+      "category": "环境不兼容",
+      "description": "Docker 18.09.0 OCI runtime create 失败（bind: invalid argument），无法运行容器",
+      "root_cause": "Docker 18.09.0 的 runc 版本与当前内核不兼容",
+      "solution": "直接在宿主 openEuler 22.03 LTS SP3 上构建（宿主 OS 即为项目推荐 OS）",
+      "severity": "low"
+    },
+    {
+      "category": "依赖缺失",
+      "description": "编译测试二进制时缺少 libaio-devel 库（/usr/bin/ld: cannot find -laio）",
+      "root_cause": "测试代码 test/llt/CMakeLists.txt 中 DEPEND_LIBS 包含 aio，但 libaio-devel 包未预装",
+      "solution": "dnf install -y libaio-devel",
+      "severity": "medium"
+    }
+  ]
+}

@@ -1,0 +1,401 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/hyperscan.git",
+    "branch": "master",
+    "commit": "152cefc",
+    "start_time": "2026-08-04T23:40:00",
+    "end_time": "2026-08-05T00:30:00",
+    "total_steps": 9,
+    "duration_seconds": 3000,
+    "environment": "远端 SSH 机器 root@192.168.25.93:22",
+    "verifier": "opencode (ttfhw-verify-baseos)"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng 920 256 cores",
+      "cpu_cores": 256,
+      "memory": "438Gi total",
+      "disk": "169G available",
+      "docker_version": "Docker version 18.09.0, build d51e3ad"
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS SP3 (主机原生环境，host IS base OS)",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "438GB (unlimited)",
+      "container_name": "host-openEuler-22.03-lts-sp3"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "selection_reason": "安装指南已验证环境明确为 openEuler 22.03（鲲鹏920系列）+ GCC 10.3 以上，与主机（openEuler 22.03 LTS SP3）完全一致。Docker 18.09 + runc 存在 notify.sock bug 无法启动容器，采用 host IS base OS 策略。",
+      "dependency_mapping": {
+        "from_dockerfile": "仓库无 Dockerfile",
+        "from_readme": "docs/zh/installation_guide.md：openEuler 22.03/openEuler 24.03 LTS SP4 + 鲲鹏920；依赖 GCC>=10.3、CMake>=2.8.11、Ragel>=6.9、Boost>=1.57、PCRE>=8.41(可选)、SQLite3(可选)",
+        "mappings": [
+          {
+            "original": "Ragel 6.9+（文档要求源码编译 ragel-6.10）",
+            "target": "dnf install ragel（openEuler 提供 ragel 7.0.0.12）",
+            "source": "docs/zh/installation_guide.md"
+          },
+          {
+            "original": "Boost 1.57+（文档要求源码解压软链接或 b2 安装）",
+            "target": "dnf install boost-devel（/usr/include/boost，版本 1.75+）",
+            "source": "docs/zh/installation_guide.md"
+          },
+          {
+            "original": "PCRE 8.41+（hscollider 可选依赖，文档要求拷贝 pcre-8.43 源码到 hyperscan/pcre 并注释 CMakeLists 第 77 行）",
+            "target": "dnf install pcre pcre-devel（hscollider 构建可用系统 PCRE，或按文档放置源码）",
+            "source": "docs/zh/installation_guide.md"
+          },
+          {
+            "original": "SQLite3（hsbench 可选依赖）",
+            "target": "dnf install sqlite sqlite-devel",
+            "source": "docs/zh/installation_guide.md"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md + docs/zh/installation_guide.md",
+      "value": "aarch64（鲲鹏920系列，NEON 优化 + KHSEL 增强库），同时兼容 ARMv8-a 与 x86"
+    },
+    "recommended_image": {
+      "source": "docs/zh/installation_guide.md 已验证环境",
+      "value": "openEuler 22.03 / openEuler 24.03 LTS SP4（鲲鹏920）"
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库无 Dockerfile",
+      "value": []
+    },
+    "dependencies": {
+      "source": "docs/zh/installation_guide.md",
+      "value": [
+        "GCC >= 10.3",
+        "CMake >= 2.8.11",
+        "Ragel >= 6.9（编译依赖，openEuler 源 ragel 7.0.0.12 可用）",
+        "Boost >= 1.57 头文件（openEuler boost-devel）",
+        "PCRE >= 8.41（可选，hscollider 依赖）",
+        "SQLite 3（可选，hsbench 依赖）"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/zh/installation_guide.md",
+      "value": "mkdir build && cd build && cmake .. && make -j（默认 Release 静态库；-DBUILD_SHARED_LIBS=ON 动态库；-DCMAKE_BUILD_TYPE=DEBUG debug 模式）"
+    },
+    "ut_commands": {
+      "source": ".travis.yml + 实测",
+      "value": "sudo ./bin/unit-hyperscan（默认配置生成的测试程序；unit-chimera 需开启 chimera 构建选项）"
+    },
+    "sample_commands": {
+      "source": "docs/zh/quick_start.md + examples/README.md",
+      "value": "hsbench -e <rules> -c <corpora> -N -n1（需要从 Intel 下载规则集）；examples/simplegrep <pattern> <file>"
+    },
+    "special_dependencies": {
+      "source": "docs/zh/installation_guide.md",
+      "value": [
+        "编译依赖 Ragel，文档要求源码编译 6.10，openEuler dnf 源 ragel 7.0 亦可",
+        "文档要求将 pcre-8.43 源码拷贝到 hyperscan/pcre 目录并注释 CMakeLists.txt 第 77 行 CMAKE_POLICY",
+        "Boost 可采用系统 boost-devel 或文档的软链接/安装两种方式",
+        "KHSEL 已集成在 src/kunpeng-enhanced，无需单独安装"
+      ]
+    }
+  },
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库未配置 pre-commit 与 lint 工具（仅有 .clang-format 与上游 .travis.yml）",
+      "pre_commit": {
+        "configured": false,
+        "config_file": "",
+        "status": "not_configured",
+        "duration_seconds": 0,
+        "hooks": []
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ".clang-format（存在但无 pre-commit/lint 运行器）"
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "summary": "仓库无 devcontainer 配置，无 Dockerfile"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 270,
+      "artifacts": [
+        {
+          "name": "libhs.a",
+          "path": "/home/workspace/ttfhw/hyperscan/build/lib/libhs.a",
+          "size": "559817710B (534MB)"
+        },
+        {
+          "name": "libhs_runtime.a",
+          "path": "/home/workspace/ttfhw/hyperscan/build/lib/",
+          "size": "静态库"
+        },
+        {
+          "name": "unit-hyperscan",
+          "path": "/home/workspace/ttfhw/hyperscan/build/bin/unit-hyperscan",
+          "size": "250999568B (239MB)"
+        },
+        {
+          "name": "simplegrep",
+          "path": "/home/workspace/ttfhw/hyperscan/build/bin/simplegrep",
+          "size": "221085488B"
+        },
+        {
+          "name": "hsbench / hscheck / hscollider / patbench / pcapscan",
+          "path": "/home/workspace/ttfhw/hyperscan/build/bin/",
+          "size": "各约 220MB"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 361,
+      "total": 4133,
+      "passed": 4133,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 2,
+      "results": [
+        {
+          "sample": "examples/simplegrep",
+          "status": "success",
+          "output": "Scanning 10023 bytes with Hyperscan; Match for pattern test at offset 5888",
+          "error": ""
+        }
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-04T23:42:00",
+      "step": "document_reading",
+      "action": "读取 README.md、docs/zh/installation_guide.md、docs/zh/quick_start.md、examples/README.md、.travis.yml",
+      "result": "成功",
+      "details": {
+        "files_read": [
+          "README.md",
+          "README_en.md",
+          "docs/zh/installation_guide.md",
+          "docs/zh/quick_start.md",
+          "examples/README.md",
+          ".travis.yml",
+          ".clang-format"
+        ],
+        "version": "Hyperscan 2.6.0（KHSEL 集成于 src/kunpeng-enhanced）"
+      },
+      "command": "",
+      "success": true,
+      "output": "文档明确 openEuler + 鲲鹏920 + GCC 10.3 环境；依赖 Ragel/Boost/PCRE/SQLite",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 180
+    },
+    {
+      "timestamp": "2026-08-04T23:45:00",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 与 devcontainer 配置",
+      "result": "未配置",
+      "details": {
+        "pre_commit_config": "无 .pre-commit-config.yaml",
+        "devcontainer": "无 .devcontainer/ 目录",
+        "lint": "有 .clang-format 文件但无运行器配置"
+      },
+      "command": "ls -a",
+      "success": true,
+      "output": "无 pre-commit/devcontainer",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-04T23:47:00",
+      "step": "dependency_verification",
+      "action": "验证构建依赖是否已具备（ragel/boost/pcre/sqlite）",
+      "result": "全部已具备（openEuler 源已装）",
+      "details": {
+        "ragel": "7.0.0.12（>=6.9 满足）",
+        "boost": "/usr/include/boost/version.hpp 存在",
+        "pcre": "pcregrep 存在",
+        "sqlite3": "pkg-config 通过",
+        "note": "未额外 dnf 安装，直接利用 openEuler 官方仓库已装包，符合从零源构建依赖原则（依赖已在 base OS 中）"
+      },
+      "command": "which ragel; ragel -v; ls /usr/include/boost/version.hpp; pkg-config --exists sqlite3",
+      "success": true,
+      "output": "ragel 7.0.0.12 / boost / pcre / sqlite3 全部就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-04T23:50:00",
+      "step": "build_attempt",
+      "action": "干净构建（rm -rf build 后 cmake .. + make -j8）",
+      "result": "成功",
+      "details": {
+        "cmake_rc": 0,
+        "flags": "-march=armv8-a+crc -O3（C）/ -O2（C++）Release",
+        "duration": "4m30s"
+      },
+      "command": "cd build && cmake .. && time make -j8",
+      "success": true,
+      "output": "[100%] Built target hscollider；build success",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 270
+    },
+    {
+      "timestamp": "2026-08-04T23:56:00",
+      "step": "ut_execution",
+      "action": "运行 unit-hyperscan 单元测试",
+      "result": "全部通过",
+      "details": {
+        "tests": "4133 tests from 34 test cases",
+        "duration": "360993 ms (361s)",
+        "note": "部分用例耗时较长（如 BadPattern.Block/72 约 62s）"
+      },
+      "command": "./bin/unit-hyperscan",
+      "success": true,
+      "output": "[  PASSED  ] 4133 tests.",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 361
+    },
+    {
+      "timestamp": "2026-08-05T00:10:00",
+      "step": "ut_execution",
+      "action": "尝试运行 unit-chimera（.travis.yml 中的测试）",
+      "result": "not_run（默认配置不构建 chimera）",
+      "details": {
+        "issue": "build/bin/ 下无 unit-chimera 二进制，默认 cmake 未开启 chimera 构建选项",
+        "note": "unit-hyperscan 已覆盖主测试套件；chimera 为可选 PCRE 兼容接口"
+      },
+      "command": "./bin/unit-chimera",
+      "success": false,
+      "output": "No such file or directory",
+      "error": "unit-chimera 未构建（默认配置不包含 chimera target）",
+      "returncode": 127,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-05T00:15:00",
+      "step": "sample_execution",
+      "action": "样例验证：运行 examples/simplegrep 匹配 README.md 中 pattern test",
+      "result": "成功",
+      "details": {
+        "note": "quick_start 的 hsbench 需要从 Intel CDN 下载规则集（外网受限），改用自带 simplegrep 示例"
+      },
+      "command": "./build/bin/simplegrep test README.md",
+      "success": true,
+      "output": "Scanning 10023 bytes with Hyperscan; Match for pattern test at offset 5888",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-05T00:20:00",
+      "step": "problem_resolution",
+      "action": "分析文档依赖安装方式与实际 dnf 包对应关系",
+      "result": "发现文档可简化空间",
+      "details": {
+        "note": "文档要求源码编译 ragel 6.10 与源码安装 boost，而 openEuler 官方 dnf 源即可提供 ragel 7.0 与 boost-devel，无需源码编译"
+      },
+      "command": "",
+      "success": true,
+      "output": "记录为 documentation_gaps",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-05T00:25:00",
+      "step": "report_generation",
+      "action": "生成 JSON 报告与文档建议",
+      "result": "完成",
+      "details": {},
+      "command": "",
+      "success": true,
+      "output": "verification_report_SSH_hyperscan_20260804.json 与 hyperscan_doc_suggestions.md",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    }
+  ],
+  "documentation_gaps": [
+    {
+      "category": "依赖安装繁琐",
+      "description": "安装指南要求从源码编译安装 Ragel 6.10 与 Boost 1.87（wget + configure + make install），但 openEuler 官方 dnf 源直接提供 ragel 7.0 与 boost-devel，无需源码编译，初学者按文档操作浪费时间且可能因外网受限失败。",
+      "severity": "medium",
+      "suggestion": "在安装指南增加 dnf install ragel boost-devel pcre pcre-devel sqlite sqlite-devel 一行命令作为快速方式，源码安装作为备选"
+    },
+    {
+      "category": "可选依赖说明不清",
+      "description": "PCRE 8.41 被标注为'可选'（仅 hscollider 依赖），但文档后续'编译 Hyperscan'章节要求必须将 pcre-8.43 源码拷贝到 hyperscan/pcre 目录并修改 CMakeLists。初学者会困惑到底是否必须。",
+      "severity": "medium",
+      "suggestion": "明确 PCRE 仅在需要构建 tools/hscollider 时才需要，并说明不放置 pcre 目录时 cmake 如何跳过该工具"
+    },
+    {
+      "category": "命令错误",
+      "description": "安装指南注释 pcre/CMakeLists.txt 第 77 行 CMAKE_POLICY 的步骤，是在 CMake >= 3.0 环境中不需要的（文档也自述可通过升级 cmake 规避）。当前主机 cmake 3.22，按文档还需修改源码，多余且易出错。",
+      "severity": "low",
+      "suggestion": "在文档中注明该修改仅针对 CMake 低于 2.8.1 的旧环境，现代 CMake 无需修改"
+    },
+    {
+      "category": "执行时间未说明",
+      "description": "构建约 4.5 分钟，unit-hyperscan 测试约 6 分钟（含个别 60 秒级用例），文档未说明预计耗时，初学者可能误判卡死。",
+      "severity": "low",
+      "suggestion": "在编译指南注明 make 与测试的预计耗时"
+    },
+    {
+      "category": "样例依赖外网",
+      "description": "quick_start 的 hsbench 示例需要从 Intel CDN 下载规则集（cdrdv2.intel.com），无外网或 CDN 变动时无法验证；文档未提供本地替代样例。",
+      "severity": "medium",
+      "suggestion": "补充一个无需外网的自带样例（如 examples/simplegrep）作为快速验证方式"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "测试二进制缺失",
+      "description": "unit-chimera 二进制不存在（No such file or directory）",
+      "root_cause": "默认 cmake 配置未启用 chimera 构建目标，.travis.yml 中的 unit-chimera 是上游 x86 完整构建流程",
+      "solution": "以 unit-hyperscan（4133 用例全部通过）作为 UT 结果；chimera 为可选接口",
+      "severity": "low"
+    },
+    {
+      "category": "执行时间过长",
+      "description": "unit-hyperscan 单次运行约 361 秒超过默认 120 秒超时",
+      "root_cause": "hyperscan 测试套件大（4133 用例），个别用例需 60 秒级",
+      "solution": "后台等待进程完成，完整日志确认全部通过",
+      "severity": "low"
+    },
+    {
+      "category": "样例外网依赖",
+      "description": "quick_start 的 hsbench 样例需要从 Intel CDN 下载规则集",
+      "root_cause": "hsbench 规则集托管在 Intel 外网 CDN，本机外网受限",
+      "solution": "改用仓库自带 examples/simplegrep 完成样例验证",
+      "severity": "medium"
+    }
+  ],
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 26000,
+    "output_tokens": 9000,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 35000
+  }
+}

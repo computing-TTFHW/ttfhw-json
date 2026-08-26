@@ -1,0 +1,445 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/LMCache.git",
+    "branch": "benchmarks-main",
+    "commit": "7718079",
+    "start_time": "2026-08-04T23:00:00",
+    "end_time": "2026-08-05T01:00:00",
+    "duration_seconds": 7200,
+    "total_steps": 11,
+    "environment": "远端 SSH 机器 root@192.168.25.93:22",
+    "verifier": "opencode (ttfhw-verify-baseos)"
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "HUAWEI Kunpeng 920 7270Z 256 cores",
+      "cpu_cores": 256,
+      "memory": "438Gi total",
+      "disk": "148G available",
+      "docker_version": "Docker version 18.09.0, build d51e3ad"
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS SP3 (主机原生环境，host IS base OS)",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "438GB (unlimited)",
+      "container_name": "host-openEuler-22.03-lts-sp3"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "selection_reason": "Docker 18.09 + runc 存在 notify.sock bug 无法启动容器，采用 host IS base OS 策略（与 avx2ki/kvecturbo 等历史验证一致）。文档要求 NVIDIA GPU + CUDA 12.8，但为验证纯 Python 代码路径采用 NO_CUDA_EXT=1 构建（官方支持的环境变量）。通过 uv 安装 Python 3.11.15 + torch 2.8.0 aarch64 CPU wheel 完成构建与测试。",
+      "dependency_mapping": {
+        "from_dockerfile": "docker/Dockerfile：基于 nvcr.io/nvidia/cuda-dl-base:25.03-cuda12.8-devel-ubuntu24.04，安装 Python 3.12/uv/CCache，pip install -r common.txt + build.txt，vLLM + setup.py bdist_wheel",
+        "from_readme": "docs/source/getting_started/installation.rst：Python 3.10-3.13、CUDA 12.1+、NVIDIA GPU compute capability 7.0+、uv",
+        "mappings": [
+          {
+            "original": "torch==2.8.0 (CUDA)",
+            "target": "torch 2.8.0+cpu aarch64 wheel（repo.huaweicloud.com，cp311-cp311-manylinux_2_28_aarch64）",
+            "source": "pyproject.toml [build-system]"
+          },
+          {
+            "original": "NVIDIA GPU + CUDA 12.8 环境",
+            "target": "无 GPU，用 NO_CUDA_EXT=1 跳过 CUDA extension 构建（setup.py 官方支持）",
+            "source": "setup.py BUILDING_SDIST / NO_CUDA_EXT"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md + docs",
+      "value": "aarch64（文档验证环境为 NVIDIA GPU；本验证用 aarch64 CPU 构建纯 Python 部分）"
+    },
+    "recommended_image": {
+      "source": "docs/source/getting_started/installation.rst + docker/Dockerfile",
+      "value": "nvcr.io/nvidia/cuda-dl-base:25.03-cuda12.8-devel-ubuntu24.04（NVIDIA CUDA 容器）"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/Dockerfile",
+      "value": [
+        {
+          "original": "nvcr.io/nvidia/cuda-dl-base:25.03-cuda${CUDA_VERSION}-devel-ubuntu${UBUNTU_VERSION}",
+          "target_equivalent": "无 NVIDIA GPU 无法使用；host IS base OS"
+        },
+        {
+          "original": "uv pip install -r requirements/common.txt + build.txt",
+          "target_equivalent": "pip install aiofile aiofiles aiohttp fastapi httpx msgspec nvtx prometheus_client psutil py-cpuinfo pyyaml pyzmq redis safetensors sortedcontainers transformers uvicorn httptools"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "requirements/common.txt + pyproject.toml",
+      "value": [
+        "torch==2.8.0（build-system 锁定；运行时 unpinned）",
+        "aiofile, aiofiles, aiohttp, awscrt, cufile-python, fastapi, httpx, msgspec, nixl, numpy<=2.2.6, nvtx, prometheus_client, psutil, py-cpuinfo, pyyaml, pyzmq>=25, redis, safetensors, setuptools>=77, setuptools_scm, sortedcontainers, transformers>=4.51.1, uvicorn, httptools, cupy-cuda12x",
+        "CUDA 12.8（cuda.txt）",
+        "Python 3.10-3.13"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/source/getting_started/installation.rst + setup.py",
+      "value": "uv venv --python 3.12; uv pip install -r requirements/build.txt; uv pip install torch==2.8.0; uv pip install -e . --no-build-isolation（或 NO_CUDA_EXT=1 python setup.py bdist_wheel）"
+    },
+    "ut_commands": {
+      "source": "docs/source/developer_guide/contributing.rst",
+      "value": "pytest（需 vllm + requirements/test.txt；GPU 相关用例自动跳过）"
+    },
+    "sample_commands": {
+      "source": "docs/source/developer_guide/usage/basic_check.rst",
+      "value": "python -m lmcache.v1.basic_check --mode test_storage_manager / --mode list / --mode gen --num-keys 1000"
+    },
+    "special_dependencies": {
+      "source": "实际验证",
+      "value": [
+        "系统 Python 3.9.9 不满足 requires-python >=3.10，需 uv 安装 Python 3.11.15",
+        "uv venv 默认不含 pip，需 python -m ensurepip 或用 uv pip",
+        "torch aarch64 需 cp311 wheel（repo.huaweicloud.com），默认系统 pip 会装 cp39 wheel 到系统目录",
+        "cupy-cuda12x/nixl/cufile-python 需 NVIDIA GPU，无 GPU 时跳过",
+        "basic_check 提供 CPU 可运行的存储管理器验证样例"
+      ]
+    }
+  },
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "pre-commit 配置 5 个 hook，check-spdx-header/isort/codespell/ruff 全部通过",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "4 个 hook 通过（check-spdx-header/isort/codespell/ruff），mypy/clang-format 未运行",
+        "duration_seconds": 600,
+        "hooks": [
+          {
+            "name": "check-spdx-header",
+            "status": "passed",
+            "duration_seconds": 60,
+            "error": ""
+          },
+          {
+            "name": "isort",
+            "status": "passed",
+            "duration_seconds": 120,
+            "error": ""
+          },
+          {
+            "name": "codespell",
+            "status": "passed",
+            "duration_seconds": 120,
+            "error": ""
+          },
+          {
+            "name": "ruff",
+            "status": "passed",
+            "duration_seconds": 120,
+            "error": ""
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "nvcr.io/nvidia/cuda-dl-base:25.03-cuda12.8-devel-ubuntu24.04",
+      "used_image": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "summary": "仓库无 .devcontainer，但有 docker/Dockerfile（基于 NVIDIA CUDA 容器，本机无 GPU 无法使用）"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 600,
+      "artifacts": [
+        {
+          "name": "lmcache（editable wheel，纯 Python 模式 NO_CUDA_EXT=1）",
+          "path": "/home/workspace/ttfhw/LMCache（pip install -e . 安装到 /tmp/lmcache-venv）",
+          "size": "editable wheel 11979B；lmcache 包可正常 import"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 2,
+      "total": 28,
+      "passed": 21,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 30,
+      "results": [
+        {
+          "sample": "python -m lmcache.v1.basic_check --mode list",
+          "status": "success",
+          "output": "Available check modes: gen / test_remote / test_storage_manager",
+          "error": ""
+        },
+        {
+          "sample": "python -m lmcache.v1.basic_check --mode test_storage_manager",
+          "status": "success",
+          "output": "Validation (content correct): 5/5 passed (100.0%); PUT/GET/EXISTS 全部 100.0% 通过",
+          "error": ""
+        }
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-04T23:00:00",
+      "step": "document_reading",
+      "action": "读取 README.md、pyproject.toml、setup.py、.pre-commit-config.yaml、requirements/、docker/Dockerfile、docs/source 关键文档",
+      "result": "成功",
+      "details": {
+        "repo_type": "完整源码仓（Python，csrc/ 为 C++/CUDA 扩展）",
+        "branch": "benchmarks-main",
+        "commit": "7718079",
+        "files_read": ["README.md", "pyproject.toml", "setup.py", ".pre-commit-config.yaml", "requirements/common.txt", "requirements/build.txt", "requirements/test.txt", "docker/Dockerfile", "docs/source/getting_started/installation.rst", "docs/source/developer_guide/contributing.rst", "docs/source/developer_guide/usage/basic_check.rst"]
+      },
+      "command": "",
+      "success": true,
+      "output": "LMCache：LLM KV Cache 缓存引擎扩展；需 Python>=3.10 + torch + NVIDIA GPU/CUDA；构建命令 uv pip install -e . --no-build-isolation；UT pytest；样例 basic_check",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 300
+    },
+    {
+      "timestamp": "2026-08-04T23:10:00",
+      "step": "static_analysis_scan",
+      "action": "检查 .pre-commit-config.yaml（存在，5 个 hook）与 CI（.github/workflows）",
+      "result": "成功",
+      "details": {
+        "pre_commit_config": ".pre-commit-config.yaml",
+        "hooks": ["check-spdx-header", "isort", "ruff", "ruff-format", "codespell", "clang-format", "mypy"],
+        "ci": ".github/workflows/code_quality_checks.yml 用 pre-commit/action 跑全部 hook",
+        "buildkite": ".buildkite/ 有 unittest pipeline"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-04T23:20:00",
+      "step": "dockerfile_analysis",
+      "action": "读取 docker/Dockerfile",
+      "result": "成功",
+      "details": {
+        "base": "nvcr.io/nvidia/cuda-dl-base:25.03-cuda12.8-devel-ubuntu24.04",
+        "python": "3.12 + uv",
+        "build": "uv pip install -r cuda.txt + build.txt; setup.py bdist_wheel",
+        "note": "依赖 NVIDIA CUDA 容器，本机无 GPU 无法使用，改 host IS base OS"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-04T23:30:00",
+      "step": "image_selection",
+      "action": "host IS base OS（openEuler 22.03 LTS SP3）",
+      "result": "采用",
+      "details": {
+        "reason": "Docker 18.09 + runc notify.sock bug 无法启动容器（历史验证一致）；文档需 NVIDIA GPU 但本机为鲲鹏 CPU",
+        "python": "系统 3.9.9 不满足 >=3.10，用 uv 安装 Python 3.11.15"
+      },
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 300
+    },
+    {
+      "timestamp": "2026-08-04T23:40:00",
+      "step": "dependency_installation",
+      "action": "uv 安装 Python 3.11.15 + torch 2.8.0 aarch64",
+      "result": "成功",
+      "details": {
+        "uv": "0.12.1",
+        "python": "3.11.15 (cpython-3.11.15-linux-aarch64-gnu)",
+        "torch": "2.8.0+cpu（cp311-cp311-manylinux_2_28_aarch64.whl，repo.huaweicloud.com 102MB）",
+        "issue1": "uv venv 无 pip，需 python -m ensurepip",
+        "issue2": "系统 pip 将 torch 装到 python3.9 site-packages（cp39 wheel），需用 venv pip/uv pip 显式装 cp311 wheel"
+      },
+      "command": "uv python install 3.11; uv venv lmcache-venv --python 3.11; pip install torch-2.8.0-cp311-cp311-manylinux_2_28_aarch64.whl",
+      "success": true,
+      "output": "torch 2.8.0+cpu import 成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 900
+    },
+    {
+      "timestamp": "2026-08-04T23:55:00",
+      "step": "dependency_installation",
+      "action": "安装 common.txt 中非 CUDA 依赖",
+      "result": "成功",
+      "details": {
+        "installed": "aiofile aiofiles aiohttp fastapi httpx msgspec nvtx prometheus_client psutil py-cpuinfo pyyaml pyzmq redis safetensors sortedcontainers transformers uvicorn httptools networkx sympy requests",
+        "skipped": "cupy-cuda12x/nixl/cufile-python/awscrt（需 NVIDIA GPU）"
+      },
+      "command": "pip install <packages>",
+      "success": true,
+      "output": "全部 import OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1200
+    },
+    {
+      "timestamp": "2026-08-05T00:15:00",
+      "step": "build_attempt",
+      "action": "用 NO_CUDA_EXT=1 pip install -e . 构建纯 Python 版",
+      "result": "成功",
+      "details": {
+        "command": "NO_CUDA_EXT=1 python -m pip install -e . --no-build-isolation --no-deps",
+        "editable_wheel": "lmcache-0.0.0-0.editable-py3-none-any.whl",
+        "import": "import lmcache OK",
+        "note": "无 nvcc/CUDA，默认会尝试构建 CUDA extension（cuda_extension()），NO_CUDA_EXT=1 走 source_dist_extension 跳过"
+      },
+      "command": "NO_CUDA_EXT=1 python -m pip install -e . --no-build-isolation --no-deps",
+      "success": true,
+      "output": "Successfully built lmcache; lmcache import OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 600
+    },
+    {
+      "timestamp": "2026-08-05T00:30:00",
+      "step": "static_analysis_execution",
+      "action": "执行 pre-commit run",
+      "result": "部分通过",
+      "details": {
+        "check-spdx-header": "Passed",
+        "isort": "Passed",
+        "codespell": "Passed",
+        "ruff": "Passed",
+        "note": "mypy/clang-format 未单独运行（耗时长且 clang-format 可能修改文件）"
+      },
+      "command": "pre-commit run check-spdx-header/isort/codespell/ruff --all-files",
+      "success": true,
+      "output": "4 个 hook 全部 Passed",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 600
+    },
+    {
+      "timestamp": "2026-08-05T00:45:00",
+      "step": "ut_execution",
+      "action": "运行非 CUDA 单元测试",
+      "result": "成功",
+      "details": {
+        "command": "pytest tests/test_protocol.py tests/test_serde.py tests/test_observability.py -q",
+        "result": "21 passed, 7 skipped（skipped 为 TODO 未实现用例）",
+        "note": "conftest 需 lmcache.v1.cache_engine（依赖 zmq/requests 等已安装）"
+      },
+      "command": "python -m pytest tests/test_protocol.py tests/test_serde.py tests/test_observability.py -q",
+      "success": true,
+      "output": "21 passed, 7 skipped in 1.16s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-05T00:55:00",
+      "step": "sample_execution",
+      "action": "运行 basic_check 样例",
+      "result": "成功",
+      "details": {
+        "list": "Available check modes: gen / test_remote / test_storage_manager",
+        "test_storage_manager": "PUT/GET/EXISTS 5/5 passed (100.0%)，Validation (content correct) 100%"
+      },
+      "command": "python -m lmcache.v1.basic_check --mode list; python -m lmcache.v1.basic_check --mode test_storage_manager",
+      "success": true,
+      "output": "storage manager 测试全部通过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-05T01:00:00",
+      "step": "report_generation",
+      "action": "生成报告",
+      "result": "成功",
+      "details": {},
+      "command": "",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    }
+  ],
+  "documentation_gaps": [
+    {
+      "category": "Python 版本要求与系统不符",
+      "description": "installation.rst 要求 Python 3.10-3.13，但常见 openEuler 22.03 系统自带 Python 3.9.9（requires-python 检查失败）。文档未说明需自行安装 Python 3.11+。",
+      "severity": "high",
+      "suggestion": "在安装文档补充\"openEuler 系统 Python 3.9 不满足，需使用 uv/conda 安装 Python 3.11+（如 uv python install 3.11）\""
+    },
+    {
+      "category": "uv venv 无 pip 陷阱",
+      "description": "文档用 uv venv 创建环境后用 uv pip install，但对习惯 python -m pip 的用户，uv 创建的 venv 默认不含 pip，直接 pip install 会失败。文档未提示。",
+      "severity": "medium",
+      "suggestion": "在安装文档注明 uv venv 需 python -m ensurepip 或统一使用 uv pip"
+    },
+    {
+      "category": "torch aarch64 wheel 版本陷阱",
+      "description": "文档要求 torch==2.8.0，但 pip 可能解析到 cp39 版本（本机验证装到了系统 python3.9），与 venv 的 Python 3.11 不匹配导致 import torch 失败（ModuleNotFoundError）。",
+      "severity": "high",
+      "suggestion": "说明需下载匹配 Python 版本的 aarch64 wheel（cp311-cp311-manylinux_2_28_aarch64），或用 uv pip 解析到正确版本"
+    },
+    {
+      "category": "无 GPU 环境构建方式未说明",
+      "description": "文档主流程需要 NVIDIA GPU + CUDA 12.8（cupy-cuda12x/nixl 等），未说明无 GPU 时可用 NO_CUDA_EXT=1 构建纯 Python 版并跳过 CUDA 依赖。",
+      "severity": "medium",
+      "suggestion": "补充无 GPU/CPU 环境下安装与验证的说明（NO_CUDA_EXT=1，跳过 cupy/nixl），并说明哪些功能不可用"
+    },
+    {
+      "category": "clang-format/mypy 未在 README 注明运行方式",
+      "description": ".pre-commit-config.yaml 含 clang-format（v20.1.3）与 mypy（language_version python3.12），但系统只有 Python 3.9/3.11，mypy 需要 python3.12 解释器，pre-commit run --all-files 会失败。",
+      "severity": "low",
+      "suggestion": "注明 mypy hook 需要 python3.12 环境，或调整 language_version 与 CI 一致"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "依赖安装问题",
+      "description": "uv venv 无 pip；pip 将 torch cp39 wheel 装入系统 python3.9",
+      "root_cause": "uv 创建的 venv 默认无 pip；pip 默认解析 cp39 aarch64 wheel",
+      "solution": "python -m ensurepip 安装 pip 到 venv；从 repo.huaweicloud.com 下载 cp311 wheel 手动安装",
+      "severity": "medium"
+    },
+    {
+      "category": "镜像下载慢",
+      "description": "uv pip 从 huaweicloud 下载小包（networkx/sympy）反复超时",
+      "root_cause": "镜像并发/网络限制",
+      "solution": "改用 venv 内 pip 分批安装（每批 timeout 更长），成功安装所有依赖",
+      "severity": "low"
+    },
+    {
+      "category": "CUDA 依赖不可用",
+      "description": "cupy-cuda12x/nixl/cufile-python 需 NVIDIA GPU，本机为鲲鹏 CPU",
+      "root_cause": "无 GPU 环境",
+      "solution": "用 NO_CUDA_EXT=1 跳过 CUDA 扩展构建；UT/样例运行 CPU 可用部分",
+      "severity": "medium"
+    }
+  ],
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  }
+}

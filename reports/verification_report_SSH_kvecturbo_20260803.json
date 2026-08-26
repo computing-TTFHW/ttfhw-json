@@ -1,0 +1,366 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/boostkit/kvecturbo.git",
+    "branch": "master",
+    "commit": "fb6d789",
+    "start_time": "2026-08-03T17:35:00",
+    "end_time": "2026-08-03T19:06:51",
+    "total_steps": 10,
+    "duration_seconds": 5511,
+    "environment": "远端 SSH 机器 root@192.168.25.93:22",
+    "verifier": "opencode (ttfhw-verify-baseos)"
+  },
+  "machine_spec": {
+    "host_machine": {},
+    "container": {
+      "os": "openEuler 22.03 LTS SP3 (主机原生环境，host IS base OS)",
+      "architecture": "aarch64",
+      "cpu_cores": 256,
+      "memory": "438GB (unlimited)",
+      "container_name": "host-openEuler-22.03-lts-sp3"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:22.03-lts-sp3",
+      "selection_reason": "项目文档（docs/zh/installation_guide.md）已验证环境明确推荐 openEuler 22.03 LTS SP3 / 20.03 LTS SP4，使用 yum 包管理；主机为 openEuler 22.03 LTS SP3 基础 OS。因本机 Docker 18.09.0 与 runc 1.1.3 存在 notify.sock bind 兼容性 bug，容器无法启动（与 cmf/omnistream 历史验证一致），采用主机原生环境作为基础 OS 环境（host IS base OS），依赖从零通过 dnf 安装，满足从零构建原则。",
+      "dependency_mapping": {
+        "from_dockerfile": "仓库无 Dockerfile",
+        "from_readme": "docs/zh/installation_guide.md 编译步骤2：yum install gcc g++ cmake libgomp make",
+        "mappings": [
+          {
+            "original": "yum install gcc g++ cmake libgomp make",
+            "target": "dnf install -y gcc gcc-c++ cmake libgomp make",
+            "source": "docs/zh/installation_guide.md 步骤2（yum 等价于 dnf，openEuler 中 g++ 包名为 gcc-c++）"
+          },
+          {
+            "original": "gtest（UT 依赖）",
+            "target": "dnf install -y gtest-devel",
+            "source": "test/ut_test/CMakeLists.txt find_package(GTest REQUIRED)"
+          },
+          {
+            "original": "lcov / genhtml（UT 覆盖率）",
+            "target": "dnf install -y lcov",
+            "source": "test/ut_test/test.sh 使用 lcov genhtml"
+          },
+          {
+            "original": "Huawei_Secure_C（openGauss third_party binarylibs）",
+            "target": "下载 openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz 并设置 BINARYLIBS",
+            "source": "docs/zh/installation_guide.md 步骤3 + CMakeLists.txt ${BINARYLIBS}/kernel/platform/Huawei_Secure_C/comm/lib/ -lsecurec"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {},
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库未配置 pre-commit 或 lint 工具（无 .pre-commit-config.yaml、无 CI 配置）",
+      "pre_commit": {
+        "configured": false,
+        "config_file": "",
+        "status": "未配置",
+        "duration_seconds": 0
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "openEuler 22.03 LTS SP3 (host IS base OS)",
+      "summary": "仓库无 devcontainer/Dockerfile 配置，直接使用主机原生 openEuler 22.03 LTS SP3 环境"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 7,
+      "artifacts": [
+        {
+          "name": "libkvecturbo.so",
+          "path": "out/lib/libkvecturbo.so -> libkvecturbo.so.1.1.0",
+          "size": "67784 bytes (66KB)"
+        },
+        {
+          "name": "libkvecturbo.so.1.1.0",
+          "path": "out/lib/libkvecturbo.so.1.1.0",
+          "size": "67784 bytes, ELF 64-bit aarch64, stripped"
+        },
+        {
+          "name": "kvecturbo.h",
+          "path": "out/include/kvecturbo.h",
+          "size": "3876 bytes"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 40,
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 10,
+      "results": [
+        {
+          "sample": "API smoke test (link libkvecturbo + call GetPQDistance)",
+          "status": "success",
+          "output": "PQParams size=32; GetPQDistance symbol at 0x400950; sample runs OK",
+          "error": ""
+        }
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-03T18:57:48",
+      "step": "image_selection",
+      "action": "选择 openEuler 基础镜像（项目推荐 openEuler 22.03 LTS SP3，与主机一致）",
+      "result": "openEuler 22.03 LTS SP3",
+      "details": {
+        "selection_reason": "项目推荐 openEuler 22.03 LTS SP3（优先项目推荐的基础 OS）"
+      },
+      "command": "",
+      "success": true,
+      "output": "openEuler 22.03 LTS SP3",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-03T18:57:48",
+      "step": "container_setup",
+      "action": "拉取 openEuler 22.03 LTS SP3 基础镜像并尝试启动容器",
+      "result": "失败（采用 host IS base OS 方案）",
+      "details": {
+        "image": "hub.oepkgs.net/openeuler/openeuler:22.03-lts-sp3",
+        "container_name": "ttfhw-kvecturbo-env",
+        "error": "OCI runtime start failed: listen unixgram .../notify.sock: bind: invalid argument（Docker 18.09.0 + runc 1.1.3 兼容性 bug）"
+      },
+      "command": "docker pull hub.oepkgs.net/openeuler/openeuler:22.03-lts-sp3 && docker run -d --name ttfhw-kvecturbo-env -v /home/workspace/ttfhw/kvecturbo:/workspace/kvecturbo hub.oepkgs.net/openeuler/openeuler:22.03-lts-sp3 tail -f /dev/null",
+      "success": false,
+      "output": "镜像已存在；docker run 返回 RUN_RC=125，OCI runtime start failed: notify.sock bind: invalid argument",
+      "error": "Docker 18.09.0 + runc 1.1.3 与 openEuler 22.03 SP3 内核存在 cgroup notify.sock bind 兼容性问题，容器无法启动",
+      "returncode": 125,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-03T18:58:28",
+      "step": "dependency_installation",
+      "action": "第一层：确认/安装基础工具链（gcc gcc-c++ make cmake libgomp git python3 python3-pip）",
+      "result": "成功",
+      "details": {
+        "source": "openEuler 官方仓库 (dnf)",
+        "packages": [
+          "gcc 10.3.1",
+          "gcc-c++ 10.3.1",
+          "make",
+          "cmake 3.22.0",
+          "libgomp 10.3.1",
+          "git",
+          "python3 3.9.9",
+          "python3-pip"
+        ]
+      },
+      "command": "dnf install -y gcc gcc-c++ make cmake libgomp git python3 python3-pip",
+      "success": true,
+      "output": "cmake 3.22.0/libgomp/git/python3 已安装；gcc 10.3.1, g++ 10.3.1, cmake 3.22.0 验证通过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-03T18:58:28",
+      "step": "dependency_installation",
+      "action": "第二层：安装 gtest（UT 依赖）",
+      "result": "成功",
+      "details": {
+        "source": "openEuler 官方仓库 (dnf)",
+        "packages": [
+          "gtest-devel 1.8.1"
+        ]
+      },
+      "command": "dnf install -y gtest-devel",
+      "success": true,
+      "output": "gtest-devel-1.8.1 已安装，/usr/include/gtest/gtest.h 与 libgtest.so 就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-03T18:58:28",
+      "step": "dependency_installation",
+      "action": "安装 lcov（UT 覆盖率工具）",
+      "result": "失败（openEuler 22.03 仓库无 lcov 包）",
+      "details": {
+        "source": "openEuler 官方仓库 (dnf)",
+        "error": "No match for argument: lcov"
+      },
+      "command": "dnf install -y lcov",
+      "success": false,
+      "output": "No match for argument: lcov",
+      "error": "openEuler 22.03 官方仓库不含 lcov 包，覆盖率统计将跳过（不影响 UT 主流程）",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-03T19:00:35",
+      "step": "special_dependency_download",
+      "action": "下载并解压 openGauss third_party binarylibs（含 Huawei_Secure_C）",
+      "result": "成功",
+      "details": {
+        "url": "https://opengauss.obs.cn-south-1.myhuaweicloud.com/latest/binarylibs/gcc10.3/openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz",
+        "size": "873071611 bytes (873MB)",
+        "speed": "47.8 MB/s",
+        "extract_path": "/home/workspace/binarylibs/openGauss-third_party_binarylibs_openEuler_2203_arm",
+        "securec_include": "kernel/platform/Huawei_Secure_C/comm/include/securec.h, securectype.h",
+        "securec_lib": "kernel/platform/Huawei_Secure_C/comm/lib/libsecurec.a"
+      },
+      "command": "wget -c https://opengauss.obs.cn-south-1.myhuaweicloud.com/latest/binarylibs/gcc10.3/openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz --no-check-certificate && tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz",
+      "success": true,
+      "output": "下载 873071611 bytes (47.8MB/s)；解压 19.3s 成功；Huawei_Secure_C 目录含 include/lib",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 65
+    },
+    {
+      "timestamp": "2026-08-03T19:01:22",
+      "step": "build_attempt",
+      "action": "按文档执行 sh build.sh（设置 BINARYLIBS 与 CPLUS_INCLUDE_PATH）",
+      "result": "成功",
+      "details": {
+        "env": "BINARYLIBS=/home/workspace/binarylibs/openGauss-third_party_binarylibs_openEuler_2203_arm, CPLUS_INCLUDE_PATH 含 Huawei_Secure_C/comm/include",
+        "cmake_warning": "CMP0000 policy warning（项目未设置 cmake_minimum_required），不影响构建",
+        "compile_warning": "kvecturbo.cpp:513 unused parameter randGen [-Wunused-parameter]，不影响构建"
+      },
+      "command": "export BINARYLIBS=...; export CPLUS_INCLUDE_PATH=...; sh build.sh",
+      "success": true,
+      "output": "Building CXX object CMakeFiles/kvecturbo.dir/src/kvecturbo.o；BUILD_RC=0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 7
+    },
+    {
+      "timestamp": "2026-08-03T19:03:31",
+      "step": "ut_execution",
+      "action": "执行单元测试 test/ut_test/test.sh（gtest）",
+      "result": "成功",
+      "details": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "xml": "build/test_main.xml tests=5 failures=0",
+        "duration": "32.17s",
+        "note": "lcov/genhtml 缺失（openEuler 22.03 仓库无此包），覆盖率统计失败但 gtest 主流程全部通过"
+      },
+      "command": "cd test/ut_test && sh test.sh",
+      "success": true,
+      "output": "[==========] 5 tests from 5 test cases ran. (32186 ms total)\n[  PASSED  ] 5 tests.",
+      "error": "lcov: command not found（覆盖率部分，不影响 UT）",
+      "returncode": 0,
+      "duration_seconds": 40
+    },
+    {
+      "timestamp": "2026-08-03T19:06:00",
+      "step": "sample_execution",
+      "action": "API 冒烟测试：编译样例程序链接 libkvecturbo 并调用 GetPQDistance 符号",
+      "result": "成功",
+      "details": {
+        "note": "文档无独立样例程序（需对接 openGauss DataVec 数据库），采用 API 冒烟测试验证库可用性",
+        "compile": "g++ -Iout/include sample.cpp -Lout/lib -lkvecturbo -lsecurec -lgomp",
+        "run": "PQParams struct accessible, size=32; GetPQDistance symbol at 0x400950; sample output OK",
+        "memcpy_s_issue": "直接链接 libkvecturbo.so 报 undefined reference to memcpy_s（CMakeLists 链接顺序 bug），补充 -lsecurec 后成功"
+      },
+      "command": "g++ -Iout/include /tmp/kvec_api4.cpp -Lout/lib -lkvecturbo -lsecurec -lgomp && LD_LIBRARY_PATH=out/lib /tmp/kvec_api4",
+      "success": true,
+      "output": "KVEC sample: linking libkvecturbo OK / PQParams struct accessible, size=32 / GetPQDistance symbol at 0x400950",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-03T19:06:00",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit / lint 配置",
+      "result": "未配置",
+      "details": {
+        "config_file": "无 .pre-commit-config.yaml、无 CI yml、无 lint 配置"
+      },
+      "command": "",
+      "success": true,
+      "output": "仓库无静态分析配置",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    }
+  ],
+  "documentation_gaps": [
+    {
+      "category": "链接顺序缺陷",
+      "description": "CMakeLists.txt 中 -lsecurec 位于源文件 kvecturbo.o 之前，导致静态库 libsecurec.a 符号(memcpy_s)未被提取。构建产物 libkvecturbo.so 中 memcpy_s 为未定义符号(UND)，外部程序直接链接会报 undefined reference to memcpy_s。UT 正常是因为 test/ut_test/CMakeLists.txt 的链接顺序正确(-lsecurec 在后)。",
+      "severity": "high",
+      "suggestion": "在 CMakeLists.txt 顶层构建中调整链接顺序：将 target_link_options 中的 -lsecurec 移到 target_link_libraries 并通过 target_link_libraries(kvecturbo PRIVATE ... securec) 链接，或使用 ${BINARYLIBS}/kernel/platform/Huawei_Secure_C/comm/lib/libsecurec.a 显式链接"
+    },
+    {
+      "category": "样例缺失",
+      "description": "仓库无独立样例程序。README quick_start.md 仅说明需对接 openGauss DataVec 数据库使用，初学者无法单独验证库功能。",
+      "severity": "medium",
+      "suggestion": "在 docs 或 examples 目录提供独立 C++ 样例，展示 VectorArray 初始化、PQ 编码、GetPQDistance 调用，便于不装数据库即可验证"
+    },
+    {
+      "category": "覆盖率工具缺失",
+      "description": "test/ut_test/test.sh 依赖 lcov/genhtml 生成覆盖率报告，但 openEuler 22.03 官方仓库无 lcov 包，脚本会在此步骤失败。",
+      "severity": "low",
+      "suggestion": "在文档中说明 lcov 需从源码安装（如 pip install lcov）或降级为可选步骤"
+    },
+    {
+      "category": "yum 命令包名问题",
+      "description": "安装指南使用 \"yum install gcc g++ cmake libgomp make\"，但 openEuler 中 C++ 编译器包名为 gcc-c++（g++ 不是独立包），yum/dnf 会报 No match for argument: g++。",
+      "severity": "low",
+      "suggestion": "将文档命令改为 \"yum install gcc gcc-c++ cmake libgomp make\""
+    },
+    {
+      "category": "文档未说明 UT 执行方式",
+      "description": "README 目录结构提到 test 目录为 ut测试，但未在 README 或安装指南说明如何执行单元测试（实际为 cd test/ut_test && sh test.sh）。",
+      "severity": "low",
+      "suggestion": "在安装指南增加 UT 执行章节"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "category": "容器无法启动",
+      "description": "Docker 18.09.0 + runc 1.1.3 在 openEuler 22.03 SP3 上启动容器报 OCI runtime start failed: notify.sock bind: invalid argument",
+      "root_cause": "本机 Docker 版本过旧，runc 与 openEuler 22.03 SP3 内核存在 cgroup v2 notify.sock 兼容性问题",
+      "solution": "采用 host IS base OS 方案，直接在 openEuler 22.03 LTS SP3 主机上从零通过 dnf 安装依赖并构建（与 cmf 等历史验证一致）",
+      "severity": "medium"
+    },
+    {
+      "category": "构建缺陷",
+      "description": "libkvecturbo.so 链接后 memcpy_s 未定义，外部程序无法直接链接",
+      "root_cause": "CMakeLists.txt target_link_options 中 -lsecurec 在目标文件之前，静态库符号未被提取",
+      "solution": "调用方补充 -L.../Huawei_Secure_C/comm/lib/ -lsecurec 链接；建议修改 CMakeLists.txt 链接顺序",
+      "severity": "high"
+    },
+    {
+      "category": "lcov 缺失",
+      "description": "test.sh 覆盖率统计步骤失败（lcov/genhtml 不存在）",
+      "root_cause": "openEuler 22.03 官方仓库无 lcov 包",
+      "solution": "跳过覆盖率统计（不影响 gtest 主流程，5 个用例全部通过）；或从源码安装 lcov",
+      "severity": "low"
+    }
+  ],
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  }
+}
