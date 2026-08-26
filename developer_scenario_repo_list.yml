@@ -424,6 +424,46 @@ BoostKit:
       url: "https://gitcode.com/boostkit/vllm_router.git"
       branch: master
       component: BoostKit
+    - name: flash-engram
+      url: "https://gitcode.com/boostkit/flash-engram.git"
+      branch: master
+      component: BoostKit
+    - name: hyperscan
+      url: "https://gitcode.com/boostkit/hyperscan.git"
+      branch: master
+      component: BoostKit
+    - name: kvecturbo
+      url: "https://gitcode.com/boostkit/kvecturbo.git"
+      branch: master
+      component: BoostKit
+    - name: LMCache
+      url: "https://gitcode.com/boostkit/LMCache.git"
+      branch: benchmarks-main
+      component: BoostKit
+    - name: numpy
+      url: "https://gitcode.com/boostkit/numpy.git"
+      branch: master
+      component: BoostKit
+    - name: omnioperator
+      url: "https://gitcode.com/boostkit/omnioperator.git"
+      branch: master
+      component: BoostKit
+    - name: omnistatestore
+      url: "https://gitcode.com/boostkit/omnistatestore.git"
+      branch: master
+      component: BoostKit
+    - name: rapidjson
+      url: "https://gitcode.com/boostkit/rapidjson.git"
+      branch: dev
+      component: BoostKit
+    - name: sonic
+      url: "https://gitcode.com/boostkit/sonic.git"
+      branch: master
+      component: BoostKit
+    - name: sonic-cpp
+      url: "https://gitcode.com/boostkit/sonic-cpp.git"
+      branch: master
+      component: BoostKit
 
 openGauss:
   description: "openGauss 开发者场景验证代码仓列表"
