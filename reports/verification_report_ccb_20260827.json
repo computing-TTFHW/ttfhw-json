@@ -1,0 +1,579 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/ConneRa1/ccb.git",
+    "branch": "master",
+    "start_time": "2026-08-27T10:36:52",
+    "end_time": "2026-08-27T10:40:33",
+    "duration_seconds": 221,
+    "total_steps": 12,
+    "commit": "9e8d8b7f96d90f4449a76edde1dcfb02b238888b",
+    "environment": "Docker 容器内验证（opencode / ttfhw-verify-smart）",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i5-12600KF",
+      "cpu_cores": 4,
+      "memory": "13Gi",
+      "disk": "63G（可用约 4G）",
+      "docker_version": "26.1.3",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler 22.03 (LTS-SP1)",
+      "architecture": "x86_64",
+      "cpu_cores": 4,
+      "memory": "12Gi",
+      "container_name": "ccb-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "ccb-ttfhw（docker build -f .devcontainer/Dockerfile，FROM openeuler/openeuler:22.03-lts-sp1）",
+      "selection_reason": "Tier 2 Dockerfile 构建：README/devcontainer.json 无业务预构建镜像信号（无 docker pull、无 image 字段、无 registry 链接），仓库内含 .devcontainer/Dockerfile，按原样 docker build 构建，构建成功无需降级 Tier 3",
+      "dependency_mapping": {
+        "from_dockerfile": "openeuler/openeuler:22.03-lts-sp1",
+        "from_readme": "README 要求 ruby 2.5+，支持 x86/arm/龙芯架构 openEuler 服务器",
+        "mappings": [
+          {
+            "original": "dnf install -y git curl tar unzip sudo vim ca-certificates tzdata ruby ruby-devel rubygems gcc gcc-c++ make",
+            "target": "dnf install -y git curl tar unzip sudo vim ca-certificates tzdata ruby ruby-devel rubygems gcc gcc-c++ make",
+            "source": ".devcontainer/Dockerfile"
+          },
+          {
+            "original": "gem install rest-client --no-document",
+            "target": "gem install rest-client --no-document",
+            "source": ".devcontainer/Dockerfile"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md 安装教程（客户端环境要求）",
+      "value": "支持 x86、arm、龙芯架构的 openEuler 系统服务器"
+    },
+    "recommended_image": {
+      "source": ".devcontainer/Dockerfile FROM + devcontainer.json build.dockerfile",
+      "value": "openeuler/openeuler:22.03-lts-sp1（基础 OS 镜像，无业务预构建镜像）"
+    },
+    "dockerfile_dependencies": {
+      "source": ".devcontainer/Dockerfile RUN 指令",
+      "value": [
+        {
+          "original": "dnf install -y git curl tar unzip sudo vim ca-certificates tzdata ruby ruby-devel rubygems gcc gcc-c++ make",
+          "target_equivalent": "dnf install -y git curl tar unzip sudo vim ca-certificates tzdata ruby ruby-devel rubygems gcc gcc-c++ make"
+        },
+        {
+          "original": "gem install rest-client --no-document",
+          "target_equivalent": "gem install rest-client --no-document"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md + .devcontainer/Dockerfile + sbin/cli/*.rb require 分析",
+      "value": [
+        "ruby >= 2.5（README 要求，devcontainer 使用 openEuler 22.03-lts-sp1 自带 ruby 3.0.3）",
+        "rest-client（Ruby gem，sbin/cli/ccb_api_client.rb require）",
+        "ruby-devel + gcc + gcc-c++ + make（rest-client 依赖 unf_ext 原生扩展编译）",
+        "git、curl、tar、unzip、sudo、vim、ca-certificates、tzdata（devcontainer Dockerfile）",
+        "yaml/json/optparse/openssl/base64/fileutils（Ruby 标准库）"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md 安装教程 + .devcontainer/README.devcontainer.md + post_install.sh",
+      "value": "纯 Ruby/Shell 脚本仓库，无编译型构建；安装流程为配置 ~/.config/cli/defaults/*.yaml 并执行 .devcontainer/post_install.sh（创建 /usr/local/bin/ccb 软链 + 自检 ccb -h）"
+    },
+    "ut_commands": {
+      "source": "README.md + 仓库全量扫描（无 test/spec/Rakefile/Gemfile）",
+      "value": "仓库未提供单元测试框架与测试命令，无测试目录"
+    },
+    "sample_commands": {
+      "source": "README.md 使用说明（配置完成后可执行以下命令查看是否正常使用）",
+      "value": "ccb -h / ccb --help；子命令详情如 ccb select -h"
+    },
+    "special_dependencies": {
+      "source": "README.md 安装教程（lkp-tests 为 EulerMaker 客户端背景说明）+ .devcontainer/README.devcontainer.md（内网镜像）",
+      "value": [
+        "lkp-tests（https://atomgit.com/openeuler-customization/lkp-tests.git，README 背景说明，非本仓库构建依赖）",
+        "gem 安装 rest-client 需访问 rubygems.org（内网可用 GEM_MIRROR 镜像源）",
+        "dnf 安装依赖需访问 repo.openeuler.org（内网可用 DNF_MIRROR 镜像源）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-27T10:37:31",
+      "step": "document_reading",
+      "action": "读取 README.md/README.en.md 全部链接（外链一层）并分析 Dockerfile、devcontainer、CLI 源码依赖",
+      "result": "成功",
+      "details": {
+        "links_checked": [
+          "https://atomgit.com/openeuler-customization/lkp-tests.git（相关，README 安装背景，已查看一层）",
+          "https://www.cnblogs.com/liugp/p/11848408.html（Elasticsearch CRUD 教程，与构建/测试/依赖无关，跳过）",
+          "https://www.cnblogs.com/powercto/p/14438907.html（Elasticsearch CRUD 教程，与构建/测试/依赖无关，跳过）",
+          "https://blog.atomgit.com（平台博客，不相关，跳过）",
+          "https://atomgit.com/explore（平台导航，不相关，跳过）",
+          "https://atomgit.com/gvp（平台栏目，不相关，跳过）",
+          "https://atomgit.com/help（平台帮助，不相关，跳过）",
+          "https://atomgit.com/atomgit-stars/（平台栏目，不相关，跳过）"
+        ],
+        "npu_required": false,
+        "tier_hint": "Tier 2（仓库内含 Dockerfile：.devcontainer/Dockerfile）"
+      },
+      "command": "cat README.md README.en.md && cat .devcontainer/Dockerfile .devcontainer/devcontainer.json",
+      "success": true,
+      "output": "README 为 ccb（EulerMaker 客户端 CLI，Ruby）使用文档；Dockerfile FROM openeuler/openeuler:22.03-lts-sp1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-27T10:37:43",
+      "step": "static_analysis_scan",
+      "action": "扫描 pre-commit 与 lint-runner 配置并解析 hook 列表",
+      "result": "成功",
+      "details": {
+        "pre_commit_configured": true,
+        "pre_commit_config_file": ".pre-commit-config.yaml",
+        "total_hooks": 13,
+        "lint_runner_configured": false,
+        "note": "按 skill 规则仅检查配置，不安装、不执行 pre-commit"
+      },
+      "command": "ls .pre-commit-config.yaml .lint-runner.yaml .lintrunner.toml && rg -n '^\\s+- id:' .pre-commit-config.yaml",
+      "success": true,
+      "output": ".pre-commit-config.yaml 存在；未发现 .lint-runner.yaml/.lintrunner.toml",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-27T10:37:49",
+      "step": "devcontainer_scan",
+      "action": "扫描 .devcontainer 目录并读取 devcontainer.json、Dockerfile、post_install.sh",
+      "result": "成功",
+      "details": {
+        "config_dir": ".devcontainer",
+        "config_files": [
+          "devcontainer.json",
+          "Dockerfile",
+          "README.devcontainer.md",
+          "post_install.sh"
+        ],
+        "image_field": "无（build.dockerfile=Dockerfile）",
+        "dockerfile_from": "openeuler/openeuler:22.03-lts-sp1",
+        "remote_user": "vscode",
+        "post_create_command": "bash /workspace/.devcontainer/post_install.sh"
+      },
+      "command": "cat .devcontainer/devcontainer.json .devcontainer/Dockerfile .devcontainer/post_install.sh",
+      "success": true,
+      "output": "devcontainer 使用 build.dockerfile 构建，FROM openeuler/openeuler:22.03-lts-sp1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-27T10:38:45",
+      "step": "image_selection",
+      "action": "按三级优先级选择镜像：检查 Tier 1 信号（预构建镜像/docker pull/registry 链接/devcontainer image 字段）",
+      "result": "Tier 2 Dockerfile 构建",
+      "details": {
+        "tier1_signals": [
+          "README 无 docker pull 命令",
+          "Dockerfile FROM 为基础 OS 镜像（openeuler/openeuler:22.03-lts-sp1）",
+          "devcontainer.json 无 image 字段",
+          "无 registry/hub 链接"
+        ],
+        "tier2_hit": "仓库含 .devcontainer/Dockerfile",
+        "fallback": "无降级"
+      },
+      "command": "docker build -f .devcontainer/Dockerfile -t ccb-ttfhw .",
+      "success": true,
+      "output": "镜像 ccb-ttfhw 构建成功（各层命中缓存，FROM openeuler/openeuler:22.03-lts-sp1）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-27T10:38:45",
+      "step": "container_setup",
+      "action": "启动验证容器并挂载仓库到 /workspace",
+      "result": "成功",
+      "details": {
+        "container_name": "ccb-ttfhw",
+        "image": "ccb-ttfhw",
+        "mount": "/root/openeuler_蓝区工程化/devcontainer改造/ccb:/workspace",
+        "command": "sleep infinity"
+      },
+      "command": "docker run -d --name ccb-ttfhw -v /root/openeuler_蓝区工程化/devcontainer改造/ccb:/workspace ccb-ttfhw sleep infinity",
+      "success": true,
+      "output": "容器 859621920d28 已启动",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-27T10:38:45",
+      "step": "dependency_verification",
+      "action": "验证 Tier 2 镜像内文档列出的依赖（ruby/rest-client/git/curl/tar/unzip/sudo/vim/make/gcc/g++/ruby-devel/rubygems）",
+      "result": "成功",
+      "details": {
+        "os": "openEuler 22.03 (LTS-SP1)",
+        "ruby": "3.0.3p157",
+        "rest-client": "2.1.0",
+        "gcc": "10.3.1",
+        "note": "Tier 2 镜像已含全部依赖，跳过依赖安装"
+      },
+      "command": "docker exec ccb-ttfhw bash -lc 'ruby -v; gem list | grep rest-client; command -v git curl tar unzip sudo vim make gcc g++'",
+      "success": true,
+      "output": "ruby 3.0.3p157；rest-client 2.1.0；gcc 10.3.1；工具链齐全",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-27T10:39:19",
+      "step": "build_attempt",
+      "action": "执行仓库文档化构建/安装入口 .devcontainer/post_install.sh 并验证 ccb 命令可用",
+      "result": "成功",
+      "details": {
+        "command_used": "bash .devcontainer/post_install.sh",
+        "self_check": "ruby -v 与 ccb -h 均通过",
+        "symlink": "/usr/local/bin/ccb -> /workspace/sbin/cli/ccb",
+        "config": "/home/vscode/.config/cli/defaults/config.yaml 已生成",
+        "note": "脚本仓库无编译步骤，无源码修改"
+      },
+      "command": "docker exec ccb-ttfhw bash -lc 'cd /workspace && time bash .devcontainer/post_install.sh'",
+      "success": true,
+      "output": "ruby 3.0.3p157；ccb 命令可用；依赖安装完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:39:30",
+      "step": "ut_execution",
+      "action": "扫描仓库测试目录/测试框架配置并执行单元测试",
+      "result": "跳过",
+      "details": {
+        "reason": "仓库无 test/spec 目录，无 Rakefile/Gemfile/*.gemspec 等测试框架配置，README 未提供 UT 命令，无测试可执行",
+        "checked": [
+          "test",
+          "spec",
+          "Rakefile",
+          "Gemfile",
+          "*.gemspec"
+        ]
+      },
+      "command": "docker exec ccb-ttfhw bash -lc 'cd /workspace && find . -path ./.git -prune -o \\( -iname \"*test*\" -o -iname \"*spec*\" -o -name Rakefile -o -name Gemfile -o -name \"*.gemspec\" \\) -print'",
+      "success": true,
+      "output": "无 test/spec 目录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-27T10:40:22",
+      "step": "build_attempt",
+      "action": "补充验证全部 Ruby 源码语法（ruby -c）",
+      "result": "成功",
+      "details": {
+        "checked_files": [
+          "sbin/cli/*.rb",
+          "lib/*.rb"
+        ],
+        "result": "全部通过"
+      },
+      "command": "docker exec ccb-ttfhw bash -lc 'for f in sbin/cli/*.rb lib/*.rb; do ruby -c \"$f\"; done'",
+      "success": true,
+      "output": "sbin/cli/*.rb 与 lib/*.rb 共 8 个 Ruby 文件语法检查全部通过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-27T10:40:22",
+      "step": "sample_execution",
+      "action": "执行 README 使用说明中的命令可用性样例（ccb -h / ccb --help / ccb select -h）",
+      "result": "成功",
+      "details": {
+        "samples": [
+          "ccb -h",
+          "ccb --help",
+          "ccb select -h"
+        ]
+      },
+      "command": "docker exec ccb-ttfhw bash -lc 'ccb -h; ccb --help; ccb select -h'",
+      "success": true,
+      "output": "三个帮助命令均正常输出，ccb 命令可用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:40:22",
+      "step": "sample_execution",
+      "action": "尝试执行 README 访客级远端查询样例 ccb select projects --size 1",
+      "result": "失败",
+      "details": {
+        "error": "sbin/cli/ccb_common.rb:174 get_jwt_from_remote 对 nil 调用 strip（NoMethodError）",
+        "root_cause": "未配置 ACCOUNT/PASSWORD 凭据，JWT 获取失败",
+        "gateway_reachable": "eulermaker.openeuler.openatom.cn HTTP 200"
+      },
+      "command": "docker exec ccb-ttfhw timeout 40 bash -lc 'ccb select projects --size 1'",
+      "success": false,
+      "output": "NoMethodError: undefined method `strip' for nil:NilClass",
+      "error": "未配置社区账号凭据导致 JWT 获取失败",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:40:22",
+      "step": "problem_resolution",
+      "action": "诊断远端查询样例失败原因（区分网络与凭据问题）",
+      "result": "成功",
+      "details": {
+        "gateway_probe": "curl https://eulermaker.openeuler.openatom.cn -> HTTP 200（网络可达）",
+        "omapi_probe": "curl https://omapi.osinfra.cn/oneid/oidc/token -> HTTP 405（需 POST，正常）",
+        "conclusion": "失败由凭据缺失引起，符合 devcontainer 文档已知限制；不修改源码、不注入凭据"
+      },
+      "command": "docker exec ccb-ttfhw bash -lc 'curl -sS -o /dev/null -w \"%{http_code}\" https://eulermaker.openeuler.openatom.cn'",
+      "success": true,
+      "output": "gateway:200 omapi:405",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 .pre-commit-config.yaml 配置（13 个 hook，6 个仓库源），本次验证仅做配置检查不执行 hook；未检测到 lint-runner 配置",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "未执行（仅检查配置，按 skill 规则不运行 pre-commit）",
+        "duration_seconds": 0,
+        "total_hooks": 13,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "executed_in_verification": false,
+        "hooks": [
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "hook": "trailing-whitespace",
+            "mode": "修复"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "hook": "end-of-file-fixer",
+            "mode": "修复"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "hook": "check-yaml",
+            "mode": "检查"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "hook": "check-json",
+            "mode": "检查"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "hook": "check-xml",
+            "mode": "检查"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "hook": "check-merge-conflict",
+            "mode": "检查"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "hook": "check-added-large-files",
+            "mode": "检查"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "hook": "detect-private-key",
+            "mode": "检查"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/gi/gitleaks",
+            "rev": "v8.30.1",
+            "hook": "gitleaks",
+            "mode": "检查"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/co/codespell",
+            "rev": "v2.4.3",
+            "hook": "codespell",
+            "mode": "检查"
+          },
+          {
+            "repo": "https://gh-proxy.com/https://github.com/scop/pre-commit-shfmt",
+            "rev": "v3.13.1-1",
+            "hook": "shfmt",
+            "mode": "修复"
+          },
+          {
+            "repo": "https://gh-proxy.com/https://github.com/shellcheck-py/shellcheck-py",
+            "rev": "v0.11.0.1",
+            "hook": "shellcheck",
+            "mode": "检查",
+            "args": [
+              "--severity=error"
+            ]
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/ma/markdownlint-cli",
+            "rev": "v0.49.1",
+            "hook": "markdownlint",
+            "mode": "修复",
+            "args": [
+              "--fix"
+            ]
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        "devcontainer.json",
+        "Dockerfile",
+        "README.devcontainer.md",
+        "post_install.sh"
+      ],
+      "original_base_image": "openeuler/openeuler:22.03-lts-sp1（来自 .devcontainer/Dockerfile FROM；devcontainer.json 无 image 字段，使用 build.dockerfile）",
+      "used_image": "openeuler/openeuler:22.03-lts-sp1（Tier 2 按 .devcontainer/Dockerfile 原样构建）",
+      "summary": ".devcontainer 提供最小范围开发容器：openEuler 22.03-lts-sp1 + ruby 3.0.3 + rest-client，postCreateCommand 执行 post_install.sh（初始化配置、创建 /usr/local/bin/ccb 软链、ruby -v 与 ccb -h 自检）；local-build/local-rebuild 因需特权 Docker 刻意不做"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 1,
+      "notes": "纯 Ruby/Shell 脚本仓库，无编译产物；构建入口按 devcontainer 文档执行 .devcontainer/post_install.sh（初始化配置 + 创建 /usr/local/bin/ccb 软链 + ruby -v/ccb -h 自检），自检全部通过",
+      "concurrency": 1,
+      "concurrency_ratio": "20%（容器 4 核 × 20%，向下取整至少 1；脚本仓库实际无编译并发）",
+      "artifacts": [
+        {
+          "name": "ccb CLI 入口软链",
+          "path": "/usr/local/bin/ccb -> /workspace/sbin/cli/ccb",
+          "type": "symlink"
+        },
+        {
+          "name": "ccb 客户端默认配置",
+          "path": "/home/vscode/.config/cli/defaults/config.yaml",
+          "type": "config"
+        },
+        {
+          "name": "ccb.rb 主程序",
+          "path": "/workspace/sbin/cli/ccb.rb",
+          "size": "2.5K",
+          "type": "ruby-script"
+        },
+        {
+          "name": "ccb 命令包装脚本",
+          "path": "/workspace/sbin/cli/ccb",
+          "size": "1.6K",
+          "type": "shell-script"
+        }
+      ]
+    },
+    "ut": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "partial_success",
+      "duration_seconds": 1,
+      "reason": "README 推荐的命令可用性自检（ccb -h/--help 与子命令 -h）全部成功；远端查询样例 ccb select projects 因未配置社区账号凭据（ACCOUNT/PASSWORD 为空）无法获取 JWT 而失败，符合 devcontainer 文档已知限制",
+      "results": [
+        {
+          "sample_name": "ccb -h（README 自检命令）",
+          "execution_status": "success",
+          "output_summary": "输出 Usage 与全部子命令列表，命令可用",
+          "execution_time": "<1s"
+        },
+        {
+          "sample_name": "ccb --help（README 自检命令）",
+          "execution_status": "success",
+          "output_summary": "输出帮助信息，命令可用",
+          "execution_time": "<1s"
+        },
+        {
+          "sample_name": "ccb select -h（命令详情查看）",
+          "execution_status": "success",
+          "output_summary": "输出 select 用法与选项，解析正常",
+          "execution_time": "<1s"
+        },
+        {
+          "sample_name": "Ruby 源码语法检查（ruby -c 全部 .rb 文件）",
+          "execution_status": "success",
+          "output_summary": "sbin/cli/*.rb 与 lib/*.rb 共 8 个文件语法全部通过",
+          "execution_time": "<1s"
+        },
+        {
+          "sample_name": "ccb select projects --size 1（README 访客级查询样例）",
+          "execution_status": "failed",
+          "output_summary": "未配置 ACCOUNT/PASSWORD 时 get_jwt_from_remote 抛 NoMethodError（对 nil 调 strip），无法获取 JWT；网关 eulermaker.openeuler.openatom.cn 可达（HTTP 200）",
+          "execution_time": "<1s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-27T10:40:22",
+      "title": "README 权限表与实际行为不一致：select 标注 guest 可执行，但无凭据时直接抛异常",
+      "body": "README 命令权限说明将 select 标为 guest 可执行（无需账号），但实际运行 ccb select projects 时，因未配置 ACCOUNT/PASSWORD，sbin/cli/ccb_common.rb 第 174 行对 nil 调用 strip 抛出 NoMethodError（undefined method `strip' for nil:NilClass），错误信息不友好且未提示需要配置账号。devcontainer 文档说明'未配置凭据时，无法执行需要鉴权的命令'，与 README 权限表表述存在冲突，建议补充 guest 无凭据时的行为说明或优化报错提示。",
+      "source": "README.md（命令权限说明表）+ 实测 ccb select projects --size 1 + sbin/cli/ccb_common.rb:174"
+    },
+    {
+      "time": "2026-08-27T10:40:22",
+      "title": "README 安装教程依赖 lkp-tests 但未说明本仓库安装方式",
+      "body": "README 安装教程描述 EulerMaker 以 lkp-tests 为客户端（外部仓库背景），未给出本仓库 ccb 客户端自身的安装命令（无 gem 包/安装脚本说明），实际安装流程仅存在于 .devcontainer/post_install.sh（创建 /usr/local/bin/ccb 软链）。新手按 README 无法直接完成本仓库安装，建议补充安装步骤。",
+      "source": "README.md 安装教程"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-27T10:40:22",
+      "problem": "执行 README 远端查询样例 ccb select projects 时抛出 NoMethodError（undefined method `strip' for nil:NilClass）",
+      "solution": "定位为未配置 ACCOUNT/PASSWORD 凭据导致 JWT 获取失败；用 curl 探测确认网关可达（HTTP 200），排除网络问题后按 devcontainer 文档限制处理：不注入凭据、不改源码，记录为样例失败并补充文档缺口",
+      "source": "sbin/cli/ccb_common.rb:174（get_jwt_from_remote）"
+    }
+  ]
+}

@@ -1,0 +1,808 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/openeuler/heolleo.git",
+    "branch": "master",
+    "start_time": "2026-08-26T20:42:55",
+    "end_time": "2026-08-26T21:30:00",
+    "duration_seconds": 2825,
+    "total_steps": 28,
+    "commit": "12aac47ef8690dfc3ed94170153b475a451a13da",
+    "environment": "DevStation openEuler 25.09 x86_64 宿主机 + Docker 容器验证环境",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "gpt-5",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i5-12600KF",
+      "cpu_cores": 4,
+      "memory": "14Gi",
+      "disk": "63G",
+      "docker_version": "26.1.3",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "Ubuntu 22.04.5 LTS",
+      "architecture": "x86_64",
+      "cpu_cores": 4,
+      "memory": "15Gi",
+      "container_name": "heolleo-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "ubuntu:22.04",
+      "selection_reason": "Tier 3 基础 OS 从零安装：仓库无预构建镜像、无 Dockerfile、无 devcontainer，按技能回退规则默认选择 Ubuntu 22.04"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md / README.en.md",
+      "value": "未明确指定（README 未提及架构要求；验证环境为 x86_64）"
+    },
+    "recommended_image": {
+      "source": "仓库扫描（README/Dockerfile/devcontainer）",
+      "value": "未提供预构建镜像，仓库内无 Dockerfile 与 devcontainer，按技能规则回退默认 Ubuntu 22.04 基础镜像"
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库扫描",
+      "value": "仓库内不存在 Dockerfile，无 Dockerfile 依赖可提取"
+    },
+    "dependencies": {
+      "source": "README.md、README.en.md、package.json、eulerinstall/pyproject.toml",
+      "value": [
+        "Node.js 18.0.0 或更高版本",
+        "npm 或 yarn 包管理器",
+        "Python 3.11+（eulerinstall 子项目）",
+        "pyparted>=3.13.0",
+        "pydantic==2.11.7",
+        "cryptography>=42.0.2",
+        "typing_extensions>=4.12.0",
+        "开发依赖（eulerinstall dev）：pytest、ruff、mypy、flake8、pylint、pylint-pydantic、pre-commit"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md、package.json、eulerinstall/PKGBUILD",
+      "value": "前端：npm install && npm run build（vite build）；eulerinstall：python -m build --wheel --no-isolation（或 uv build --no-build-isolation --wheel）"
+    },
+    "ut_commands": {
+      "source": "eulerinstall/pyproject.toml、ssg_ut_test/tests/run_tests.sh",
+      "value": "eulerinstall：pytest（testpaths=tests）；ssg_ut_test：./tests/run_tests.sh unit/integration/system/all（bats）"
+    },
+    "sample_commands": {
+      "source": "README.md、eulerinstall/examples/",
+      "value": "README 未提供具体样例运行命令；eulerinstall/examples 目录含 full_automated_installation.py 等 Python 示例脚本（依赖 archinstall 与真实磁盘设备）"
+    },
+    "special_dependencies": {
+      "source": "eulerinstall/PKGBUILD、eulerinstall/build_iso.sh",
+      "value": [
+        "archiso/mkarchiso（构建 ISO 使用，与常规构建无关）",
+        "系统工具（PKGBUILD depends）：btrfs-progs、cryptsetup、dosfstools、e2fsprogs、pciutils、procps-ng、util-linux、xfsprogs、lvm2、f2fs-tools、ntfs-3g",
+        "pyparted 需要 libparted 开发头文件支持"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-26T20:42:55",
+      "step": "document_reading",
+      "action": "读取 README.md 与 README.en.md，提取环境要求、构建命令、技术栈",
+      "result": "成功",
+      "details": {
+        "environment": "Node.js >= 18.0.0、npm/yarn、Python 3.11+",
+        "build": "npm install && npm run build",
+        "dev": "npm run dev / npm run electron:dev",
+        "links": "README 仅含 LICENSE 仓库内链接与 gitee.com/openeuler/heolleo 外链（Issue 页面，与编译/测试无关，跳过）"
+      },
+      "command": "cat README.md; cat README.en.md",
+      "success": true,
+      "output": "heolleo 是一个现代化的操作系统安装客户端工具，采用 Vue 3 + Electron 技术栈，构建命令 npm run build，eulerinstall 子项目需 Python 3.11+",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T20:43:00",
+      "step": "document_reading",
+      "action": "阅读 package.json 与 eulerinstall/pyproject.toml，提取构建与测试入口",
+      "result": "成功",
+      "details": {
+        "npm_scripts": "build=vite build, dev=vite, start=npm run build && electron . --no-sandbox",
+        "python_deps": "pyparted>=3.13.0, pydantic==2.11.7, cryptography>=42.0.2, typing_extensions>=4.12.0",
+        "pytest": "testpaths=tests"
+      },
+      "command": "cat package.json; cat eulerinstall/pyproject.toml",
+      "success": true,
+      "output": "前端 vite build；eulerinstall 为 Python 3.11+ 包，pytest 测试目录 tests",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T20:43:10",
+      "step": "document_reading",
+      "action": "扫描仓库内 Dockerfile、devcontainer、CI 配置、README 链接",
+      "result": "成功",
+      "details": {
+        "dockerfile": "不存在",
+        "devcontainer": "不存在",
+        "ci": ".github/.gitee 目录不存在",
+        "prebuilt_image_signal": "未命中任何 Tier 1 信号"
+      },
+      "command": "rg --files | rg -i 'docker|devcontainer|github|gitee'",
+      "success": true,
+      "output": "未发现 Dockerfile、devcontainer.json、.github/.gitee CI 配置",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T20:43:20",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 配置是否存在并解析 hook 列表",
+      "result": "成功",
+      "details": {
+        "configured": true,
+        "hooks": [
+          "trailing-whitespace",
+          "end-of-file-fixer",
+          "check-yaml",
+          "check-json",
+          "check-xml",
+          "check-merge-conflict",
+          "check-added-large-files",
+          "detect-private-key",
+          "gitleaks",
+          "codespell",
+          "ruff-check",
+          "ruff-format",
+          "bandit",
+          "shfmt",
+          "shellcheck",
+          "markdownlint"
+        ]
+      },
+      "command": "cat .pre-commit-config.yaml",
+      "success": true,
+      "output": ".pre-commit-config.yaml 存在，包含 trailing-whitespace/ruff/gitleaks/shellcheck 等 16 个 hook",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T20:43:25",
+      "step": "static_analysis_scan",
+      "action": "检查 lint-runner 配置是否存在",
+      "result": "成功",
+      "details": {
+        "configured": false
+      },
+      "command": "rg --files -g '.lint-runner.yaml' -g '.lintrunner.toml'",
+      "success": true,
+      "output": "未发现 .lint-runner.yaml/.lintrunner.toml",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:43:30",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录与 devcontainer.json",
+      "result": "成功",
+      "details": {
+        "enabled": false
+      },
+      "command": "ls -la .devcontainer",
+      "success": true,
+      "output": ".devcontainer 目录不存在，devcontainer 未启用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:44:10",
+      "step": "image_selection",
+      "action": "按三级镜像优先级选择验证镜像",
+      "result": "Tier 3 基础 OS 从零安装",
+      "details": {
+        "tier1_signal": "未命中（无预构建镜像、无 devcontainer、无 registry 链接）",
+        "tier2_signal": "未命中（仓库内无 Dockerfile）",
+        "selected_image": "ubuntu:22.04"
+      },
+      "command": "docker run -d --name heolleo-ttfhw -v /root/ttfhw-work/heolleo:/workspace ubuntu:22.04 sleep infinity",
+      "success": true,
+      "output": "容器 heolleo-ttfhw 已启动（ubuntu:22.04，仓库挂载至 /workspace）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T20:44:15",
+      "step": "container_setup",
+      "action": "启动验证容器并挂载仓库",
+      "result": "成功",
+      "details": {
+        "container_name": "heolleo-ttfhw",
+        "mount": "/root/ttfhw-work/heolleo -> /workspace",
+        "os": "Ubuntu 22.04.5 LTS",
+        "architecture": "x86_64",
+        "cpu_cores": 4,
+        "memory": "15Gi"
+      },
+      "command": "docker ps --filter name=heolleo-ttfhw",
+      "success": true,
+      "output": "heolleo-ttfhw Up ubuntu:22.04",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T20:44:30",
+      "step": "dependency_installation",
+      "action": "安装基础工具链 gcc/g++/make/cmake/git/python3/python3-pip",
+      "result": "成功",
+      "details": {
+        "packages": "gcc g++ make cmake git python3 python3-pip",
+        "versions": "gcc 11.4.0, cmake 3.22.1, make 4.3, git 2.34.1"
+      },
+      "command": "apt-get update && apt-get install -y gcc g++ make cmake git python3 python3-pip",
+      "success": true,
+      "output": "build-essential 安装完成，gcc (Ubuntu 11.4.0)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 210
+    },
+    {
+      "timestamp": "2026-08-26T20:49:30",
+      "step": "dependency_installation",
+      "action": "通过 deadsnakes PPA 安装 Python 3.11（README 要求 3.11+）",
+      "result": "成功",
+      "details": {
+        "packages": "python3.11 python3.11-dev python3.11-venv",
+        "version": "Python 3.11.15"
+      },
+      "command": "add-apt-repository -y ppa:deadsnakes/ppa && apt-get install -y python3.11 python3.11-dev python3.11-venv",
+      "success": true,
+      "output": "Python 3.11.15 安装完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 74
+    },
+    {
+      "timestamp": "2026-08-26T20:51:10",
+      "step": "dependency_installation",
+      "action": "通过 NodeSource 安装 Node.js 18（README 要求 18.0+）",
+      "result": "成功",
+      "details": {
+        "packages": "nodejs",
+        "versions": "node v18.20.8, npm 10.8.2"
+      },
+      "command": "curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs",
+      "success": true,
+      "output": "node v18.20.8, npm 10.8.2",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 38
+    },
+    {
+      "timestamp": "2026-08-26T20:52:00",
+      "step": "dependency_installation",
+      "action": "安装 libparted-dev/parted 开发包并为 Python 3.11 配置 pip",
+      "result": "成功",
+      "details": {
+        "packages": "libparted-dev parted",
+        "pip": "pip 24.0 (python3.11)"
+      },
+      "command": "apt-get install -y libparted-dev parted; python3.11 -m ensurepip --upgrade",
+      "success": true,
+      "output": "libparted 开发包安装完成，pip 24.0 就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 14
+    },
+    {
+      "timestamp": "2026-08-26T20:52:20",
+      "step": "problem_resolution",
+      "action": "排查 pyparted 安装失败原因（pkg-config 缺失）并安装",
+      "result": "成功",
+      "details": {
+        "problem": "pyparted 构建元数据时提示 FileNotFoundError: 'pkg-config'",
+        "solution": "apt-get install -y pkg-config 后重试 pip 安装"
+      },
+      "command": "apt-get install -y pkg-config",
+      "success": true,
+      "output": "pkg-config 安装完成，pyparted 重装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-26T20:53:00",
+      "step": "dependency_installation",
+      "action": "pip 安装 eulerinstall Python 依赖（pyparted/pydantic/cryptography/typing_extensions）",
+      "result": "成功",
+      "details": {
+        "packages": "pyparted>=3.13.0, pydantic==2.11.7, cryptography>=42.0.2, typing_extensions>=4.12.0"
+      },
+      "command": "python3.11 -m pip install 'pyparted>=3.13.0' 'pydantic==2.11.7' 'cryptography>=42.0.2' 'typing_extensions>=4.12.0'",
+      "success": true,
+      "output": "import parted, pydantic, cryptography, typing_extensions 全部成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 205
+    },
+    {
+      "timestamp": "2026-08-26T20:57:00",
+      "step": "dependency_installation",
+      "action": "pip 安装 pytest（eulerinstall dev 依赖，UT 需要）",
+      "result": "成功",
+      "details": {
+        "package": "pytest==8.4.1",
+        "version": "pytest 8.4.1"
+      },
+      "command": "python3.11 -m pip install 'pytest==8.4.1'",
+      "success": true,
+      "output": "pytest 8.4.1 安装完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 42
+    },
+    {
+      "timestamp": "2026-08-26T20:58:00",
+      "step": "dependency_verification",
+      "action": "验证容器内关键依赖版本",
+      "result": "成功",
+      "details": {
+        "gcc": "11.4.0",
+        "cmake": "3.22.1",
+        "python3.11": "3.11.15",
+        "node": "v18.20.8",
+        "npm": "10.8.2",
+        "pytest": "8.4.1",
+        "python_deps": "pyparted/pydantic/cryptography/typing_extensions 导入成功"
+      },
+      "command": "gcc --version; python3.11 --version; node --version; python3.11 -m pytest --version",
+      "success": true,
+      "output": "所有关键依赖版本符合 README 要求",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T21:05:00",
+      "step": "build_attempt",
+      "action": "执行前端 npm install 安装依赖（首次因 Electron 二进制下载卡住，改用 npmmirror 镜像重试）",
+      "result": "成功",
+      "details": {
+        "packages": "523",
+        "mirror": "ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/"
+      },
+      "command": "npm install --no-audit --no-fund",
+      "success": true,
+      "output": "added 523 packages in 33s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 33
+    },
+    {
+      "timestamp": "2026-08-26T21:06:00",
+      "step": "build_attempt",
+      "action": "执行前端生产构建 npm run build（vite build）",
+      "result": "成功",
+      "details": {
+        "command": "npm run build",
+        "duration": "9.26s 构建，共 10s",
+        "artifacts": "dist/index.html、dist/assets/*.js/css"
+      },
+      "command": "npm run build",
+      "success": true,
+      "output": "✓ built in 9.26s，1670 modules transformed",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T21:07:00",
+      "step": "build_attempt",
+      "action": "构建 eulerinstall Python wheel 包",
+      "result": "成功",
+      "details": {
+        "command": "python3.11 -m build --wheel --no-isolation",
+        "duration": "2s",
+        "artifact": "eulerinstall-3.0.9-py3-none-any.whl (1.2M)"
+      },
+      "command": "python3.11 -m build --wheel --no-isolation",
+      "success": true,
+      "output": "Successfully built eulerinstall-3.0.9-py3-none-any.whl",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T21:10:00",
+      "step": "problem_resolution",
+      "action": "从源码构建 libparted 3.6 以提供 PARTITION_BLS_BOOT（首次因缺少 termcap 失败，改用 --without-readline 成功）",
+      "result": "成功",
+      "details": {
+        "problem": "Ubuntu 22.04 自带 libparted 3.4 缺少 PARTITION_BLS_BOOT，pyparted 无法暴露该常量",
+        "solution": "源码构建 parted 3.6（--without-readline），安装至多架构路径并 ldconfig",
+        "note": "构建期间还发现 pip 构建缓存导致 pyparted 未使用新头文件，用 --no-cache-dir 强制重编解决"
+      },
+      "command": "./configure --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu --without-readline && make -j2 && make install",
+      "success": true,
+      "output": "parted (GNU parted) 3.6，PARTITION_BLS_BOOT = 20 可用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 250
+    },
+    {
+      "timestamp": "2026-08-26T21:15:00",
+      "step": "dependency_installation",
+      "action": "强制重编译 pyparted（--no-cache-dir）以链接新版 libparted 头文件",
+      "result": "成功",
+      "details": {
+        "package": "pyparted==3.13.0",
+        "result": "parted.PARTITION_BLS_BOOT = 20"
+      },
+      "command": "python3.11 -m pip install --force-reinstall --no-binary pyparted --no-cache-dir 'pyparted==3.13.0' --no-deps",
+      "success": true,
+      "output": "PARTITION_BLS_BOOT 常量现可访问",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-26T21:16:00",
+      "step": "ut_execution",
+      "action": "运行 eulerinstall pytest（首次：parted 常量缺失与 archinstall import 导致收集失败）",
+      "result": "部分成功",
+      "details": {
+        "issue_1": "parted.PARTITION_BLS_BOOT 缺失（libparted 3.4）",
+        "issue_2": "3 个测试文件 import 不存在的 archinstall 模块"
+      },
+      "command": "cd eulerinstall && python3.11 -m pytest -q",
+      "success": false,
+      "output": "4 errors during collection",
+      "error": "AttributeError: module 'parted' has no attribute 'PARTITION_BLS_BOOT'; ModuleNotFoundError: No module named 'archinstall'",
+      "returncode": 2,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:18:00",
+      "step": "ut_execution",
+      "action": "运行 eulerinstall pytest（修复 parted 后：模块级 ArchConfigHandler 解析 pytest argv 导致 SystemExit）",
+      "result": "失败",
+      "details": {
+        "issue": "eulerinstall/lib/args.py 模块级 arch_config_handler = ArchConfigHandler() 解析 sys.argv，与 pytest 参数冲突"
+      },
+      "command": "cd eulerinstall && python3.11 -m pytest -q",
+      "success": false,
+      "output": "INTERNALERROR: SystemExit: 2",
+      "error": "argparse 解析 pytest 参数失败导致 SystemExit",
+      "returncode": 3,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:19:00",
+      "step": "ut_execution",
+      "action": "清空 sys.argv 后运行 eulerinstall pytest 全量收集",
+      "result": "部分成功",
+      "details": {
+        "collected": 87,
+        "collection_errors": 3,
+        "broken_files": "test_args.py、test_configuration_output.py、test_mirrorlist.py（import archinstall）"
+      },
+      "command": "python3.11 -c \"import sys; sys.argv=['pytest']; import pytest; pytest.main()\"",
+      "success": false,
+      "output": "collected 87 items / 3 errors（archinstall 模块缺失）",
+      "error": "ModuleNotFoundError: No module named 'archinstall'",
+      "returncode": 2,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:20:00",
+      "step": "ut_execution",
+      "action": "排除 3 个无法收集的测试文件后运行其余 eulerinstall 单元测试",
+      "result": "部分成功",
+      "details": {
+        "total": 87,
+        "passed": 75,
+        "failed": 12,
+        "duration": "7.24s"
+      },
+      "command": "python3.11 -c \"import sys; sys.argv=['pytest']; import pytest; pytest.main(['--ignore=...3 个文件'])\"",
+      "success": false,
+      "output": "12 failed, 75 passed in 7.24s",
+      "error": "12 个用例失败：测试 patch 目标未命中/实现与断言不一致/环境相关断言",
+      "returncode": 1,
+      "duration_seconds": 8
+    },
+    {
+      "timestamp": "2026-08-26T21:25:00",
+      "step": "ut_execution",
+      "action": "运行 ssg_ut_test bats 单元测试（run_tests.sh unit，243 个用例）",
+      "result": "失败",
+      "details": {
+        "total": 243,
+        "passed": 0,
+        "failed": 243,
+        "reason": "测试引用 ../../scripts/scripts/SV_*_rule.sh，但仓库未包含 scripts/scripts 目录"
+      },
+      "command": "cd ssg_ut_test && bash tests/run_tests.sh unit",
+      "success": false,
+      "output": "1..243，全部 not ok，sed: can't read .../scripts/scripts/SV_*_rule.sh",
+      "error": "测试依赖的规则脚本目录缺失（仓库结构不完整）",
+      "returncode": 1,
+      "duration_seconds": 16
+    },
+    {
+      "timestamp": "2026-08-26T21:28:00",
+      "step": "smoke_test",
+      "action": "安装 eulerinstall wheel 并做 import 冒烟测试",
+      "result": "成功",
+      "details": {
+        "wheel": "eulerinstall-3.0.9-py3-none-any.whl",
+        "import": "eulerinstall 导入成功"
+      },
+      "command": "python3.11 -m pip install --no-deps dist/eulerinstall-3.0.9-py3-none-any.whl && python3.11 -c 'import eulerinstall'",
+      "success": true,
+      "output": "INSTALL_RC=0，import ok",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-26T21:29:00",
+      "step": "sample_execution",
+      "action": "执行前端产物访问验证（vite preview + curl）",
+      "result": "成功",
+      "details": {
+        "url": "http://localhost:4173/",
+        "http_code": 200,
+        "title": "Heolleo App"
+      },
+      "command": "npm run preview -- --port 4173 --strictPort && curl http://localhost:4173/",
+      "success": true,
+      "output": "HTTP 200，页面正确加载 dist/index.html 与 index-Dg80ucE9.js",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 6
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "仓库根目录存在 .pre-commit-config.yaml，接入 pre-commit 质量门禁；未发现 .lint-runner.yaml/.lintrunner.toml 配置。按技能要求仅检查配置，不安装、不执行 pre-commit。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "仅检查配置（不执行）",
+        "duration_seconds": 0
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无（未配置）",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "无",
+      "summary": "仓库内不存在 .devcontainer 目录与 devcontainer.json，devcontainer 未启用"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 12,
+      "concurrency": 1,
+      "concurrency_ratio": "容器核数 4 × 20% = 0.8，向下取整至少 1",
+      "compiler": "node v18.20.8 / python3.11 (3.11.15)",
+      "notes": "前端 npm run build（vite）10 秒成功；eulerinstall python -m build --wheel --no-isolation 2 秒成功，构建时因 /usr/bin/time 不存在改用 date 计时",
+      "artifacts": [
+        {
+          "name": "index.html",
+          "path": "/workspace/dist/index.html",
+          "size": "393 B",
+          "type": "html"
+        },
+        {
+          "name": "index-Dg80ucE9.js",
+          "path": "/workspace/dist/assets/index-Dg80ucE9.js",
+          "size": "511K",
+          "type": "js"
+        },
+        {
+          "name": "index-Bf7syYVD.css",
+          "path": "/workspace/dist/assets/index-Bf7syYVD.css",
+          "size": "216K",
+          "type": "css"
+        },
+        {
+          "name": "eulerinstall-3.0.9-py3-none-any.whl",
+          "path": "/workspace/eulerinstall/dist/eulerinstall-3.0.9-py3-none-any.whl",
+          "size": "1.2M",
+          "type": "wheel"
+        }
+      ]
+    },
+    "ut": {
+      "status": "partial_success",
+      "duration_seconds": 25,
+      "total": 100,
+      "passed": 75,
+      "failed": 25,
+      "failures": [
+        {
+          "test_name": "test_args.py / test_configuration_output.py / test_mirrorlist.py（3 个文件 13 个用例）",
+          "error": "收集失败：测试代码仍 import archinstall（fork 改名 eulerinstall 后未更新），仓库内无 archinstall 模块"
+        },
+        {
+          "test_name": "test_general.py::TestLocateBinary::test_found",
+          "error": "@patch('shutil.which') 未命中 general.py 中直接导入的 which，调用真实 which 后抛 RequirementError"
+        },
+        {
+          "test_name": "test_hardware.py::TestCpuVendor::test_get_ucode",
+          "error": "get_ucode() 返回 PosixPath('amd-ucode.img')，断言期望字符串 'amd-ucode.img'"
+        },
+        {
+          "test_name": "test_hardware.py::TestSysInfo::test_virtualization",
+          "error": "SysInfo.virtualization() 返回未解码的 b'kvm\\n'，断言期望 'kvm'"
+        },
+        {
+          "test_name": "test_networking.py::TestDownloadTimer::test_timeout_exception",
+          "error": "DownloadTimer 超时异常消息与断言不匹配"
+        },
+        {
+          "test_name": "test_networking.py::TestListInterfaces::test_list_interfaces_include_loopback",
+          "error": "容器内仅检测到 1 个网络接口（eth0），断言期望 2 个（含 loopback）"
+        },
+        {
+          "test_name": "test_networking.py::TestEnrichIfaceTypes::test_enrich_iface_types",
+          "error": "enrich_iface_types(['tun0']) 返回 'BRIDGE'，断言期望 'TUN/TAP'"
+        },
+        {
+          "test_name": "test_networking.py::TestFetchDataFromUrl 4 个用例",
+          "error": "@patch('urllib.request.urlopen') 未命中模块内直接导入的 urlopen，测试发起了真实网络请求导致断言失败"
+        },
+        {
+          "test_name": "test_system_detection.py::TestSystemType::test_detect_openEuler_via_os_release",
+          "error": "容器为 Ubuntu，SystemType.detect() 返回 'unknown'，断言期望 'openEuler'（环境相关断言）"
+        },
+        {
+          "test_name": "test_system_detection.py::TestSystemType::test_detect_via_package_manager_pacman",
+          "error": "subprocess.run 实际调用次数为 1，断言期望 3（实现与测试预期不一致）"
+        }
+      ]
+    },
+    "sample": {
+      "status": "partial_success",
+      "duration_seconds": 6,
+      "reason": "eulerinstall/examples 示例脚本 import archinstall（fork 后未更新）且需要真实磁盘设备，容器内无法执行",
+      "results": [
+        {
+          "sample_name": "eulerinstall/examples/full_automated_installation.py 等示例",
+          "execution_status": "not_run",
+          "output_summary": "示例依赖 archinstall 模块（仓库内不存在）与真实磁盘设备，容器环境无法执行",
+          "execution_time": "0s"
+        },
+        {
+          "sample_name": "前端生产构建产物访问验证（vite preview）",
+          "execution_status": "success",
+          "output_summary": "npm run preview 启动后 curl http://localhost:4173/ 返回 HTTP 200，页面标题 Heolleo App，正确引用 dist 构建产物",
+          "execution_time": "6s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-26T21:16:00",
+      "title": "eulerinstall 依赖 libparted 版本要求未说明",
+      "body": "eulerinstall 3.0.9 使用 parted.PARTITION_BLS_BOOT（libparted ≥3.5 引入），但 README/pyproject/PKGBUILD 均未说明该版本要求，Ubuntu 22.04 自带 libparted 3.4 会导致测试收集失败",
+      "source": "eulerinstall/pyproject.toml、eulerinstall/eulerinstall/lib/models/device.py:760"
+    },
+    {
+      "time": "2026-08-26T21:16:00",
+      "title": "测试代码引用已改名的 archinstall 模块",
+      "body": "tests/test_args.py、test_configuration_output.py、test_mirrorlist.py 直接 import archinstall.*，但仓库包已改名为 eulerinstall 且无 archinstall 模块，13 个用例无法收集",
+      "source": "eulerinstall/tests/test_args.py:7 等"
+    },
+    {
+      "time": "2026-08-26T21:18:00",
+      "title": "pytest 与模块级 CLI 参数解析冲突",
+      "body": "eulerinstall/lib/args.py 模块级 arch_config_handler = ArchConfigHandler() 会解析 sys.argv，按文档运行 pytest（含 addopts=-s）时 argparse 报错 SystemExit，测试无法收集",
+      "source": "eulerinstall/eulerinstall/lib/args.py:558、eulerinstall/pyproject.toml"
+    },
+    {
+      "time": "2026-08-26T21:25:00",
+      "title": "ssg_ut_test 依赖的规则脚本目录缺失",
+      "body": "ssg_ut_test 的 bats 测试引用 ../../scripts/scripts/SV_*_rule.sh，但仓库仅包含 tests 目录，无 scripts 目录，243 个用例全部无法执行",
+      "source": "ssg_ut_test/tests/test_helper.bash:152"
+    },
+    {
+      "time": "2026-08-26T21:29:00",
+      "title": "README 未提供 eulerinstall 样例与测试命令",
+      "body": "README 仅列出 eulerinstall 目录结构，未给出 pytest 运行命令与示例脚本运行方式；eulerinstall/examples 示例仍 import archinstall 且需真实磁盘设备",
+      "source": "README.md、eulerinstall/examples/"
+    },
+    {
+      "time": "2026-08-26T21:30:00",
+      "title": "pyproject 动态 readme 引用不存在的文件",
+      "body": "eulerinstall/pyproject.toml 的 [tool.setuptools.dynamic] readme 引用 README.rst/USAGE.rst，仓库实际只有 README.md，构建虽成功但配置与文件不一致",
+      "source": "eulerinstall/pyproject.toml"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-26T21:02:00",
+      "problem": "npm install 时 Electron 二进制从 GitHub 下载长时间无进展",
+      "solution": "中断后设置 ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ 重新安装，33 秒完成 523 个包",
+      "source": "npm install（Electron postinstall）"
+    },
+    {
+      "timestamp": "2026-08-26T21:06:00",
+      "problem": "容器内无 /usr/bin/time 导致构建计时失败",
+      "solution": "改用 date 前后差值计时",
+      "source": "Ubuntu 22.04 基础镜像"
+    },
+    {
+      "timestamp": "2026-08-26T21:07:00",
+      "problem": "pip 安装 pyparted 报 FileNotFoundError: pkg-config",
+      "solution": "apt-get install pkg-config 后重装成功",
+      "source": "pyparted 源码构建"
+    },
+    {
+      "timestamp": "2026-08-26T21:10:00",
+      "problem": "Ubuntu 22.04 libparted 3.4 无 PARTITION_BLS_BOOT，pytest 收集失败",
+      "solution": "源码构建 parted 3.6 并安装至 /usr/lib/x86_64-linux-gnu，ldconfig 后可用",
+      "source": "eulerinstall/eulerinstall/lib/models/device.py:760"
+    },
+    {
+      "timestamp": "2026-08-26T21:10:00",
+      "problem": "parted 3.6 configure 因缺少 termcap 失败",
+      "solution": "以 --without-readline 重新 configure（库功能不受影响）",
+      "source": "parted-3.6 源码构建"
+    },
+    {
+      "timestamp": "2026-08-26T21:12:00",
+      "problem": "parted 3.6 安装后 /usr/bin/parted 报 undefined symbol（新库在 /usr/lib 与旧库冲突）",
+      "solution": "用 --libdir=/usr/lib/x86_64-linux-gnu 重装到多架构路径覆盖旧库",
+      "source": "parted-3.6 源码构建"
+    },
+    {
+      "timestamp": "2026-08-26T21:15:00",
+      "problem": "重装 pyparted 后仍无 PARTITION_BLS_BOOT（pip 构建缓存未用新头文件）",
+      "solution": "pip install --force-reinstall --no-binary pyparted --no-cache-dir 强制重编，常量变为可用",
+      "source": "pyparted==3.13.0"
+    },
+    {
+      "timestamp": "2026-08-26T21:18:00",
+      "problem": "pytest 收集时 eulerinstall 模块级 ArchConfigHandler 解析 pytest argv 抛 SystemExit",
+      "solution": "用 sys.argv=['pytest'] 包装入口运行 pytest.main()，绕过模块级参数解析",
+      "source": "eulerinstall/eulerinstall/lib/args.py:558"
+    },
+    {
+      "timestamp": "2026-08-26T21:25:00",
+      "problem": "ssg_ut_test/run_tests.sh 无执行权限",
+      "solution": "改用 bash tests/run_tests.sh unit 执行",
+      "source": "ssg_ut_test/tests/run_tests.sh"
+    },
+    {
+      "timestamp": "2026-08-26T21:29:00",
+      "problem": "vite preview 后 curl 127.0.0.1:4173 连接被拒",
+      "solution": "服务监听 localhost（IPv6 优先），改用 curl http://localhost:4173/ 返回 HTTP 200",
+      "source": "vite preview"
+    }
+  ]
+}

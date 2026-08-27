@@ -1,0 +1,588 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/openeuler/euler-copilot-shell.git",
+    "branch": "master",
+    "start_time": "2026-08-26T20:39:53",
+    "end_time": "2026-08-26T21:28:40",
+    "duration_seconds": 2927,
+    "total_steps": 14,
+    "commit": "928287ebbe245d607c171a02e41205dfeb1a1a2d",
+    "environment": "本机 Docker 容器（Tier 2 构建 openEuler 24.03 LTS 开发镜像）",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "gpt-5",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i5-12600KF",
+      "cpu_cores": 4,
+      "memory": "13Gi（可用 5.4Gi）",
+      "disk": "9.2G 可用",
+      "docker_version": "26.1.3",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS)",
+      "architecture": "x86_64",
+      "cpu_cores": 4,
+      "memory": "13Gi（可用 5.4Gi）",
+      "container_name": "euler-copilot-shell-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "euler-copilot-shell-ttfhw（Tier 2 本地构建，基于 openeuler/openeuler:24.03-lts）",
+      "selection_reason": "Tier 2：Dockerfile FROM 为基础 OS openeuler/openeuler:24.03-lts，README 无 docker pull 自定义镜像、devcontainer 无预构建 image 字段，未命中 Tier 1；仓库含 .devcontainer/Dockerfile，原样 docker build 成功",
+      "dependency_mapping": {
+        "from_dockerfile": "openeuler/openeuler:24.03-lts",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md 系统要求 + distribution/linux/euler-copilot-shell.spec ExclusiveArch",
+      "value": "x86_64（spec 声明支持 x86_64/aarch64/riscv64/loongarch64）"
+    },
+    "recommended_image": {
+      "source": ".devcontainer/Dockerfile FROM",
+      "value": "openeuler/openeuler:24.03-lts"
+    },
+    "dockerfile_dependencies": {
+      "source": ".devcontainer/Dockerfile RUN 指令",
+      "value": [
+        {
+          "original": "dnf install git curl wget tar unzip jq vim tmux zsh sudo python3 python3-devel python3-pip gettext gcc make",
+          "target_equivalent": "dnf install -y git curl wget tar unzip jq vim tmux zsh sudo python3 python3-devel python3-pip gettext gcc make"
+        },
+        {
+          "original": "python3 -m pip install uv",
+          "target_equivalent": "python3 -m pip install uv"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md 系统要求 + pyproject.toml dependencies",
+      "value": [
+        "python3>=3.11",
+        "httpx>=0.28.1",
+        "openai>=2.8.0",
+        "rich>=14.2.0",
+        "textual>=6.6.0",
+        "toml>=0.10.2",
+        "uv",
+        "pytest（测试用，需单独安装）"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md 安装说明/从源码安装 + .devcontainer/post_install.sh",
+      "value": "uv venv --python 3.11 .venv && source .venv/bin/activate && uv pip install -e '.[dev]'（devcontainer 内为 uv sync --extra dev）"
+    },
+    "ut_commands": {
+      "source": ".devcontainer/README.devcontainer.md 测试命令 + post_install.sh",
+      "value": "PYTHONPATH=src uv run pytest -q tests/log tests/tool/test_browser_availability.py tests/tool/test_token_validation.py"
+    },
+    "sample_commands": {
+      "source": ".devcontainer/README.devcontainer.md 环境内容",
+      "value": "uv run witty --help / uv run witty --version（CLI 冒烟验证）"
+    },
+    "special_dependencies": {
+      "source": "README.md + .devcontainer/Dockerfile + README.devcontainer.md",
+      "value": [
+        "uv（Python 包管理器，Dockerfile 用 pip 安装）",
+        "pytest（未声明在 dev 依赖中，post_install.sh 单独安装）",
+        "gettext（i18n 编译）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-26T20:39:53",
+      "step": "document_reading",
+      "action": "读取 README.md/README_EN.md 及其相关链接，结合 .devcontainer 配置、pyproject.toml、构建脚本提取依赖与构建/测试/样例命令",
+      "result": "成功",
+      "details": {
+        "files": [
+          "README.md",
+          "README_EN.md",
+          ".devcontainer/Dockerfile",
+          ".devcontainer/devcontainer.json",
+          ".devcontainer/README.devcontainer.md",
+          ".devcontainer/post_install.sh",
+          "pyproject.toml",
+          "scripts/build/build_rpm.sh",
+          "scripts/build/create_tarball.sh",
+          "distribution/linux/euler-copilot-shell.spec",
+          "docs/部署手册.md"
+        ]
+      },
+      "command": "cat README.md; cat README_EN.md; cat .devcontainer/Dockerfile; cat .devcontainer/devcontainer.json; cat .devcontainer/README.devcontainer.md; cat pyproject.toml",
+      "success": true,
+      "output": "Tier 2 信号：Dockerfile FROM 为基础 OS openeuler/openeuler:24.03-lts，无预构建镜像；构建/UT/样例命令均已提取",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-08-26T20:40:30",
+      "step": "static_analysis_scan",
+      "action": "检查 pre-commit 与 lint-runner 配置文件，解析 hook 列表",
+      "result": "成功",
+      "details": {
+        "pre_commit": ".pre-commit-config.yaml",
+        "hooks_count": 16,
+        "lint_runner": "未配置"
+      },
+      "command": "ls -la .pre-commit-config.yaml .lint-runner.yaml .lintrunner.toml; rg -n '^\\s*- id:' .pre-commit-config.yaml",
+      "success": true,
+      "output": ".pre-commit-config.yaml 存在，16 个 hook；.lint-runner.yaml/.lintrunner.toml 不存在",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-26T20:40:30",
+      "step": "devcontainer_scan",
+      "action": "扫描 .devcontainer 目录并读取 devcontainer.json/Dockerfile/post_install.sh",
+      "result": "成功",
+      "details": {
+        "config_dir": ".devcontainer",
+        "config_files": [
+          "Dockerfile",
+          "devcontainer.json",
+          "README.devcontainer.md",
+          "post_install.sh",
+          ".env.example"
+        ],
+        "build_type": "build.dockerfile",
+        "from": "openeuler/openeuler:24.03-lts"
+      },
+      "command": "ls -la .devcontainer/; cat .devcontainer/devcontainer.json; cat .devcontainer/Dockerfile",
+      "success": true,
+      "output": "devcontainer 存在，build.dockerfile 指向 Dockerfile，FROM openeuler/openeuler:24.03-lts",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T20:42:00",
+      "step": "image_selection",
+      "action": "判定镜像策略：无预构建镜像信号，按 Tier 2 使用仓库 .devcontainer/Dockerfile 原样构建",
+      "result": "Tier 2 Dockerfile 构建",
+      "details": {
+        "tier": "Tier 2",
+        "dockerfile": ".devcontainer/Dockerfile",
+        "from": "openeuler/openeuler:24.03-lts"
+      },
+      "command": "docker build -f .devcontainer/Dockerfile -t euler-copilot-shell-ttfhw .",
+      "success": true,
+      "output": "镜像构建成功：dnf 工具链缓存命中，pip 安装 uv 0.12.6（PyPI 下载约 400s）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 460
+    },
+    {
+      "timestamp": "2026-08-26T20:56:00",
+      "step": "container_setup",
+      "action": "启动验证容器并收集宿主机/容器规格",
+      "result": "成功",
+      "details": {
+        "container_name": "euler-copilot-shell-ttfhw",
+        "host": {
+          "arch": "x86_64",
+          "cores": 4,
+          "memory": "13Gi"
+        },
+        "container_os": "openEuler 24.03 (LTS)",
+        "python": "3.11.6",
+        "uv": "0.12.6"
+      },
+      "command": "docker run -d --name euler-copilot-shell-ttfhw -v /root/ttfhw-work/euler-copilot-shell:/workspace -u root euler-copilot-shell-ttfhw sleep infinity",
+      "success": true,
+      "output": "容器已启动：openEuler 24.03 LTS / x86_64 / 4 核 / Python 3.11.6 / uv 0.12.6",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-26T20:56:30",
+      "step": "dependency_installation",
+      "action": "执行 uv sync --extra dev 安装项目依赖（httpx/openai/rich/textual/toml/ruff）",
+      "result": "成功",
+      "details": {
+        "packages_installed": 30,
+        "command_source": ".devcontainer/post_install.sh / README.md 从源码安装"
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'cd /workspace && uv sync --extra dev'",
+      "success": true,
+      "output": "Prepared 29 packages, Installed 29 packages + witty-assistant 0.10.2；PyPI 下载较慢，耗时约 20 分钟",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1208
+    },
+    {
+      "timestamp": "2026-08-26T21:16:40",
+      "step": "dependency_installation",
+      "action": "安装 pytest 测试框架（文档说明 dev 依赖未声明 pytest，需单独安装）",
+      "result": "成功",
+      "details": {
+        "packages_installed": [
+          "pytest 9.1.1",
+          "iniconfig",
+          "packaging",
+          "pluggy"
+        ],
+        "command_source": ".devcontainer/post_install.sh"
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'cd /workspace && uv pip install pytest'",
+      "success": true,
+      "output": "Installed 4 packages: pytest 9.1.1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 35
+    },
+    {
+      "timestamp": "2026-08-26T21:17:20",
+      "step": "dependency_verification",
+      "action": "验证关键依赖 import 与 pytest 可用性",
+      "result": "成功",
+      "details": {
+        "versions": {
+          "httpx": "0.28.1",
+          "openai": "3.3.1",
+          "rich": "15.0.0",
+          "textual": "8.2.8",
+          "toml": "0.10.2",
+          "pytest": "9.1.1"
+        }
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'cd /workspace && .venv/bin/python -c \"from importlib.metadata import version; ...\" && .venv/bin/python -m pytest --version'",
+      "success": true,
+      "output": "httpx 0.28.1 / openai 3.3.1 / rich 15.0.0 / textual 8.2.8 / toml 0.10.2 / pytest 9.1.1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T21:24:00",
+      "step": "build_attempt",
+      "action": "执行文档化构建：i18n 编译 + uv build 生成 Python 包产物",
+      "result": "成功",
+      "details": {
+        "i18n": "en_US/zh_CN 编译成功",
+        "artifacts": [
+          "dist/witty_assistant-0.10.2-py3-none-any.whl (183K)",
+          "dist/witty_assistant-0.10.2.tar.gz (153K)"
+        ]
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'cd /workspace && bash scripts/tools/i18n-manager.sh compile && uv build'",
+      "success": true,
+      "output": "Compiled en_US/zh_CN；Successfully built dist/witty_assistant-0.10.2.tar.gz 与 -py3-none-any.whl",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T21:25:00",
+      "step": "ut_execution",
+      "action": "执行文档化单元测试子集（tests/log + test_browser_availability + test_token_validation）",
+      "result": "成功",
+      "details": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "command_source": ".devcontainer/post_install.sh / README.devcontainer.md"
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'cd /workspace && env PYTHONPATH=src .venv/bin/python -m pytest -q tests/log tests/tool/test_browser_availability.py tests/tool/test_token_validation.py'",
+      "success": true,
+      "output": "11 passed in 1.35s（1 条 i18n DeprecationWarning）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T21:25:30",
+      "step": "ut_execution",
+      "action": "运行文档标注为已知失败的 tests/tool/test_login.py，确认失败情况",
+      "result": "部分成功",
+      "details": {
+        "total": 5,
+        "passed": 3,
+        "failed": 2,
+        "known_issue": "get_auth_url 已改为单参数并返回元组，用例仍按旧签名调用"
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'cd /workspace && env PYTHONPATH=src .venv/bin/python -m pytest -q tests/tool/test_login.py'",
+      "success": false,
+      "output": "2 failed, 3 passed：TypeError: get_auth_url() takes 1 positional argument but 2 were given",
+      "error": "test_get_auth_url_success / test_get_auth_url_error_response 失败（旧签名）",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:28:00",
+      "step": "sample_execution",
+      "action": "执行 CLI 冒烟：witty --version / --help",
+      "result": "成功",
+      "details": {
+        "version": "0.10.2",
+        "help": "usage 正常输出"
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'cd /workspace && .venv/bin/witty --version; .venv/bin/witty --help'",
+      "success": true,
+      "output": "witty 0.10.2；usage: witty [-h] [-V] [--init] [--llm-config] [--agent] [--login] ...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T21:28:30",
+      "step": "smoke_test",
+      "action": "wheel 安装冒烟：独立 venv 安装 dist 产物并运行 witty --version",
+      "result": "成功",
+      "details": {
+        "wheel": "dist/witty_assistant-0.10.2-py3-none-any.whl"
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'python3 -m venv /tmp/wheel-test-venv && uv pip install --python /tmp/wheel-test-venv/bin/python dist/witty_assistant-0.10.2-py3-none-any.whl && /tmp/wheel-test-venv/bin/witty --version'",
+      "success": true,
+      "output": "wheel 安装成功（复用 uv 缓存），witty 0.10.2",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T21:29:00",
+      "step": "sample_execution",
+      "action": "运行文档列出的脚本式异步测试（token 集成 + RPM 可用性检查）",
+      "result": "失败",
+      "details": {
+        "token_integration": "断言错误信息语言不匹配",
+        "rpm_availability": "循环导入 ImportError"
+      },
+      "command": "docker exec euler-copilot-shell-ttfhw bash -c 'cd /workspace && env PYTHONPATH=src .venv/bin/python tests/tool/test_token_integration.py; env PYTHONPATH=src .venv/bin/python tests/app/deployment/test_rpm_availability.py'",
+      "success": false,
+      "output": "token 集成测试断言失败；test_rpm_availability.py ImportError: cannot import name InitializationModeScreen（循环导入）",
+      "error": "两个脚本式测试均失败（仓库既有问题，非容器环境导致）",
+      "returncode": 1,
+      "duration_seconds": 2
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 .pre-commit-config.yaml（pre-commit-hooks、gitleaks、codespell、ruff/ruff-format、bandit、shfmt、shellcheck、markdownlint 共 16 个 hook）；未检测到 lint-runner 配置。按 skill 规则仅记录配置，不执行 pre-commit。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置（未执行，按规则仅检查配置）",
+        "duration_seconds": 0,
+        "total_hooks": 16,
+        "hooks": [
+          {
+            "id": "trailing-whitespace",
+            "repo": "pre-commit/pre-commit-hooks"
+          },
+          {
+            "id": "end-of-file-fixer",
+            "repo": "pre-commit/pre-commit-hooks"
+          },
+          {
+            "id": "check-yaml",
+            "repo": "pre-commit/pre-commit-hooks"
+          },
+          {
+            "id": "check-json",
+            "repo": "pre-commit/pre-commit-hooks"
+          },
+          {
+            "id": "check-xml",
+            "repo": "pre-commit/pre-commit-hooks"
+          },
+          {
+            "id": "check-merge-conflict",
+            "repo": "pre-commit/pre-commit-hooks"
+          },
+          {
+            "id": "check-added-large-files",
+            "repo": "pre-commit/pre-commit-hooks"
+          },
+          {
+            "id": "detect-private-key",
+            "repo": "pre-commit/pre-commit-hooks"
+          },
+          {
+            "id": "gitleaks",
+            "repo": "gitleaks/gitleaks"
+          },
+          {
+            "id": "codespell",
+            "repo": "codespell-project/codespell"
+          },
+          {
+            "id": "ruff",
+            "repo": "astral-sh/ruff-pre-commit"
+          },
+          {
+            "id": "ruff-format",
+            "repo": "astral-sh/ruff-pre-commit"
+          },
+          {
+            "id": "bandit",
+            "repo": "PyCQA/bandit"
+          },
+          {
+            "id": "shfmt",
+            "repo": "scop/pre-commit-shfmt"
+          },
+          {
+            "id": "shellcheck",
+            "repo": "shellcheck-py/shellcheck-py"
+          },
+          {
+            "id": "markdownlint",
+            "repo": "igorshubovych/markdownlint-cli"
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        "Dockerfile",
+        "devcontainer.json",
+        "README.devcontainer.md",
+        "post_install.sh",
+        ".env.example"
+      ],
+      "original_base_image": "openeuler/openeuler:24.03-lts",
+      "used_image": "openeuler/openeuler:24.03-lts（Tier 2 按 Dockerfile 原样构建，构建参数 OPENEULER_IMAGE 默认值）",
+      "summary": "devcontainer 采用单容器 openEuler 24.03 LTS 开发环境：devcontainer.json 使用 build.dockerfile（非预构建 image），Dockerfile 预装 git/curl/python3/python3-devel/pip/gettext/gcc/make 等并 pip 安装 uv，post_install.sh 执行 uv sync --extra dev、安装 pytest 并运行测试子集；remoteUser 为 vscode。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 2,
+      "artifacts": [
+        {
+          "name": "witty_assistant-0.10.2-py3-none-any.whl",
+          "path": "dist/witty_assistant-0.10.2-py3-none-any.whl",
+          "size": "183K",
+          "type": "wheel"
+        },
+        {
+          "name": "witty_assistant-0.10.2.tar.gz",
+          "path": "dist/witty_assistant-0.10.2.tar.gz",
+          "size": "153K",
+          "type": "sdist"
+        }
+      ],
+      "concurrency": 4,
+      "concurrency_ratio": "纯 Python 打包构建，无编译并发需求",
+      "notes": "构建采用文档化流程：i18n 编译（scripts/tools/i18n-manager.sh compile）后 uv build（hatchling 后端）生成 wheel/sdist。RPM 打包（scripts/build/build_rpm.sh）按 .devcontainer/README.devcontainer.md 明确说明依赖 rpmbuild 宿主环境，不在开发容器内执行。"
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 1,
+      "total": 11,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "partial_success",
+      "duration_seconds": 15,
+      "results": [
+        {
+          "sample_name": "CLI 冒烟 witty --version",
+          "execution_status": "success",
+          "output_summary": "输出 witty 0.10.2",
+          "execution_time": "1.4s"
+        },
+        {
+          "sample_name": "CLI 冒烟 witty --help",
+          "execution_status": "success",
+          "output_summary": "输出完整 usage 与各选项说明（--init/--llm-config/--agent/--login/--locale/--logs 等）",
+          "execution_time": "1.5s"
+        },
+        {
+          "sample_name": "wheel 安装冒烟（独立 venv 安装 dist wheel 后运行 witty --version）",
+          "execution_status": "success",
+          "output_summary": "wheel 安装成功，witty 0.10.2 正常运行",
+          "execution_time": "10s"
+        },
+        {
+          "sample_name": "脚本式异步测试 tests/tool/test_token_integration.py",
+          "execution_status": "failed",
+          "output_summary": "断言失败：validators 返回英文错误信息 Access token format is invalid，用例断言中文 格式无效（测试与实现语言不一致）",
+          "execution_time": "1s"
+        },
+        {
+          "sample_name": "脚本式异步测试 tests/app/deployment/test_rpm_availability.py",
+          "execution_status": "failed",
+          "output_summary": "ImportError：app.deployment 与 tool 包存在循环导入（import app.deployment 可稳定复现），脚本无法运行",
+          "execution_time": "0.2s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-26T21:29:00",
+      "title": "test_token_integration.py 断言语言与实现不一致",
+      "body": "文档将其列为可手动执行的脚本式测试，但测试断言错误信息包含中文「格式无效」，实际 tool/validators.py 返回英文 'Access token format is invalid'，直接运行必然失败。",
+      "source": "tests/tool/test_token_integration.py + .devcontainer/README.devcontainer.md"
+    },
+    {
+      "time": "2026-08-26T21:29:00",
+      "title": "tests/app/deployment 系列脚本存在循环导入无法运行",
+      "body": "test_rpm_availability.py 通过 import app.deployment.agent 触发 app.deployment 与 tool 包循环导入（app.deployment.__init__ → components → service → agent → models → tool.validators → tool.__init__ → oi_backend_init → app.deployment），脚本直接运行报 ImportError；import app.deployment 本身即可稳定复现，非容器环境问题。",
+      "source": "tests/app/deployment/test_rpm_availability.py / src/app/deployment/__init__.py / src/tool/__init__.py"
+    },
+    {
+      "time": "2026-08-26T21:25:30",
+      "title": "test_login.py 用例过时（文档已声明）",
+      "body": "tests/tool/test_login.py 中 2 个 get_auth_url 用例仍按旧双参数签名调用，源码已改为单参数并返回元组，运行报 TypeError。devcontainer README 已声明该文件不纳入门禁并记录于 .pytest_cache。",
+      "source": "tests/tool/test_login.py + .devcontainer/README.devcontainer.md"
+    },
+    {
+      "time": "2026-08-26T21:20:00",
+      "title": "uv.lock 未提交且 dev 依赖未声明 pytest",
+      "body": "仓库未提交 uv.lock（首次 uv sync 动态生成），可复现构建依赖网络解析；pytest 未声明在 [project.optional-dependencies].dev，需 post_install.sh 单独安装。devcontainer README 已提示。",
+      "source": "pyproject.toml + .devcontainer/README.devcontainer.md"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-26T21:16:00",
+      "problem": "PyPI 直连下载极慢：uv sync 解析与下载 29 个包耗时约 20 分钟（约 47KB/s）",
+      "solution": "保持耐心等待完成；容器内 uv 全局缓存已保留全部 wheel，后续 wheel 冒烟通过 uv pip install 复用缓存秒级完成。文档建议国内网络使用 UV_DEFAULT_INDEX=https://mirrors.huaweicloud.com/repository/pypi/simple。",
+      "source": "验证环境网络 / .devcontainer/README.devcontainer.md"
+    },
+    {
+      "timestamp": "2026-08-26T21:29:00",
+      "problem": "tests/app/deployment/test_rpm_availability.py 因 app.deployment 与 tool 包循环导入无法运行",
+      "solution": "确认非容器环境问题（import app.deployment 可复现）；该系列测试属于真实部署验证，不属于开发门禁，已在报告中记录为仓库问题。",
+      "source": "src/app/deployment/__init__.py / src/tool/__init__.py"
+    },
+    {
+      "timestamp": "2026-08-26T21:29:00",
+      "problem": "tests/tool/test_token_integration.py 断言中文错误信息但实现返回英文，脚本运行失败",
+      "solution": "按文档它属于手动按需执行的脚本式测试，不作为门禁；已在 documentation_gaps 记录，建议统一错误信息语言或修正断言。",
+      "source": "tests/tool/test_token_integration.py"
+    }
+  ]
+}

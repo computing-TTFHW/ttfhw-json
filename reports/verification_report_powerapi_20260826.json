@@ -1,0 +1,808 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/openeuler/powerapi.git",
+    "branch": "master",
+    "start_time": "2026-08-26T20:29:35",
+    "end_time": "2026-08-26T21:25:28",
+    "duration_seconds": 3353,
+    "total_steps": 27,
+    "commit": "a11c75b8f64611d1f24cd17ddd2ae4dd654c5aaa",
+    "environment": "Docker 容器（ubuntu:22.04）内验证；宿主机 x86_64/4核/13Gi，Docker 26.1.3",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "gpt-5-codex",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i5-12600KF",
+      "cpu_cores": 4,
+      "memory": "13Gi",
+      "disk": "63G（可用约 6.6G）",
+      "docker_version": "26.1.3",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "Ubuntu 22.04.5 LTS",
+      "architecture": "x86_64",
+      "cpu_cores": 4,
+      "memory": "13Gi",
+      "container_name": "powerapi-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "ubuntu:22.04",
+      "selection_reason": "Tier 3 基础 OS 从零安装：仓库无 Dockerfile、无预构建镜像/devcontainer 信号，README 未指定 OS，按技能默认选择 ubuntu:22.04（本地已有镜像，无需外网拉取）；get_gtest.sh 中的 yum 安装 gtest 按跨发行版映射替换为 libgtest-dev 并预构建共享库",
+      "dependency_mapping": {
+        "from_dockerfile": "无 Dockerfile",
+        "from_cmake": "无 find_package 外部依赖，仅链接 -lpthread；gtest 目标链接 -lgtest -lgtest_main",
+        "from_readme": "README 未列依赖，构建命令为 ./build.sh",
+        "mappings": [
+          {
+            "original": "yum install gtest-devel",
+            "target": "apt-get install -y libgtest-dev googletest + 源码构建 libgtest.so/libgtest_main.so",
+            "source": "pwrapic/gtest/get_gtest.sh"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md / README.en.md / CMakeLists.txt（均未声明架构限制）",
+      "value": "无明确架构要求（通用 C 工程，验证环境为 x86_64）"
+    },
+    "recommended_image": {
+      "source": "仓库扫描：README 无镜像推荐、无 Dockerfile、无 devcontainer.json",
+      "value": "未提供预构建镜像或推荐镜像"
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库扫描",
+      "value": "无 Dockerfile"
+    },
+    "dependencies": {
+      "source": "README.md + CMakeLists.txt + pwrapic/gtest/get_gtest.sh",
+      "value": [
+        "gcc",
+        "g++（gtest 用例为 C/C++ 编译）",
+        "make",
+        "cmake（>= 3.16）",
+        "gtest / gtest-devel（UT 依赖）",
+        "pthread（系统库，链接 -lpthread）"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md 使用说明 + build.sh",
+      "value": "./build.sh（默认模式构建全部）；可选 ./build.sh client / server / release / asan / export"
+    },
+    "ut_commands": {
+      "source": "pwrapic/gtest/CMakeLists.txt + build.sh",
+      "value": "./build.sh 构建后执行 ./release/gtest/gtest_test"
+    },
+    "sample_commands": {
+      "source": "README.md 使用说明",
+      "value": "先后台启动 ./release/pwrapis/pwrapis pwrapis/conf/pwrapis_config.ini &，再执行 ./release/pwrapi_demo/pwrapic_demo"
+    },
+    "special_dependencies": {
+      "source": "pwrapic/gtest/get_gtest.sh",
+      "value": [
+        "gtest 动态库：脚本在缺少 /lib64/libgtest.so 时执行 yum install gtest-devel（Ubuntu 环境需改为 libgtest-dev 并自行构建 .so）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-26T20:30:00",
+      "step": "document_reading",
+      "action": "读取 README.md 提取构建/测试/样例命令并检查链接",
+      "result": "成功",
+      "details": {
+        "file": "README.md"
+      },
+      "command": "cat README.md",
+      "success": true,
+      "output": "仓库介绍：电源 API SO 与服务；构建命令 ./build.sh；样例 pwrapic_demo；链接为 gitee 官方博客/探索/GVP/帮助/明星页与 res/arch.png，均与编译测试无关",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:30:00",
+      "step": "document_reading",
+      "action": "读取 README.en.md 提取构建/测试/样例命令并检查链接",
+      "result": "成功",
+      "details": {
+        "file": "README.en.md"
+      },
+      "command": "cat README.en.md",
+      "success": true,
+      "output": "英文版介绍，无构建/测试/样例具体命令；链接均为 gitee 官方页面，与编译测试无关",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:30:00",
+      "step": "document_reading",
+      "action": "逐一跟进 README 中所有链接并判定相关性（外链一层、仓库内两层）",
+      "result": "成功",
+      "details": {
+        "links": [
+          "res/arch.png",
+          "https://blog.gitee.com",
+          "https://gitee.com/explore",
+          "https://gitee.com/gvp",
+          "https://gitee.com/help",
+          "https://gitee.com/gitee-stars/"
+        ]
+      },
+      "command": "rg -o 'https?://[^ )]+|\\./[^ )]+' README.md README.en.md",
+      "success": true,
+      "output": "按标题判定全部与编译/测试/依赖/环境/样例无关，跳过查看（仅 res/arch.png 为架构图，不涉及构建）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:30:00",
+      "step": "document_reading",
+      "action": "读取 CMakeLists.txt 及子目录 CMakeLists 提取依赖与构建入口",
+      "result": "成功",
+      "details": {
+        "files": [
+          "CMakeLists.txt",
+          "pwrapic/CMakeLists.txt",
+          "pwrapic/src/CMakeLists.txt",
+          "pwrapic/test/CMakeLists.txt",
+          "pwrapic/gtest/CMakeLists.txt",
+          "pwrapis/src/CMakeLists.txt"
+        ]
+      },
+      "command": "cat CMakeLists.txt pwrapic/CMakeLists.txt pwrapic/src/CMakeLists.txt pwrapic/test/CMakeLists.txt pwrapic/gtest/CMakeLists.txt pwrapis/src/CMakeLists.txt",
+      "success": true,
+      "output": "cmake_minimum_required 3.16；目标 libpwrapi.so、pwrapis、pwrapic_demo、gtest_test；无 find_package 外部依赖，仅 -lpthread；gtest 目标链接 -lgtest -lgtest_main -lpthread",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:30:00",
+      "step": "document_reading",
+      "action": "读取 build.sh / install.sh / uninstall.sh / clean.sh 提取构建部署命令",
+      "result": "成功",
+      "details": {
+        "files": [
+          "build.sh",
+          "install.sh",
+          "uninstall.sh",
+          "clean.sh"
+        ]
+      },
+      "command": "cat build.sh install.sh uninstall.sh clean.sh",
+      "success": true,
+      "output": "build.sh 执行 cmake+make，产物拷贝到 release/ 目录；install.sh 为 sudo make install + systemctl enable",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:30:00",
+      "step": "document_reading",
+      "action": "读取 pwrapic/gtest/get_gtest.sh 提取 UT 依赖安装方式",
+      "result": "成功",
+      "details": {
+        "file": "pwrapic/gtest/get_gtest.sh"
+      },
+      "command": "cat pwrapic/gtest/get_gtest.sh",
+      "success": true,
+      "output": "缺少 /lib64/libgtest.so 时执行 sudo yum install gtest-devel，说明 UT 依赖 gtest 动态库",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:30:00",
+      "step": "document_reading",
+      "action": "扫描仓库确认是否命中 NPU 相关关键词（CANN/Ascend/torch_npu/davinci/昇腾）",
+      "result": "成功",
+      "details": {
+        "npu_required": false
+      },
+      "command": "rg -n -i 'cann|ascend|torch_npu|davinci|昇腾' .",
+      "success": true,
+      "output": "无真实命中（npu 关键词命中的均为 InputParam 等代码标识符误报），npu_required=false",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:30:07",
+      "step": "static_analysis_scan",
+      "action": "扫描根目录 pre-commit 与 lint-runner 配置文件",
+      "result": "成功",
+      "details": {
+        "pre_commit_configured": false,
+        "lint_runner_configured": false
+      },
+      "command": "ls -la .pre-commit-config.yaml .lint-runner.yaml .lintrunner.toml .devcontainer",
+      "success": true,
+      "output": "未发现 .pre-commit-config.yaml、.lint-runner.yaml、.lintrunner.toml",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:30:07",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录及 devcontainer.json 配置",
+      "result": "成功",
+      "details": {
+        "config_dir": null,
+        "config_files": []
+      },
+      "command": "find . -maxdepth 2 -name '.devcontainer*'",
+      "success": true,
+      "output": "未发现 .devcontainer 目录或 devcontainer.json",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:07",
+      "step": "image_selection",
+      "action": "选择基础镜像（Tier 3 判定）",
+      "result": "Tier 3 基础 OS 从零安装",
+      "details": {
+        "tier": "Tier 3",
+        "reason": "无 Dockerfile/无预构建镜像信号/README 未指定 OS",
+        "image": "ubuntu:22.04"
+      },
+      "command": "docker images && rg -l 'FROM' . 2>/dev/null; find . -iname 'Dockerfile*' -o -iname '*devcontainer*'",
+      "success": true,
+      "output": "仓库无 Dockerfile/devcontainer/预构建镜像信号，命中 Tier 3；选择本地已有的 ubuntu:22.04",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:07",
+      "step": "container_setup",
+      "action": "启动验证容器 powerapi-ttfhw 并挂载仓库",
+      "result": "成功",
+      "details": {
+        "container": "powerapi-ttfhw",
+        "mount": "/root/ttfhw-work/powerapi:/workspace"
+      },
+      "command": "docker run -d --name powerapi-ttfhw -v /root/ttfhw-work/powerapi:/workspace ubuntu:22.04 sleep infinity",
+      "success": true,
+      "output": "容器 37a8a2e49936 启动成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:07",
+      "step": "dependency_installation",
+      "action": "执行 apt-get update 更新软件源",
+      "result": "成功",
+      "details": {
+        "step": "apt-get update"
+      },
+      "command": "docker exec powerapi-ttfhw bash -lc 'apt-get update -y'",
+      "success": true,
+      "output": "Fetched 48.1 MB，软件源更新完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:07",
+      "step": "dependency_installation",
+      "action": "安装系统工具链 gcc g++ make cmake git python3 python3-pip",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "gcc",
+          "g++",
+          "make",
+          "cmake",
+          "git",
+          "python3",
+          "python3-pip"
+        ]
+      },
+      "command": "docker exec powerapi-ttfhw bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get install -y gcc g++ make cmake git python3 python3-pip'",
+      "success": true,
+      "output": "工具链安装完成：gcc 11.4.0 / cmake 3.22.1 / python 3.10.12",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:07",
+      "step": "dependency_installation",
+      "action": "安装 gtest 测试框架（libgtest-dev + googletest）",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "libgtest-dev",
+          "googletest"
+        ]
+      },
+      "command": "docker exec powerapi-ttfhw bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get install -y libgtest-dev googletest'",
+      "success": true,
+      "output": "gtest 1.11.0 安装完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:07",
+      "step": "dependency_installation",
+      "action": "从 googletest 源码构建共享库（BUILD_SHARED_LIBS=ON）",
+      "result": "成功",
+      "details": {
+        "mode": "BUILD_SHARED_LIBS=ON",
+        "output": "/tmp/gtest-build/lib"
+      },
+      "command": "docker exec powerapi-ttfhw bash -lc 'cmake -S /usr/src/googletest -B /tmp/gtest-build -DBUILD_SHARED_LIBS=ON && cmake --build /tmp/gtest-build -j4'",
+      "success": true,
+      "output": "生成 libgtest.so / libgtest_main.so 等共享库",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:07",
+      "step": "dependency_installation",
+      "action": "安装 gtest 共享库到系统目录并创建 /lib64 软链",
+      "result": "成功",
+      "details": {
+        "target": "/usr/lib/x86_64-linux-gnu",
+        "symlink": "/lib64/libgtest.so -> /usr/lib/x86_64-linux-gnu/libgtest.so"
+      },
+      "command": "docker exec powerapi-ttfhw bash -lc 'cp -d /tmp/gtest-build/lib/libgtest*.so* /usr/lib/x86_64-linux-gnu/ && ln -sf ... && ldconfig'",
+      "success": true,
+      "output": "软链创建成功，满足 get_gtest.sh 的 /lib64/libgtest.so 检查",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:07",
+      "step": "dependency_verification",
+      "action": "验证容器内工具链与 gtest 依赖就绪",
+      "result": "成功",
+      "details": {
+        "os": "Ubuntu 22.04.5 LTS",
+        "gcc": "11.4.0",
+        "cmake": "3.22.1",
+        "gtest": "已就绪"
+      },
+      "command": "docker exec powerapi-ttfhw bash -lc 'gcc --version; cmake --version; ls -l /lib64/libgtest.so'",
+      "success": true,
+      "output": "全部依赖验证通过，仓库挂载于 /workspace",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:36:43",
+      "step": "build_attempt",
+      "action": "在容器内执行 ./build.sh 构建全部目标（libpwrapi.so、pwrapis、pwrapic_demo、gtest_test）",
+      "result": "成功",
+      "details": {
+        "command": "cd /workspace && ./build.sh",
+        "duration": "real 0m5.597s",
+        "exit": 0
+      },
+      "command": "docker exec powerapi-ttfhw bash -lc 'cd /workspace && time ./build.sh'",
+      "success": true,
+      "output": "[100%] Built target gtest_test / pwrapic_demo；EXIT=0；real 0m5.597s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 6
+    },
+    {
+      "timestamp": "2026-08-26T21:21:36",
+      "step": "ut_execution",
+      "action": "从 release/gtest 运行 gtest_test（README 未说明运行位置），StartService 相对路径解析错误导致 51 个用例失败",
+      "result": "失败",
+      "details": {
+        "issue": "../../../release/pwrapis/pwrapis 从 release/gtest 解析为 /release/pwrapis/pwrapis"
+      },
+      "command": "cd /workspace/release/gtest && ./gtest_test",
+      "success": false,
+      "output": "51 FAILED TESTS；已定位为运行目录问题",
+      "error": "51 FAILED TESTS；已定位为运行目录问题",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:21:36",
+      "step": "ut_execution",
+      "action": "从构建目录 build/pwrapic/gtest 重跑 gtest_test，首次运行 36/55 用例后因 CPU 频率用例长超时被中断",
+      "result": "部分成功",
+      "details": {
+        "completed": 36,
+        "ok": 24,
+        "failed": 12
+      },
+      "command": "cd /workspace/build/pwrapic/gtest && ./gtest_test",
+      "success": false,
+      "output": "24 通过/12 失败，CPU GetFreq 等用例因服务崩溃等待约 152 秒",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:21:36",
+      "step": "dependency_installation",
+      "action": "安装 perf/ipmitool 运行时工具以补齐用例依赖",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "linux-tools-common",
+          "linux-tools-generic",
+          "ipmitool"
+        ]
+      },
+      "command": "apt-get install -y linux-tools-common linux-tools-generic ipmitool",
+      "success": true,
+      "output": "perf 5.15 与宿主 openEuler 6.6 内核不匹配，perf stat 仍不可用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:21:36",
+      "step": "ut_execution",
+      "action": "重试依赖 perf 的 PWR_SetMetaDataCallback_Test_002",
+      "result": "失败",
+      "details": {
+        "reason": "perf 与宿主内核不匹配，ipc/llcMiss 仍为 -nan"
+      },
+      "command": "timeout 60 ./gtest_test --gtest_filter='RegisterOkTestCommon.PWR_SetMetaDataCallback_Test_002'",
+      "success": false,
+      "output": "1 FAILED TEST，环境限制",
+      "error": "1 FAILED TEST，环境限制",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:21:36",
+      "step": "ut_execution",
+      "action": "完整重跑 55 个用例（40 分钟超时）",
+      "result": "成功",
+      "details": {
+        "total": 55,
+        "passed": 28,
+        "failed": 27,
+        "duration_seconds": 1166
+      },
+      "command": "cd /workspace/build/pwrapic/gtest && timeout 2400 ./gtest_test",
+      "success": true,
+      "output": "28 通过/27 失败；失败均为容器缺少 cpufreq/idle sysfs、perf/ipmitool 不可用等环境限制，及服务端 poNum=0 除零崩溃",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:25:28",
+      "step": "sample_execution",
+      "action": "按 README 启动 pwrapis 服务（release 产物+配置文件）并验证 socket",
+      "result": "成功",
+      "details": {
+        "cmd": "nohup ./pwrapis /workspace/pwrapis/conf/pwrapis_config.ini &"
+      },
+      "command": "cd /workspace/release/pwrapis && nohup ./pwrapis /workspace/pwrapis/conf/pwrapis_config.ini &",
+      "success": true,
+      "output": "服务进程存活，/etc/sysconfig/pwrapis/pwrserver.sock 已创建",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:25:28",
+      "step": "sample_execution",
+      "action": "运行 README 指定的样例 pwrapic_demo（首次，输出缓冲丢失）",
+      "result": "失败",
+      "details": {
+        "issue": "stdout 全缓冲，进程卡在服务崩溃后的重连等待，未刷新输出"
+      },
+      "command": "cd /workspace/release/pwrapi_demo && timeout 90 ./pwrapic_demo",
+      "success": false,
+      "output": "日志为空，仅记录 90 秒超时",
+      "error": "日志为空，仅记录 90 秒超时",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:25:28",
+      "step": "sample_execution",
+      "action": "以 stdbuf -oL 行缓冲重跑样例并捕获输出",
+      "result": "部分成功",
+      "details": {
+        "timeout_seconds": 75,
+        "ok_groups": 10
+      },
+      "command": "cd /workspace/release/pwrapi_demo && timeout 75 stdbuf -oL ./pwrapic_demo",
+      "success": false,
+      "output": "前 10 组接口 SUCCESS；PWR_CPU_GetFreqAbility 触发服务端 Floating point exception，客户端重连至超时",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:25:28",
+      "step": "sample_execution",
+      "action": "分析样例执行结果与失败原因",
+      "result": "成功",
+      "details": {
+        "crash": "pwrapis 服务端除零（SIGFPE）",
+        "root_cause": "/sys/devices/system/cpu/cpufreq 为空，poNum=0 时 GetCpuFreqAbility 计算 step 除零"
+      },
+      "command": "分析 /tmp/pwrapi-demo2.log 与 pwrapis 运行日志",
+      "success": true,
+      "output": "样例核心调用链可用，CPU 频率能力接口在容器环境下使服务崩溃",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": false,
+      "summary": "仓库根目录未发现 .pre-commit-config.yaml 与 .lint-runner.yaml/.lintrunner.toml 配置，静态检查未启用，按技能规则仅记录配置情况不执行任何静态检查工具",
+      "pre_commit": {
+        "configured": false,
+        "config_file": "无（仓库无 .pre-commit-config.yaml）",
+        "status": "未配置",
+        "duration_seconds": 0
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": "无（仓库无 .lint-runner.yaml/.lintrunner.toml）"
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无（仓库无 .devcontainer 目录）",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "无",
+      "summary": "仓库未包含 .devcontainer 目录及 devcontainer.json，无 devcontainer 开发环境配置"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 6,
+      "cmake": "3.22.1",
+      "compiler": "gcc 11.4.0 / g++ 11.4.0",
+      "concurrency": 1,
+      "concurrency_ratio": "容器核数 4 × 20% = 0.8，向下取整至少 1；build.sh 内 make 未指定 -j，实际并发 1",
+      "artifacts": [
+        {
+          "name": "libpwrapi.so",
+          "path": "release/pwrapic/lib/libpwrapi.so",
+          "size": "159232 字节 (155.5K)",
+          "type": "library"
+        },
+        {
+          "name": "pwrapis",
+          "path": "release/pwrapis/pwrapis",
+          "size": "297168 字节 (290.2K)",
+          "type": "executable"
+        },
+        {
+          "name": "pwrapic_demo",
+          "path": "release/pwrapi_demo/pwrapic_demo",
+          "size": "61232 字节 (59.8K)",
+          "type": "executable"
+        },
+        {
+          "name": "gtest_test",
+          "path": "release/gtest/gtest_test",
+          "size": "1226744 字节 (1.17M)",
+          "type": "executable"
+        },
+        {
+          "name": "pwrapis_config.ini",
+          "path": "release/pwrapis/conf/pwrapis_config.ini",
+          "size": "配置文件",
+          "type": "config"
+        },
+        {
+          "name": "powerapi.h/pwrdata.h/pwrerr.h",
+          "path": "release/pwrapic/inc/",
+          "size": "头文件（5.7K/8.5K/2.5K）",
+          "type": "header"
+        }
+      ]
+    },
+    "ut": {
+      "status": "partial_success",
+      "duration_seconds": 1166,
+      "total": 55,
+      "passed": 28,
+      "failed": 27,
+      "failures": [
+        {
+          "test_name": "RegisterOkTestCommon.PWR_SetMetaDataCallback_Test_002",
+          "error": "依赖 perf 命令采集 CPU 性能数据，容器内 perf 与宿主 openEuler 6.6 内核不匹配，ipc/llcMiss 为 -nan，断言 0 < ipc 失败"
+        },
+        {
+          "test_name": "RegisterOkTestCommon.PWR_RequestControlAuth_Test_001",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)；GetCpuCurFreq 返回 65535"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_SYS_GetRtPowerInfo_Test_001",
+          "error": "容器内无 ipmitool/BMC，sysPower 读取为 0，断言 0 < sysPower 失败"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetInfo_Test_001",
+          "error": "容器内无 cpufreq sysfs，minFreq/maxFreq 为 0，断言失败"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreqAbility_Test_001",
+          "error": "服务端处理 CPU 频率请求时因 policy 数为 0 除零崩溃（SIGFPE），客户端等待约 152 秒后超时"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreqRange_Test_001",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreqRange_Test_001",
+          "error": "服务端处理 CPU 频率请求时因 policy 数为 0 除零崩溃（SIGFPE），客户端等待约 152 秒后超时"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreqGovernor_Test_001",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)，GetFreqGovernor 返回 13"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreqGovernor_Test_002",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)，GetFreqGovernor 返回 13"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreq_Test_001",
+          "error": "服务端处理 CPU 频率请求时因 policy 数为 0 除零崩溃（SIGFPE），客户端等待约 152 秒后超时"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreq_Test_002",
+          "error": "服务端处理 CPU 频率请求时因 policy 数为 0 除零崩溃（SIGFPE），客户端等待约 152 秒后超时"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreq_Test_003",
+          "error": "服务端处理 CPU 频率请求时因 policy 数为 0 除零崩溃（SIGFPE），客户端等待约 152 秒后超时"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreq_Test_001",
+          "error": "服务端处理 CPU 频率请求时因 policy 数为 0 除零崩溃（SIGFPE），客户端等待约 152 秒后超时"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreq_Test_002",
+          "error": "服务端处理 CPU 频率请求时因 policy 数为 0 除零崩溃（SIGFPE），客户端等待约 152 秒后超时"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreqGovAttr_002",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)，GetFreqGovAttr 返回 9"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreqGovAttr_003",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)，GetFreqGovAttr 返回 9"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreqGovAttr_004",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)，GetFreqGovAttr 返回 9"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetFreqGovAttr_005",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)，GetFreqGovAttr 返回 9"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreqGovAttr_002",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreqGovAttr_003",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreqGovAttr_004",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetFreqGovAttr_005",
+          "error": "容器内无 cpufreq sysfs（/sys/devices/system/cpu/cpufreq 为空、/sys 只读），接口返回 PWR_ERR_COMMON(13)"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetIdleInfo_002",
+          "error": "PWR_CPU_GetIdleInfo(NULL) 返回 4，断言与 PWR_SUCCESS 不符"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_GetIdleGovernor_001",
+          "error": "无 cpuidle sysfs 数据，GetIdleGovernor 返回 15"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_SetIdleGovernor_001",
+          "error": "无 cpuidle sysfs 数据，SetIdleGovernor 返回 15"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_DmaGetLatency_001",
+          "error": "DMA 延迟读取返回 500（/sys 只读或无节点）"
+        },
+        {
+          "test_name": "RegisterOkCpuTest.PWR_CPU_DmaSetLatency_001",
+          "error": "DMA 延迟设置返回 500（/sys 只读或无节点）"
+        }
+      ]
+    },
+    "sample": {
+      "status": "partial_success",
+      "duration_seconds": 75,
+      "results": [
+        {
+          "sample_name": "pwrapic_demo",
+          "execution_status": "partial_success",
+          "output_summary": "按 README 先启动 pwrapis 服务后运行样例：PWR_SetServerInfo/PWR_SetClientSockPath/PWR_SetLogCallback/PWR_SetEventCallback/PWR_Register/PWR_RequestControlAuth/PWR_SYS_GetRtPower/PWR_CPU_GetInfo/PWR_CPU_GetUsage/PWR_CPU_GetPerfData 共 10 组接口调用均 SUCCESS；随后 PWR_CPU_GetFreqAbility 请求触发服务端除零崩溃（Floating point exception），客户端持续重连直至 75 秒超时终止（样例主循环本为持续运行设计）",
+          "execution_time": "75s（超时终止）"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-26T21:01:14",
+      "title": "README 安装教程为占位符",
+      "body": "README.md 与 README.en.md 的「安装教程」均为 xxxx 占位内容，未提供任何实际安装/部署步骤，外部新手无法据此完成安装。",
+      "source": "README.md / README.en.md 安装教程章节"
+    },
+    {
+      "time": "2026-08-26T21:01:14",
+      "title": "README 未说明单元测试的正确运行方式",
+      "body": "README 未提供 UT 运行说明。构建产物 release/gtest/gtest_test 直接运行时，测试内 StartService() 的 ../../../release/pwrapis/pwrapis 相对路径按 build/pwrapic/gtest 计算，从 release/gtest 运行会解析到 /release/pwrapis/pwrapis 而失败；需从 build/pwrapic/gtest 目录运行。",
+      "source": "pwrapic/gtest/Common.cpp + 实际验证"
+    },
+    {
+      "time": "2026-08-26T21:01:14",
+      "title": "README 未列出系统依赖与测试框架要求",
+      "body": "README 未声明构建/测试依赖（gcc、g++、make、cmake>=3.16、gtest），仅能从 CMakeLists.txt 与 get_gtest.sh 推断，给外部开发者带来依赖安装困难。",
+      "source": "README.md + CMakeLists.txt + pwrapic/gtest/get_gtest.sh"
+    },
+    {
+      "time": "2026-08-26T21:01:14",
+      "title": "服务端 CPU 频率能力接口在无 cpufreq policy 环境下除零崩溃",
+      "body": "容器内 /sys/devices/system/cpu/cpufreq 存在但为空时，服务端 GetCpuFreqAbility 计算 step = (coreNum / poNum) 时 poNum=0 触发除零崩溃，导致 CPU 频率相关用例失败并等待约 152 秒超时。属代码健壮性问题，文档亦未说明所需内核特性。",
+      "source": "pwrapis/src/cpuservice.c + 实际运行验证"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-26T21:01:14",
+      "problem": "Ubuntu 22.04 下项目 get_gtest.sh 使用 yum install gtest-devel 无法执行",
+      "solution": "按跨发行版映射改为 apt-get install -y libgtest-dev googletest，并用 cmake -DBUILD_SHARED_LIBS=ON 从 /usr/src/googletest 构建 libgtest.so/libgtest_main.so，安装到 /usr/lib/x86_64-linux-gnu 并创建 /lib64 软链，满足 get_gtest.sh 检查与链接需求。",
+      "source": "pwrapic/gtest/get_gtest.sh + Ubuntu 容器验证"
+    },
+    {
+      "timestamp": "2026-08-26T21:01:14",
+      "problem": "从 release/gtest 运行 gtest_test 时 StartService 相对路径错误（../../../release 解析为 /release）导致 51 个用例失败",
+      "solution": "按测试代码的相对路径设计，改从构建目录 /workspace/build/pwrapic/gtest 运行 gtest_test，服务可正常拉起。",
+      "source": "pwrapic/gtest/Common.cpp + 实际验证"
+    },
+    {
+      "timestamp": "2026-08-26T21:01:14",
+      "problem": "沙箱内 /root/json_tmp 只读，无法直接写入最终报告目录",
+      "solution": "报告在 /tmp/ttfhw-report/powerapi 增量生成与校验，完成后通过提权命令复制到 /root/json_tmp/powerapi。",
+      "source": "验证环境文件系统权限"
+    }
+  ]
+}

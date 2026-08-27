@@ -1,0 +1,883 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/ConneRa1/openeuler-jenkins.git",
+    "branch": "master",
+    "start_time": "2026-08-27T10:35:41",
+    "end_time": "2026-08-27T10:44:26",
+    "duration_seconds": 525,
+    "total_steps": 23,
+    "commit": "99629e52fad8a9876a8c359cd12be55e05fb5ed7",
+    "environment": "本地容器验证环境：Docker 26.1.3（x86_64），仓库挂载至容器 /workspace",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "gpt-5",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i5-12600KF",
+      "cpu_cores": 4,
+      "memory": "12Gi",
+      "disk": "63G 总量 / 4.1G 可用",
+      "docker_version": "Docker Engine 26.1.3 (client + server)",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler 22.03 (LTS-SP1)",
+      "architecture": "x86_64",
+      "cpu_cores": 4,
+      "memory": "13Gi",
+      "container_name": "openeuler-jenkins-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "openeuler-jenkins-ttfhw（Tier 2 本地构建，基于 openeuler/openeuler:22.03-lts-sp1）",
+      "selection_reason": "Tier 2 Dockerfile 构建：README 无 docker pull 预构建镜像命令、devcontainer.json 使用 build.dockerfile 而非 image 字段、Dockerfile FROM openeuler/openeuler:22.03-lts-sp1 为纯基础 OS 镜像，未命中 Tier 1；仓库含 .devcontainer/Dockerfile，按二级优先级原样 docker build 成功，跳过系统依赖安装",
+      "dependency_mapping": {
+        "from_dockerfile": "openeuler/openeuler:22.03-lts-sp1（.devcontainer/Dockerfile FROM 指令）",
+        "from_readme": "README.devcontainer.md：dnf 包名对齐 openEuler，python3-pyrpm 必须用 dnf 包（PyPI 同名包不兼容）",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README-zh-cn.md「四、运行节点定制」/ READM_EN.md",
+      "value": "x86_64 / aarch64（门禁运行节点覆盖两种架构；仓库本体为 Python 项目，无架构限制）"
+    },
+    "recommended_image": {
+      "source": ".devcontainer/Dockerfile FROM 指令 + README.devcontainer.md",
+      "value": "openeuler/openeuler:22.03-lts-sp1（devcontainer 基础镜像，Python 3.9，可用 ARG OPENELER_IMAGE 覆盖）"
+    },
+    "dockerfile_dependencies": {
+      "source": ".devcontainer/Dockerfile RUN 指令（openEuler dnf 包名）+ src/dockerfile/release-tools-dockerfile（示例）",
+      "value": [
+        {
+          "original": "dnf install -y git curl wget tar unzip xz bzip2 cpio bsdtar file jq vim tmux tzdata zsh sudo",
+          "target_equivalent": "dnf install -y git curl wget tar unzip xz bzip2 cpio bsdtar file jq vim tmux tzdata zsh sudo（openEuler 原生包，无需翻译）"
+        },
+        {
+          "original": "dnf install -y gcc gcc-c++ make cmake pkgconf python3 python3-devel python3-pip",
+          "target_equivalent": "dnf install -y gcc gcc-c++ make cmake pkgconf python3 python3-devel python3-pip（openEuler 原生包）"
+        },
+        {
+          "original": "dnf install -y python3-pyrpm rpm-build expect openssh-clients strace",
+          "target_equivalent": "dnf install -y python3-pyrpm rpm-build expect openssh-clients strace（openEuler 原生包）"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.devcontainer.md + .devcontainer/Dockerfile + src/requirements",
+      "value": [
+        "gcc / gcc-c++ / make / cmake（dnf）",
+        "python3 / python3-devel / python3-pip（dnf，Python 3.9）",
+        "python3-pyrpm（dnf，提供 pyrpm.spec，门禁子集运行必需）",
+        "rpm-build（rpmspec/rpmbuild）",
+        "pip 依赖（src/requirements）：requests、jenkinsapi、colorlog、threadpool、PyYAML、gevent、jsonpath、mock、tldextract、chardet、kafka-python、elasticsearch、retrying、scanoss",
+        "开发工具：ruff==0.16.2、pre-commit==4.1.0（post_install.sh 安装）"
+      ]
+    },
+    "build_commands": {
+      "source": "README.devcontainer.md + .devcontainer/post_install.sh（仓库无 setup.py/pyproject，无独立编译入口）",
+      "value": "python3 -m pip install --user -r src/requirements（依赖安装）；构建验证采用 python3 -m compileall src test 进行全量语法编译检查"
+    },
+    "ut_commands": {
+      "source": "README.devcontainer.md + .devcontainer/post_install.sh",
+      "value": "python3 -m unittest discover -s test/ac/acl/package_yaml -p 'test*.py' -t .（离线 39 用例，29 个网络用例自动跳过）；全量套件 python3 -m unittest discover -s test -p 'test*.py' -t .（license/openlibing 为仓库存量坏用例）"
+    },
+    "sample_commands": {
+      "source": "README.devcontainer.md「能做」清单（本地运行门禁 CLI 语法级检查与试跑）",
+      "value": "python3 src/ac/framework/ac.py --help（门禁 CLI 入口试跑）；python3 -m py_compile 关键入口语法检查"
+    },
+    "special_dependencies": {
+      "source": "README.devcontainer.md「已知限制」",
+      "value": [
+        "python3-pyrpm 必须用 openEuler dnf 包（PyPI 的 pyrpm 是另一包），且未在 src/requirements 中声明",
+        "spectool 未预装，check_consistency 需要时按需 dnf install rpmdevtools",
+        "完整门禁 CLI 需克隆 gitee/gitcode 仓库并调用 OBS/Jenkins/ES/Kafka/openlibing 等外部服务，容器内无法端到端运行"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "step": "document_reading",
+      "action": "读取 README-zh-cn.md 主文档，提取门禁检查项、运行节点与镜像定制说明",
+      "result": "成功",
+      "details": {
+        "file": "README-zh-cn.md",
+        "sections_read": [
+          "门禁功能",
+          "运行节点定制",
+          "门禁代码上线流程"
+        ]
+      },
+      "command": "cat README-zh-cn.md",
+      "success": true,
+      "output": "识别门禁 6 项基本检查、接口变更检查、运行节点 x86-64/aarch64 及基础镜像定制 dockerfile 示例",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 8,
+      "timestamp": "2026-08-27T10:35:41"
+    },
+    {
+      "step": "document_reading",
+      "action": "读取 READM_EN.md 英文文档，交叉核对与中文版一致性",
+      "result": "成功",
+      "details": {
+        "file": "READM_EN.md",
+        "sections_read": [
+          "Gating",
+          "Node customization"
+        ]
+      },
+      "command": "cat READM_EN.md",
+      "success": true,
+      "output": "内容与中文版一致，包含节点列表与 dockerfile 示例（FROM swr.cn-north-4.myhuaweicloud.com/openeuler/openjdk/OPENJDK:TAG）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 6,
+      "timestamp": "2026-08-27T10:35:41"
+    },
+    {
+      "step": "document_reading",
+      "action": "跟进 README 仓库内链接：读取 门禁问题排查手册 与 src/dockerfile/README.md、release-tools-dockerfile",
+      "result": "成功",
+      "details": {
+        "files": [
+          "doc/门禁问题排查手册.md",
+          "src/dockerfile/README.md",
+          "src/dockerfile/release-tools-dockerfile"
+        ]
+      },
+      "command": "cat doc/门禁问题排查手册.md src/dockerfile/README.md src/dockerfile/release-tools-dockerfile",
+      "success": true,
+      "output": "排查手册为门禁问题定位指南；dockerfile 文档列出 openeuler/ci 系列预构建镜像名（无 docker pull 指令）与 release-tools-dockerfile 内容",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-08-27T10:35:41"
+    },
+    {
+      "step": "document_reading",
+      "action": "读取 .devcontainer 全套配置（devcontainer.json/Dockerfile/README.devcontainer.md/post_install.sh）",
+      "result": "成功",
+      "details": {
+        "files": [
+          ".devcontainer/devcontainer.json",
+          ".devcontainer/Dockerfile",
+          ".devcontainer/README.devcontainer.md",
+          ".devcontainer/post_install.sh"
+        ]
+      },
+      "command": "cat .devcontainer/*",
+      "success": true,
+      "output": "基础镜像 openeuler/openeuler:22.03-lts-sp1；测试命令 unittest discover -s test/ac/acl/package_yaml；离线 39 用例、29 个网络用例跳过；license/openlibing 存量坏用例",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 8,
+      "timestamp": "2026-08-27T10:35:41"
+    },
+    {
+      "step": "document_reading",
+      "action": "读取 src/README.md、src/requirements 与 src/ac/framework/ac.yaml，确认构建依赖与门禁框架入口",
+      "result": "成功",
+      "details": {
+        "files": [
+          "src/README.md",
+          "src/requirements",
+          "src/ac/framework/ac.yaml"
+        ]
+      },
+      "command": "cat src/README.md src/requirements src/ac/framework/ac.yaml",
+      "success": true,
+      "output": "门禁框架入口 src/ac/framework/ac.py（argparse 参数 -w/-r/-b/-p/-t 等）；pip 依赖 14 个；ac.yaml 配置门禁检查项映射",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 6,
+      "timestamp": "2026-08-27T10:35:41"
+    },
+    {
+      "step": "document_reading",
+      "action": "扫描 test/ 目录统计单元测试用例并确认 ACCESS2INTERNET 离线跳过机制",
+      "result": "成功",
+      "details": {
+        "test_dirs": [
+          "test/ac/acl/license",
+          "test/ac/acl/openlibing",
+          "test/ac/acl/package_yaml"
+        ],
+        "package_yaml_tests": 39
+      },
+      "command": "find test -type f -name '*.py' | sort; rg -n 'def test_' test/ac/acl/package_yaml/*.py",
+      "success": true,
+      "output": "package_yaml 39 个用例（3 个被注释），网络用例以 @unittest.skipIf(not ACCESS2INTERNET) 跳过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3,
+      "timestamp": "2026-08-27T10:35:41"
+    },
+    {
+      "timestamp": "2026-08-27T10:36:00",
+      "step": "static_analysis_scan",
+      "action": "扫描仓库 pre-commit 配置并解析 hook 列表",
+      "result": "已配置",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks_count": 16,
+        "repos": 8
+      },
+      "command": "cat .pre-commit-config.yaml",
+      "success": true,
+      "output": "解析出 16 个 hook：pre-commit-hooks 8 个、gitleaks、codespell、ruff/ruff-format、bandit、shfmt、shellcheck、markdownlint",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-27T10:36:00",
+      "step": "static_analysis_scan",
+      "action": "搜索 lint-runner 配置（.lint-runner.yaml/.lintrunner.toml）",
+      "result": "未配置",
+      "details": {
+        "searched": [
+          ".lint-runner.yaml",
+          ".lintrunner.toml"
+        ]
+      },
+      "command": "find . -name '.lint-runner.yaml' -o -name '.lintrunner.toml'",
+      "success": true,
+      "output": "未发现任何 lint-runner 配置文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:36:00",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录并读取 devcontainer.json 与 Dockerfile",
+      "result": "已配置",
+      "details": {
+        "config_dir": ".devcontainer",
+        "files": [
+          "devcontainer.json",
+          "Dockerfile",
+          "README.devcontainer.md",
+          "post_install.sh"
+        ],
+        "original_base_image": "openeuler/openeuler:22.03-lts-sp1",
+        "build_trigger": "devcontainer.json 使用 build.dockerfile 字段（非 image）"
+      },
+      "command": "cat .devcontainer/devcontainer.json .devcontainer/Dockerfile",
+      "success": true,
+      "output": "devcontainer.json build.dockerfile=Dockerfile；Dockerfile FROM openeuler/openeuler:22.03-lts-sp1，dnf 安装工具链与门禁子集依赖",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-27T10:41:41",
+      "step": "image_selection",
+      "action": "按三级优先级探测镜像：检查 README docker pull、devcontainer image 字段、Dockerfile FROM 是否为预构建镜像",
+      "result": "Tier 2 Dockerfile 构建",
+      "details": {
+        "tier1_signals": [
+          "README 无 docker pull 命令",
+          "devcontainer.json 使用 build.dockerfile 字段",
+          "Dockerfile FROM openeuler/openeuler:22.03-lts-sp1 为纯基础 OS"
+        ],
+        "tier": 2,
+        "selection_reason": "未命中 Tier 1；仓库含 .devcontainer/Dockerfile，按二级优先级原样 docker build"
+      },
+      "command": "rg -n 'docker pull' README-zh-cn.md READM_EN.md; cat .devcontainer/devcontainer.json",
+      "success": true,
+      "output": "未发现 docker pull 预构建镜像指令；devcontainer.json image 字段不存在；决定走 Tier 2",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:41:41",
+      "step": "container_setup",
+      "action": "Tier 2：原样执行 docker build 构建 .devcontainer/Dockerfile",
+      "result": "成功",
+      "details": {
+        "dockerfile": ".devcontainer/Dockerfile",
+        "image": "openeuler-jenkins-ttfhw",
+        "base": "openeuler/openeuler:22.03-lts-sp1",
+        "build_duration": "1分46秒"
+      },
+      "command": "time docker build -f .devcontainer/Dockerfile -t openeuler-jenkins-ttfhw .",
+      "success": true,
+      "output": "dnf update + 安装工具链/门禁依赖完成（103s），镜像 openeuler-jenkins-ttfhw 构建成功，image sha256:ee82be7c...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 106
+    },
+    {
+      "timestamp": "2026-08-27T10:41:41",
+      "step": "container_setup",
+      "action": "启动验证容器并挂载仓库到 /workspace",
+      "result": "成功",
+      "details": {
+        "container_name": "openeuler-jenkins-ttfhw",
+        "mount": "/workspace -> 仓库根目录",
+        "user": "vscode"
+      },
+      "command": "docker run -d --name openeuler-jenkins-ttfhw -v <repo>:/workspace openeuler-jenkins-ttfhw sleep infinity",
+      "success": true,
+      "output": "容器 20cede7ddebc 启动成功，状态 Up",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-27T10:41:41",
+      "step": "dependency_installation",
+      "action": "按 post_install.sh 步骤2升级用户级 pip（约束 pip<26.1）",
+      "result": "成功",
+      "details": {
+        "note": "系统 pip 21.3.1 已满足 pip<26.1 约束，无需升级",
+        "python_version": "3.9.9"
+      },
+      "command": "python3 -m pip install --user 'pip<26.1'",
+      "success": true,
+      "output": "Requirement already satisfied: pip<26.1 in /usr/lib/python3.9/site-packages (21.3.1)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:41:41",
+      "step": "dependency_installation",
+      "action": "按 post_install.sh 步骤3安装 src/requirements 的 Python 依赖",
+      "result": "成功",
+      "details": {
+        "requirements": "src/requirements",
+        "installed_count": 70,
+        "builds": [
+          "gevent 26.7.0 编译 wheel 成功",
+          "jsonpath 走 legacy setup.py install"
+        ]
+      },
+      "command": "python3 -m pip install --user -r src/requirements",
+      "success": true,
+      "output": "Successfully installed PyYAML-6.0.3 requests-2.32.5 elasticsearch-9.1.3 kafka-python-3.0.11 scanoss-1.54.2 ... 共 70 个包",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 130
+    },
+    {
+      "timestamp": "2026-08-27T10:41:41",
+      "step": "dependency_installation",
+      "action": "按 post_install.sh 步骤4安装开发工具 ruff 与 pre-commit",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "ruff==0.16.2",
+          "pre-commit==4.1.0"
+        ]
+      },
+      "command": "python3 -m pip install --user 'ruff==0.16.2' 'pre-commit==4.1.0'",
+      "success": true,
+      "output": "Successfully installed ruff-0.16.2 pre-commit-4.1.0 virtualenv-21.7.5 nodeenv-1.10.0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 11
+    },
+    {
+      "timestamp": "2026-08-27T10:41:41",
+      "step": "dependency_verification",
+      "action": "验证容器内关键依赖可导入与工具版本",
+      "result": "成功",
+      "details": {
+        "imports": [
+          "yaml",
+          "gevent",
+          "kafka",
+          "elasticsearch",
+          "scanoss",
+          "tldextract",
+          "jenkinsapi",
+          "colorlog",
+          "retrying",
+          "mock",
+          "jsonpath",
+          "threadpool",
+          "chardet",
+          "pyrpm.spec"
+        ],
+        "tools": {
+          "ruff": "0.16.2",
+          "pre-commit": "4.1.0"
+        }
+      },
+      "command": "python3 -c 'import yaml, gevent, kafka, elasticsearch, scanoss, ..., pyrpm.spec'; ruff --version; pre-commit --version",
+      "success": true,
+      "output": "全部 Python 依赖导入成功（含 pyrpm.spec）；ruff 0.16.2；pre-commit 4.1.0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-27T10:42:09",
+      "step": "build_attempt",
+      "action": "执行构建验证：在容器 /tmp 副本上全量语法编译 src/ 与 test/",
+      "result": "成功",
+      "details": {
+        "py_files": 105,
+        "pyc_files": 149,
+        "exit_code": 0,
+        "note": "仓库无独立编译入口，compileall 作为构建验证"
+      },
+      "command": "cp -r /workspace/src /workspace/test /tmp/build_check/ && time python3 -m compileall -q /tmp/build_check/src /tmp/build_check/test",
+      "success": true,
+      "output": "real 0m0.136s；EXIT=0；105 个 .py 全部编译成功，产出 149 个 .pyc",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:43:02",
+      "step": "ut_execution",
+      "action": "执行文档指定的离线单测：package_yaml 子集",
+      "result": "成功",
+      "details": {
+        "total": 39,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 29,
+        "exit_code": 0
+      },
+      "command": "cd /workspace && time python3 -m unittest discover -s test/ac/acl/package_yaml -p 'test*.py' -t .",
+      "success": true,
+      "output": "Ran 39 tests in 0.017s; OK (skipped=29)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:43:02",
+      "step": "ut_execution",
+      "action": "执行全量单测套件核实文档声明的存量失败用例",
+      "result": "部分成功",
+      "details": {
+        "total": 58,
+        "passed": 10,
+        "failed": 19,
+        "skipped": 29,
+        "failures": {
+          "license": 9,
+          "openlibing": 10
+        },
+        "documented": "README.devcontainer.md 已声明 license/openlibing 为存量坏用例"
+      },
+      "command": "cd /workspace && time python3 -m unittest discover -s test -p 'test*.py' -t .",
+      "success": false,
+      "output": "Ran 58 tests; FAILED (errors=19, skipped=29)；package_yaml 39 用例 OK",
+      "error": "license 9 个 AttributeError(PkgLicense.load_config)；openlibing 10 个 KeyError(code_create_ak/anti_create_ak)",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:43:58",
+      "step": "dependency_installation",
+      "action": "补充安装代码运行缺失的 python-jenkins 依赖",
+      "result": "成功",
+      "details": {
+        "reason": "src/requirements 未声明但 src/proxy/jenkins_proxy.py import jenkins",
+        "package": "python-jenkins 1.8.3"
+      },
+      "command": "python3 -m pip install --user python-jenkins",
+      "success": true,
+      "output": "Successfully installed python-jenkins-1.8.3 pbr-7.0.3 multi-key-dict-2.0.3",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-27T10:43:58",
+      "step": "sample_execution",
+      "action": "执行样例1：按文档写法直接运行门禁 CLI --help",
+      "result": "失败",
+      "details": {
+        "error": "ModuleNotFoundError: No module named 'src'",
+        "root_cause": "脚本方式 sys.path[0] 为脚本目录而非仓库根"
+      },
+      "command": "cd /workspace && python3 src/ac/framework/ac.py --help",
+      "success": false,
+      "output": "Traceback: from src.proxy.git_proxy import GitProxy -> ModuleNotFoundError",
+      "error": "No module named 'src'",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:43:58",
+      "step": "sample_execution",
+      "action": "执行样例2：以模块方式试跑门禁 CLI --help",
+      "result": "成功",
+      "details": {
+        "method": "python3 -m src.ac.framework.ac --help",
+        "options_printed": 18
+      },
+      "command": "cd /workspace && time python3 -m src.ac.framework.ac --help",
+      "success": true,
+      "output": "usage: ac.py [-h] [-c COMMUNITY] [-w WORKSPACE] [-r REPO] [-b TBRANCH] [-o OUTPUT] [-p PR] [-t TOKEN] ...；退出码 0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-27T10:44:26",
+      "step": "cleanup",
+      "action": "清理验证容器 openeuler-jenkins-ttfhw",
+      "result": "成功",
+      "details": {
+        "container": "openeuler-jenkins-ttfhw",
+        "removed": true
+      },
+      "command": "docker rm -f openeuler-jenkins-ttfhw",
+      "success": true,
+      "output": "openeuler-jenkins-ttfhw（已删除，docker ps 无残留）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（.pre-commit-config.yaml，16 个 hooks：通用 8 + gitleaks + codespell + ruff/ruff-format + bandit + shfmt + shellcheck + markdownlint），未检测到 lint-runner 配置；按 ttfhw 规范仅记录配置不执行",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置（本次验证不执行 pre-commit，仅扫描配置）",
+        "duration_seconds": 0,
+        "total_hooks": 16,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "executed_in_verification": false,
+        "hooks": [
+          {
+            "id": "trailing-whitespace",
+            "repo": "pre-commit-hooks",
+            "args": []
+          },
+          {
+            "id": "end-of-file-fixer",
+            "repo": "pre-commit-hooks",
+            "args": []
+          },
+          {
+            "id": "check-yaml",
+            "repo": "pre-commit-hooks",
+            "args": []
+          },
+          {
+            "id": "check-json",
+            "repo": "pre-commit-hooks",
+            "args": []
+          },
+          {
+            "id": "check-xml",
+            "repo": "pre-commit-hooks",
+            "args": []
+          },
+          {
+            "id": "check-merge-conflict",
+            "repo": "pre-commit-hooks",
+            "args": []
+          },
+          {
+            "id": "check-added-large-files",
+            "repo": "pre-commit-hooks",
+            "args": [
+              "--maxkb=8192"
+            ]
+          },
+          {
+            "id": "detect-private-key",
+            "repo": "pre-commit-hooks",
+            "args": []
+          },
+          {
+            "id": "gitleaks",
+            "repo": "gitleaks v8.30.1",
+            "args": []
+          },
+          {
+            "id": "codespell",
+            "repo": "codespell v2.4.3",
+            "args": []
+          },
+          {
+            "id": "ruff",
+            "repo": "ruff-pre-commit v0.16.2",
+            "args": [
+              "--fix"
+            ]
+          },
+          {
+            "id": "ruff-format",
+            "repo": "ruff-pre-commit v0.16.2",
+            "args": []
+          },
+          {
+            "id": "bandit",
+            "repo": "bandit 1.9.4",
+            "args": [
+              "-lll"
+            ]
+          },
+          {
+            "id": "shfmt",
+            "repo": "pre-commit-shfmt v3.13.1-1",
+            "args": []
+          },
+          {
+            "id": "shellcheck",
+            "repo": "shellcheck-py v0.11.0.1",
+            "args": [
+              "--severity=error"
+            ]
+          },
+          {
+            "id": "markdownlint",
+            "repo": "markdownlint-cli v0.49.1",
+            "args": [
+              "--fix"
+            ]
+          }
+        ],
+        "note": "修复模式配置：仅对暂存区文件生效；minimum_pre_commit_version 4.0"
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        "devcontainer.json",
+        "Dockerfile",
+        "README.devcontainer.md",
+        "post_install.sh"
+      ],
+      "original_base_image": "openeuler/openeuler:22.03-lts-sp1",
+      "used_image": "openeuler-jenkins-ttfhw（Tier 2 本地构建，基于 openeuler/openeuler:22.03-lts-sp1）",
+      "summary": "仓库配置了 devcontainer：devcontainer.json 使用 build.dockerfile（非 image 字段），Dockerfile FROM openeuler/openeuler:22.03-lts-sp1（纯基础 OS 镜像，Python 3.9），post_install.sh 安装 src/requirements 依赖并执行 package_yaml 离线单测；无 NPU/特权/GPU 需求"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 0.2,
+      "compiler": "Python 3.9.9（CPython，openEuler 22.03 系统解释器）",
+      "concurrency": 1,
+      "concurrency_ratio": "不适用（纯 Python 语法编译，compileall 单进程即可）",
+      "notes": "仓库为 legacy Python 项目（无 setup.py/pyproject/CMakeLists 等编译入口，README 与 devcontainer 文档均无独立构建命令），按文档化环境安装依赖即完成构建准备；构建验证在容器 /tmp/build_check 副本上执行 python3 -m compileall src test，105 个 .py 全部编译成功（exit 0），未修改仓库文件",
+      "artifacts": [
+        {
+          "name": "Python 字节码（.pyc，149 个）",
+          "path": "/tmp/build_check/src、/tmp/build_check/test（容器内），含 src/ac/framework/ac.py 等全部入口",
+          "size": "766 KB（字节码合计 784873 B）",
+          "type": "bytecode"
+        }
+      ]
+    },
+    "ut": {
+      "status": "partial_success",
+      "duration_seconds": 0.4,
+      "total": 58,
+      "passed": 10,
+      "failed": 19,
+      "skipped": 29,
+      "failures": [
+        {
+          "test_name": "test_check_license_in_spec_failed",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_license_in_spec_none",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_license_in_spec_succeed",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_license_in_src_failed",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_license_in_src_succeed",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_license_none",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_license_same_failed",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_license_same_later_version",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_license_same_succeed",
+          "error": "AttributeError: 'PkgLicense' object has no attribute 'load_config'（测试引用源码中已不存在的接口，README.devcontainer.md 已声明的仓库存量坏用例）"
+        },
+        {
+          "test_name": "test_check_code_success",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_codecheck_api_success",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_codecheck_api_success_no_fail",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_codecheck_api_success_no_pr_url",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_anti_poison_api_failed_no_pr_url",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_anti_poison_api_success",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_codecheck_api_failed_no_pr_url",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_codecheck_api_success",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_sca_api_failed_no_pr_url",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        },
+        {
+          "test_name": "test_sca_api_success",
+          "error": "KeyError: 'code_create_ak' 或 'anti_create_ak'（缺少 openlibing/anti-poison 真实凭据，属 CI/网络用例，README.devcontainer.md 已声明）"
+        }
+      ],
+      "python": {
+        "status": "partial_success",
+        "total": 58,
+        "passed": 10,
+        "failed": 19,
+        "modules": [
+          {
+            "module": "package_yaml（文档指定离线子集：unittest discover -s test/ac/acl/package_yaml）",
+            "status": "success",
+            "total": 39,
+            "passed": 10,
+            "failed": 0,
+            "skipped": 29,
+            "note": "文档指定命令实测 Ran 39 tests，OK (skipped=29)，10 个离线用例全部通过"
+          },
+          {
+            "module": "license（test/ac/acl/license）",
+            "status": "failed",
+            "total": 9,
+            "passed": 0,
+            "failed": 9,
+            "error": "AttributeError: PkgLicense.load_config 不存在，仓库存量坏用例（README.devcontainer.md 已预警）"
+          },
+          {
+            "module": "openlibing（test/ac/acl/openlibing）",
+            "status": "failed",
+            "total": 10,
+            "passed": 0,
+            "failed": 10,
+            "error": "KeyError: code_create_ak / anti_create_ak，需真实凭据与网络，属 CI 用例（README.devcontainer.md 已预警）"
+          }
+        ]
+      }
+    },
+    "sample": {
+      "status": "partial_success",
+      "duration_seconds": 2,
+      "results": [
+        {
+          "sample_name": "门禁 CLI 入口试跑（文档写法 python3 src/ac/framework/ac.py --help）",
+          "execution_status": "失败",
+          "output_summary": "ModuleNotFoundError: No module named 'src'：脚本方式运行时 sys.path 不含仓库根目录，README.devcontainer.md 给出的直接命令写法无法执行，需用模块方式或设置 PYTHONPATH",
+          "execution_time": "0.1s"
+        },
+        {
+          "sample_name": "门禁 CLI 入口试跑（模块方式 python3 -m src.ac.framework.ac --help，补装 python-jenkins 后）",
+          "execution_status": "成功",
+          "output_summary": "输出完整 usage 与全部参数（-c community、-w workspace、-r repo、-b branch、-o output、-p pr、-t token、-a account、-m comment、-i comment_id、-e committer、-x pr_ctime、-z trigger_time、-l trigger_link、--jenkins-base-url/user/api-token、--platform），退出码 0",
+          "execution_time": "0.5s"
+        }
+      ],
+      "reason": "完整门禁 CLI 端到端运行依赖 gitee/gitcode/OBS/Jenkins/ES/Kafka/openlibing 等外部服务与真实凭据（README.devcontainer.md 已声明容器化不等于可运行），仅做语法级试跑"
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-27T10:43:58",
+      "title": "README.devcontainer.md 的 CLI 运行命令无法直接执行",
+      "body": "文档给出 python3 src/ac/framework/ac.py -w <workspace> -r <repo> -b <branch> -p <pr> -t <token> ... 的直接脚本调用方式，但实测从仓库根目录直接运行报 ModuleNotFoundError: No module named 'src'（脚本方式 sys.path[0] 为脚本所在目录而非仓库根）。需要改为 python3 -m src.ac.framework.ac 或设置 PYTHONPATH=仓库根目录。",
+      "source": ".devcontainer/README.devcontainer.md「凭据注入」章节"
+    },
+    {
+      "time": "2026-08-27T10:43:58",
+      "title": "src/requirements 未声明 python-jenkins 依赖",
+      "body": "src/proxy/jenkins_proxy.py 第24行 import jenkins，但 src/requirements 仅列出 requests/jenkinsapi/colorlog/threadpool/PyYAML/gevent/jsonpath/mock/tldextract/chardet/kafka-python/elasticsearch/retrying/scanoss，devcontainer Dockerfile 也未安装 python-jenkins，导致门禁 CLI 入口 import 阶段失败；release-tools-dockerfile 使用 yum 安装 python-jenkins，建议补入依赖清单。",
+      "source": "src/requirements + src/proxy/jenkins_proxy.py + src/dockerfile/release-tools-dockerfile"
+    },
+    {
+      "time": "2026-08-27T10:43:58",
+      "title": "主 README 未提供本地构建/测试/样例命令",
+      "body": "README-zh-cn.md/READM_EN.md 只描述门禁使用与运行节点，外部新手开发者按主 README 无法得知如何本地构建、跑单测或试跑，需转向 .devcontainer/README.devcontainer.md 才能获得命令。",
+      "source": "README-zh-cn.md / READM_EN.md"
+    },
+    {
+      "time": "2026-08-27T10:43:58",
+      "title": "全量单测存在 19 个已预警的存量失败用例",
+      "body": "实测全量套件 Ran 58 tests，FAILED (errors=19, skipped=29)：license 9 个用例报 AttributeError（PkgLicense.load_config 已不存在）、openlibing 10 个用例报 KeyError（缺 code_create_ak/anti_create_ak 凭据）。README.devcontainer.md 已声明这些是仓库存量坏用例/CI 用例，建议修复或从离线套件中排除。",
+      "source": ".devcontainer/README.devcontainer.md「测试与质量」章节 + test/ 实测"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-27T10:43:58",
+      "problem": "README.devcontainer.md 给出的 CLI 直接脚本调用 python3 src/ac/framework/ac.py 报 ModuleNotFoundError: No module named 'src'",
+      "solution": "改用模块方式 python3 -m src.ac.framework.ac --help（仓库根目录自动加入 sys.path），试跑成功输出完整 usage；或在运行前设置 PYTHONPATH=仓库根目录",
+      "source": ".devcontainer/README.devcontainer.md + src/ac/framework/ac.py"
+    },
+    {
+      "timestamp": "2026-08-27T10:43:58",
+      "problem": "门禁 CLI 入口 import 阶段报 ModuleNotFoundError: No module named 'jenkins'，src/requirements 与 devcontainer 未包含 python-jenkins",
+      "solution": "按 release-tools-dockerfile 依赖补齐：python3 -m pip install --user python-jenkins（1.8.3），重试 CLI 试跑成功",
+      "source": "src/proxy/jenkins_proxy.py 第24行 + src/dockerfile/release-tools-dockerfile"
+    },
+    {
+      "timestamp": "2026-08-27T10:43:58",
+      "problem": "沙箱将 /root 挂载为只读，验证报告无法直接写入 /root/json_tmp/openeuler-jenkins",
+      "solution": "报告先在 /tmp 工作副本增量更新并校验，最终以提升权限复制到 /root/json_tmp/openeuler-jenkins",
+      "source": "验证环境（sandbox 权限）"
+    }
+  ]
+}

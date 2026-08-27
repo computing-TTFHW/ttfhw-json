@@ -1,0 +1,811 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/openeuler/sysHAX.git",
+    "branch": "master",
+    "start_time": "2026-08-26T20:30:05",
+    "end_time": "2026-08-26T20:41:00",
+    "duration_seconds": 780,
+    "total_steps": 28,
+    "commit": "5bab42db2cda9301027657cb94f0c519ffa2adee",
+    "environment": "Docker 容器 openEuler 24.03 LTS（x86_64，4核/11Gi），宿主机 Intel i5-12600KF，Docker 26.1.3",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-pro",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "Intel(R) Core(TM) i5-12600KF",
+      "cpu_cores": 4,
+      "memory": "11Gi",
+      "disk": "63G 总容量 / 6.6G 可用",
+      "docker_version": "Docker version 26.1.3, build b72abbb",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler 24.03 LTS",
+      "architecture": "x86_64",
+      "cpu_cores": 4,
+      "memory": "11Gi",
+      "container_name": "sysHAX-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "selection_reason": "Tier 3 基础 OS 从零安装：Tier 1 业务预构建镜像 hub.oepkgs.net/neocopilot/syshax/syshax-vllm-gpu/cpu:0.2.1 经 manifest/仓库 API 探测均为 arm64 架构且为 vllm 部署镜像（不含 sysHAX 仓库代码），宿主机为 x86_64 无法使用；Tier 2 仓库无 Dockerfile；README 环境准备明确要求 openEuler 24.03 LTS SP1，故选 openEuler 24.03 LTS 基础镜像",
+      "dependency_mapping": {
+        "from_dockerfile": "无 Dockerfile（仓库未提供）",
+        "from_readme": "README 环境准备：openEuler 24.03 LTS SP1、python 3.9+、docker 25.0.3+；requirements.txt：fastapi>=0.115.0、uvicorn>=0.23.2、httpx>=0.24.1、PyYAML>=6.0.1；sysHAX.spec：BuildRequires python3-devel",
+        "mappings": [
+          {
+            "original": "python3-fastapi（spec Requires）",
+            "target": "pip 安装 fastapi>=0.115.0（openEuler 仓库无该包，改用 pip 清华源）",
+            "source": "sysHAX.spec + requirements.txt"
+          },
+          {
+            "original": "python3-uvicorn（spec Requires）",
+            "target": "pip 安装 uvicorn>=0.23.2（openEuler 仓库无该包）",
+            "source": "sysHAX.spec + requirements.txt"
+          },
+          {
+            "original": "python3-httpx（spec Requires）",
+            "target": "pip 安装 httpx>=0.24.1（openEuler 仓库无该包）",
+            "source": "sysHAX.spec + requirements.txt"
+          },
+          {
+            "original": "python3-PyYAML（spec Requires）",
+            "target": "pip 安装 PyYAML>=6.0.1（openEuler 仓库无该包）",
+            "source": "sysHAX.spec + requirements.txt"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md 安装教程-环境准备 + docs 部署指南",
+      "value": "aarch64（要求鲲鹏920系列CPU；当前验证宿主机为 x86_64）"
+    },
+    "recommended_image": {
+      "source": "README.md 环境准备 + 仓库无 Dockerfile",
+      "value": "openEuler 24.03 LTS SP1（README 明确要求）；业务镜像 hub.oepkgs.net/neocopilot/syshax/syshax-vllm-gpu:0.2.1 与 syshax-vllm-cpu:0.2.1 为 vllm 部署镜像"
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库无 Dockerfile",
+      "value": "仓库无 Dockerfile；构建依赖来自 requirements.txt 与 sysHAX.spec（Requires: python3-fastapi/python3-uvicorn/python3-httpx/python3-PyYAML，BuildRequires: python3-devel）"
+    },
+    "dependencies": {
+      "source": "README.md + requirements.txt + sysHAX.spec",
+      "value": [
+        "python3 >= 3.9",
+        "fastapi >= 0.115.0",
+        "uvicorn >= 0.23.2",
+        "httpx >= 0.24.1",
+        "PyYAML >= 6.0.1",
+        "python3-devel（spec BuildRequires）",
+        "docker >= 25.0.3（README 环境要求）"
+      ]
+    },
+    "build_commands": {
+      "source": "README.md 安装教程 + sysHAX.spec",
+      "value": "无编译步骤（sysHAX.spec %build 注明无需编译步骤）；源码方式为 python3 cli.py init -> python3 cli.py config <key> <value> -> python3 main.py（或 python3 cli.py run）"
+    },
+    "ut_commands": {
+      "source": "仓库内容扫描",
+      "value": "未提供：仓库无 tests 目录、无 pytest/unittest 配置，README 与 docs 无测试章节"
+    },
+    "sample_commands": {
+      "source": "README.md 安装教程 + docs 在线部署指南",
+      "value": "python3 cli.py init；python3 cli.py config gpu.port 8001 / cpu.port 8002 / conductor.port 8010；python3 main.py；curl http://0.0.0.0:8010/v1/chat/completions"
+    },
+    "special_dependencies": {
+      "source": "README.md + docs 部署指南",
+      "value": [
+        "NVIDIA Container Toolkit（GPU 场景，README 外链）",
+        "NVIDIA 驱动与 CUDA（nvidia-smi / nvcc）",
+        "vllm GPU/CPU 容器镜像 hub.oepkgs.net/neocopilot/syshax/syshax-vllm-gpu:0.2.1 / syshax-vllm-cpu:0.2.1",
+        "大模型权重（如 DeepSeek-R1-Distill-Qwen-32B）",
+        "NPU 驱动与固件（CPU+NPU 场景，docs 指南）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-26T20:28:30",
+      "step": "document_reading",
+      "action": "读取 README.md（中文）提取环境要求、部署流程、构建与样例命令",
+      "result": "成功",
+      "details": {
+        "file": "README.md",
+        "key_points": [
+          "openEuler 24.03 LTS SP1",
+          "python 3.9+",
+          "docker 25.0.3+",
+          "python3 cli.py init/config/main.py",
+          "curl 8010 样例"
+        ]
+      },
+      "command": "cat README.md",
+      "success": true,
+      "output": "openEuler 24.03 LTS SP1 / python 3.9+ / docker 25.0.3+；源码启动方式 python3 cli.py init、python3 main.py；样例 curl 8010",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-08-26T20:29:00",
+      "step": "document_reading",
+      "action": "读取 README_EN.md 交叉核对英文文档内容",
+      "result": "成功",
+      "details": {
+        "file": "README_EN.md"
+      },
+      "command": "cat README_EN.md",
+      "success": true,
+      "output": "英文版与中文版内容一致",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T20:29:20",
+      "step": "document_reading",
+      "action": "读取 requirements.txt 提取 Python 依赖",
+      "result": "成功",
+      "details": {
+        "file": "requirements.txt",
+        "dependencies": [
+          "fastapi>=0.115.0",
+          "uvicorn>=0.23.2",
+          "httpx>=0.24.1",
+          "PyYAML>=6.0.1"
+        ]
+      },
+      "command": "cat requirements.txt",
+      "success": true,
+      "output": "fastapi>=0.115.0, uvicorn>=0.23.2, httpx>=0.24.1, PyYAML>=6.0.1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-26T20:29:35",
+      "step": "document_reading",
+      "action": "读取 sysHAX.spec 提取构建与安装信息",
+      "result": "成功",
+      "details": {
+        "file": "sysHAX.spec",
+        "build": "无需编译步骤",
+        "requires": [
+          "python3-fastapi",
+          "python3-uvicorn",
+          "python3-httpx",
+          "python3-PyYAML"
+        ]
+      },
+      "command": "cat sysHAX.spec",
+      "success": true,
+      "output": "%build 注明无需编译步骤；BuildRequires python3-devel；Requires python3-fastapi 等",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-26T20:29:50",
+      "step": "document_reading",
+      "action": "读取 docs/sysHAX_online_deployment_guide_on_CPU+GPU.md 提取部署样例命令",
+      "result": "成功",
+      "details": {
+        "file": "docs/sysHAX_online_deployment_guide_on_CPU+GPU.md"
+      },
+      "command": "cat docs/sysHAX_online_deployment_guide_on_CPU+GPU.md",
+      "success": true,
+      "output": "配置命令 python3 cli.py config gpu.port 8001 等；启动 python3 cli.py run；curl 8010 推理请求",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-26T20:30:20",
+      "step": "document_reading",
+      "action": "读取 docs/sysHAX_online_deployment_guide_on_CPU.md 与 CPU+NPU 指南提取样例命令",
+      "result": "成功",
+      "details": {
+        "files": [
+          "docs/sysHAX_online_deployment_guide_on_CPU.md",
+          "docs/sysHAX_online_deployment_guide_on_CPU+NPU.md"
+        ]
+      },
+      "command": "cat docs/sysHAX_online_deployment_guide_on_CPU.md docs/sysHAX_online_deployment_guide_on_CPU+NPU.md",
+      "success": true,
+      "output": "纯 CPU 与 CPU+NPU 部署流程；NPU 场景依赖昇腾驱动/固件与 vllm-npu 镜像",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-26T20:30:40",
+      "step": "document_reading",
+      "action": "跟进 README 外链（NVIDIA Container Toolkit 安装指南）",
+      "result": "成功",
+      "details": {
+        "url": "https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html"
+      },
+      "command": "open_page https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html",
+      "success": true,
+      "output": "通用 NVIDIA 容器工具链安装指南，与仓库构建/UT 无关，作为部署前置依赖记录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-08-26T20:30:55",
+      "step": "document_reading",
+      "action": "NPU 需求探测与仓库测试/CI/Dockerfile/devcontainer 扫描",
+      "result": "成功",
+      "details": {
+        "npu_devices": "无",
+        "tests": "无",
+        "dockerfile": "无",
+        "devcontainer": "无",
+        "ci": "无"
+      },
+      "command": "ls /dev/davinci* ; find . -iname *test* -o -name Dockerfile* -o -name *.devcontainer*",
+      "success": true,
+      "output": "宿主机无 NPU 设备；仓库无测试用例、无 Dockerfile、无 devcontainer、无 CI 配置",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T20:31:10",
+      "step": "static_analysis_scan",
+      "action": "检查仓库 pre-commit 配置并解析 hook 列表",
+      "result": "已配置",
+      "details": {
+        "config_file": ".pre-commit-config.yaml",
+        "hooks_count": 14
+      },
+      "command": "rg -c '^\\s*- id:' .pre-commit-config.yaml",
+      "success": true,
+      "output": "14",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:31:20",
+      "step": "static_analysis_scan",
+      "action": "搜索 lint-runner 配置文件（.lint-runner.yaml/.lintrunner.toml）",
+      "result": "未配置",
+      "details": {
+        "found": []
+      },
+      "command": "find . -name '.lint-runner.yaml' -o -name '.lintrunner.toml'",
+      "success": true,
+      "output": "未找到 lint-runner 配置文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:31:40",
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录及 devcontainer.json",
+      "result": "未配置",
+      "details": {
+        "config_dir": null,
+        "config_files": []
+      },
+      "command": "ls -la .devcontainer",
+      "success": true,
+      "output": ".devcontainer 目录不存在",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:32:10",
+      "step": "image_selection",
+      "action": "Tier 1 探测：检查 README 提供的业务预构建镜像架构与可用性",
+      "result": "Tier 1 不可用（业务镜像均为 arm64）",
+      "details": {
+        "images": [
+          "hub.oepkgs.net/neocopilot/syshax/syshax-vllm-gpu:0.2.1",
+          "hub.oepkgs.net/neocopilot/syshax/syshax-vllm-cpu:0.2.1"
+        ],
+        "arch": "arm64",
+        "host_arch": "x86_64",
+        "reason": "arm64 镜像无法在 x86_64 宿主机运行，且为 vllm 部署镜像不含 sysHAX 代码"
+      },
+      "command": "docker manifest inspect + 镜像仓库 API 查询架构",
+      "success": true,
+      "output": "GPU 镜像 arm64/约8.2GB，CPU 镜像 arm64/约1.5GB；宿主机 x86_64，降级 Tier 2",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-26T20:33:10",
+      "step": "image_selection",
+      "action": "Tier 2 检查仓库是否提供 Dockerfile",
+      "result": "跳过（仓库无 Dockerfile）",
+      "details": {
+        "found": false
+      },
+      "command": "find . -name Dockerfile*",
+      "success": true,
+      "output": "仓库根目录无 Dockerfile，降级 Tier 3",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T20:33:20",
+      "step": "image_selection",
+      "action": "选择 Tier 3 基础镜像：openEuler 24.03 LTS（README 明确要求）",
+      "result": "Tier 3 基础 OS 从零安装",
+      "details": {
+        "image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+        "reason": "README 要求 openEuler 24.03 LTS SP1"
+      },
+      "command": "docker manifest inspect hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "success": true,
+      "output": "该镜像提供 linux/amd64 与 linux/arm64，本机选择 amd64",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T20:33:40",
+      "step": "container_setup",
+      "action": "拉取 openEuler 24.03 LTS 基础镜像",
+      "result": "成功",
+      "details": {
+        "image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts"
+      },
+      "command": "docker pull hub.oepkgs.net/openeuler/openeuler:24.03-lts",
+      "success": true,
+      "output": "Downloaded newer image，digest sha256:ace677f...",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-08-26T20:34:10",
+      "step": "container_setup",
+      "action": "创建并启动验证容器 sysHAX-ttfhw（挂载仓库到 /workspace）",
+      "result": "成功",
+      "details": {
+        "container_name": "sysHAX-ttfhw",
+        "mount": "/root/ttfhw-work/sysHAX:/workspace"
+      },
+      "command": "docker run -d --name sysHAX-ttfhw -v /root/ttfhw-work/sysHAX:/workspace hub.oepkgs.net/openeuler/openeuler:24.03-lts sleep infinity",
+      "success": true,
+      "output": "容器运行正常（Up）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T20:35:10",
+      "step": "dependency_installation",
+      "action": "dnf 安装系统工具链（gcc、gcc-c++、make、cmake、git、python3、python3-pip、python3-devel）",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "gcc",
+          "gcc-c++",
+          "make",
+          "cmake",
+          "git",
+          "python3",
+          "python3-pip",
+          "python3-devel"
+        ]
+      },
+      "command": "docker exec sysHAX-ttfhw dnf install -y gcc gcc-c++ make cmake git python3 python3-pip python3-devel",
+      "success": true,
+      "output": "Complete！工具链安装完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 150
+    },
+    {
+      "timestamp": "2026-08-26T20:36:10",
+      "step": "dependency_installation",
+      "action": "pip 安装 Python 依赖（fastapi/uvicorn/httpx/PyYAML，清华源）",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "fastapi>=0.115.0",
+          "uvicorn>=0.23.2",
+          "httpx>=0.24.1",
+          "PyYAML>=6.0.1"
+        ],
+        "mirror": "https://pypi.tuna.tsinghua.edu.cn/simple"
+      },
+      "command": "docker exec sysHAX-ttfhw python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple ...",
+      "success": true,
+      "output": "Successfully installed fastapi-0.141.1 uvicorn-0.52.4 httpx-0.28.1 PyYAML-6.0.3",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 8
+    },
+    {
+      "timestamp": "2026-08-26T20:36:30",
+      "step": "dependency_verification",
+      "action": "验证容器内 Python 依赖与系统工具链可用",
+      "result": "成功",
+      "details": {
+        "versions": {
+          "python": "3.11.6",
+          "fastapi": "0.141.1",
+          "uvicorn": "0.52.4",
+          "httpx": "0.28.1",
+          "PyYAML": "6.0.3"
+        }
+      },
+      "command": "docker exec sysHAX-ttfhw python3 -c \"import fastapi, uvicorn, httpx, yaml\"",
+      "success": true,
+      "output": "全部模块导入成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T20:37:10",
+      "step": "build_attempt",
+      "action": "Python 源码构建验证：字节编译与模块导入检查",
+      "result": "成功",
+      "details": {
+        "commands": [
+          "python3 -m compileall -q src main.py cli.py",
+          "python3 -c import cli/src.*"
+        ],
+        "compiler": "gcc 12.3.1"
+      },
+      "command": "cd /workspace && python3 -m compileall -q src main.py cli.py && python3 -c \"import cli; import src.core.engine, ...\"",
+      "success": true,
+      "output": "COMPILE_OK / IMPORT_OK / BUILD_OK（compileall 0.039s）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:38:00",
+      "step": "build_attempt",
+      "action": "按 sysHAX.spec 执行 rpmbuild -ba 打包（首次尝试）",
+      "result": "失败（spec 引用不存在的 README.en.md）",
+      "details": {
+        "command": "rpmbuild -ba --define _topdir /tmp/rpmbuild /workspace/sysHAX.spec",
+        "error": "File not found: .../README.en.md"
+      },
+      "command": "rpmbuild -ba --define \"_topdir /tmp/rpmbuild\" /workspace/sysHAX.spec",
+      "success": false,
+      "output": "RPM build errors: File not found: .../usr/share/doc/sysHAX/README.en.md",
+      "error": "%doc README.en.md 文件不存在（仓库实际文件为 README_EN.md）",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:38:30",
+      "step": "build_retry",
+      "action": "重试 rpmbuild 确认失败可复现",
+      "result": "失败（同一 spec 缺陷，可复现）",
+      "details": {
+        "verified": "ls /workspace 仅存在 README_EN.md，无 README.en.md"
+      },
+      "command": "rpmbuild -ba --define \"_topdir /tmp/rpmbuild\" /workspace/sysHAX.spec",
+      "success": false,
+      "output": "cp: cannot stat README.en.md; RPM build errors: File not found README.en.md",
+      "error": "spec 中 %doc 文件名校验错误",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:39:10",
+      "step": "ut_execution",
+      "action": "运行 unittest 发现器确认仓库测试用例",
+      "result": "未提供测试用例",
+      "details": {
+        "result": "Ran 0 tests in 0.000s - OK",
+        "test_files": []
+      },
+      "command": "cd /workspace && python3 -m unittest discover -v",
+      "success": true,
+      "output": "Ran 0 tests in 0.000s, OK；仓库无 test*.py/_test.py 文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:39:30",
+      "step": "sample_execution",
+      "action": "按 README 样例流程执行 CLI 初始化与配置",
+      "result": "部分成功（models.default 键不受支持）",
+      "details": {
+        "init": "成功",
+        "gpu.port": "成功",
+        "cpu.port": "成功",
+        "conductor.port": "成功",
+        "models.default": "不支持的键"
+      },
+      "command": "python3 cli.py init; python3 cli.py config gpu.port 8001; ...",
+      "success": true,
+      "output": "已生成配置文件；三个端口配置成功；models.default 输出“不支持的键”",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:39:40",
+      "step": "sample_execution",
+      "action": "执行 python3 main.py 启动 sysHAX 服务",
+      "result": "失败（依赖 vllm GPU/CPU 服务，环境无 GPU/模型）",
+      "details": {
+        "error": "配置加载失败：从 http://0.0.0.0:8001 获取模型失败: [Errno 111] Connection refused",
+        "exit_code": 1
+      },
+      "command": "timeout 30 python3 main.py",
+      "success": false,
+      "output": "2026-08-26 12:39:17,466 - ERROR - main.py:35 - 配置加载失败...",
+      "error": "vllm GPU/CPU 服务未运行（连接被拒）",
+      "returncode": 1,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T20:39:50",
+      "step": "sample_execution",
+      "action": "curl 推理请求样例评估",
+      "result": "跳过（服务未启动）",
+      "details": {
+        "reason": "sysHAX 服务依赖 vllm GPU/CPU 服务与模型，未启动"
+      },
+      "command": "curl http://0.0.0.0:8010/v1/chat/completions ...",
+      "success": false,
+      "output": "未执行：前置服务不可用",
+      "error": "前置依赖缺失",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-26T20:40:30",
+      "step": "cleanup",
+      "action": "清理验证容器与临时产物",
+      "result": "成功",
+      "details": {
+        "container_removed": "sysHAX-ttfhw",
+        "removed": [
+          "/workspace/config/config.yaml",
+          "/workspace/logs",
+          "__pycache__",
+          "/tmp/rpmbuild",
+          "/tmp/gpu_*.json"
+        ]
+      },
+      "command": "docker rm -f sysHAX-ttfhw; rm -rf /workspace/config/config.yaml /workspace/logs ...",
+      "success": true,
+      "output": "容器已删除，git status 无变更",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T20:41:00",
+      "step": "report_generation",
+      "action": "生成并全量校验验证报告 JSON",
+      "result": "成功",
+      "details": {
+        "file": "/root/json_tmp/sysHAX/verification_report_sysHAX_20260826.json",
+        "validation": "0 ERROR, 0 WARNING（含 JSON Schema）"
+      },
+      "command": "validate_report.py --jsonschema report_schema.json",
+      "success": true,
+      "output": "全量校验：通过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（.pre-commit-config.yaml），共 14 个 hooks，涵盖通用格式/安全（trailing-whitespace、end-of-file-fixer、check-yaml、check-json、check-xml、check-merge-conflict、check-added-large-files、detect-private-key）、密钥检测（gitleaks）、拼写检查（codespell）、Python 检查（ruff、ruff-format、bandit）与 Markdown 检查（markdownlint）；未检测到 lint-runner 配置。按流程仅检查配置，不执行 pre-commit。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置，未执行（仅配置检查）",
+        "duration_seconds": 0,
+        "total_hooks": 14,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "executed_in_verification": false,
+        "hooks": [
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "id": "trailing-whitespace"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "id": "end-of-file-fixer"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "id": "check-yaml"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "id": "check-json"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "id": "check-xml"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "id": "check-merge-conflict"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "id": "check-added-large-files"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/pr/pre-commit-hooks",
+            "rev": "v6.0.0",
+            "id": "detect-private-key"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/gi/gitleaks",
+            "rev": "v8.30.1",
+            "id": "gitleaks"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/co/codespell",
+            "rev": "v2.4.3",
+            "id": "codespell"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/ru/ruff-pre-commit",
+            "rev": "v0.16.2",
+            "id": "ruff"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/ru/ruff-pre-commit",
+            "rev": "v0.16.2",
+            "id": "ruff-format"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/ba/bandit",
+            "rev": "1.9.4",
+            "id": "bandit"
+          },
+          {
+            "repo": "https://gitcode.com/gh_mirrors/ma/markdownlint-cli",
+            "rev": "v0.49.1",
+            "id": "markdownlint"
+          }
+        ],
+        "note": "按照 ttfhw-verify-smart 流程，仅检查 pre-commit 配置是否存在并解析 hook 列表，不安装、不执行 pre-commit run"
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无（未提供 .devcontainer 目录）",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "无",
+      "summary": "仓库根目录不存在 .devcontainer/ 目录，未配置 devcontainer；镜像选择不受 devcontainer 影响，按 README 环境要求（openEuler 24.03 LTS）走基础镜像 Tier 3"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 1,
+      "compiler": "gcc (GCC) 12.3.1 (openEuler 12.3.1-38.oe2403)",
+      "concurrency": 1,
+      "concurrency_ratio": "20%（容器4核×20%，至少1）",
+      "notes": "纯 Python 仓库，sysHAX.spec %build 注明无需编译步骤；以 python3 -m compileall 字节编译与全模块导入作为源码构建验证，均通过。额外按 sysHAX.spec 尝试 rpmbuild -ba 打包：因 spec 中 %doc README.en.md 引用不存在的文件（仓库实际为 README_EN.md）导致 %install 阶段 File not found，RPM 打包失败（已重试确认可复现），属 spec 缺陷，详见 documentation_gaps 与 problems_encountered",
+      "artifacts": []
+    },
+    "ut": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "partial_success",
+      "duration_seconds": 2,
+      "reason": "样例流程为 CLI 配置 + 服务启动 + curl 推理请求。CLI 配置样例成功；main.py 启动失败：配置加载时需从 vllm GPU/CPU 服务（8001/8002）获取模型名，但本验证环境无 NVIDIA GPU/鲲鹏硬件、无 vllm 容器与模型，连接被拒（Connection refused）；curl 推理样例依赖服务启动，未执行",
+      "results": [
+        {
+          "sample_name": "python3 cli.py init",
+          "execution_status": "success",
+          "output_summary": "已生成配置文件：/workspace/config/config.yaml",
+          "execution_time": "0.1s"
+        },
+        {
+          "sample_name": "python3 cli.py config gpu.port 8001 / cpu.port 8002 / conductor.port 8010",
+          "execution_status": "success",
+          "output_summary": "三个配置项均成功写入 config.yaml",
+          "execution_time": "0.2s"
+        },
+        {
+          "sample_name": "python3 cli.py config models.default ds-32b（README 文档命令）",
+          "execution_status": "failed",
+          "output_summary": "输出“不支持的键：models.default”，CLI 实际不识别该配置键",
+          "execution_time": "0.1s"
+        },
+        {
+          "sample_name": "python3 main.py 启动 sysHAX 服务",
+          "execution_status": "failed",
+          "output_summary": "配置加载失败：从 http://0.0.0.0:8001 获取模型失败 [Errno 111] Connection refused，退出码 1；前置 vllm GPU/CPU 服务未运行",
+          "execution_time": "0.2s"
+        },
+        {
+          "sample_name": "curl http://0.0.0.0:8010/v1/chat/completions 推理请求",
+          "execution_status": "not_run",
+          "output_summary": "sysHAX 服务未启动（前置 vllm 服务与模型缺失），无法执行",
+          "execution_time": "0s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-26T20:38:40",
+      "title": "sysHAX.spec %doc 引用不存在的 README.en.md",
+      "body": "sysHAX.spec 的 %doc 行写的是 README.en.md，但仓库根目录实际文件名为 README_EN.md，导致 rpmbuild -ba 在 %install 阶段报错 File not found，RPM 打包失败",
+      "source": "sysHAX.spec"
+    },
+    {
+      "time": "2026-08-26T20:39:10",
+      "title": "仓库未提供单元测试用例与测试说明",
+      "body": "仓库无 tests 目录、无 pytest/unittest 配置，README 与 docs 均无测试章节；unittest discover 仅发现 0 个测试，UT 验证无法执行",
+      "source": "仓库结构扫描 + python3 -m unittest discover"
+    },
+    {
+      "time": "2026-08-26T20:39:45",
+      "title": "README 的 config models.default 命令不受 CLI 支持",
+      "body": "README 与 README_EN 安装教程中的 python3 cli.py config models.default ds-32b 命令执行后输出“不支持的键：models.default”；cli.py 的 HANDLERS 与 config --help 中均无 models.default 键，且 config.example.yaml 无 models 配置段",
+      "source": "README.md 安装教程 + cli.py HANDLERS"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-26T20:38:40",
+      "problem": "按 sysHAX.spec 执行 rpmbuild -ba 时，%install/%files 阶段报 File not found：/usr/share/doc/sysHAX/README.en.md；spec 的 %doc 引用了仓库中不存在的 README.en.md，实际文件名是 README_EN.md",
+      "solution": "属 spec 缺陷，验证流程遵循不改源码原则未修改；已在 documentation_gaps 记录，建议仓库维护者将 spec 中 README.en.md 更正为 README_EN.md 或补充同名文件后再打包",
+      "source": "sysHAX.spec + rpmbuild 输出"
+    },
+    {
+      "timestamp": "2026-08-26T20:39:50",
+      "problem": "样例流程中 python3 main.py 启动失败：配置加载阶段需调用 GPU/CPU 服务的 /v1/models 获取模型名并校验一致性，本环境无 NVIDIA GPU/A100、无 vllm-gpu/cpu 容器（业务镜像均为 arm64）与模型文件，8001/8002 端口连接被拒",
+      "solution": "属文档要求的前置部署条件（README：先部署 vllm GPU/CPU 容器并准备模型），验证环境无法满足，记录为环境限制；CLI 初始化与配置样例已完成",
+      "source": "README.md 部署流程 + main.py/src/utils/config.py 输出"
+    }
+  ]
+}

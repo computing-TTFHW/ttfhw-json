@@ -1,0 +1,344 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/openeuler/euler-copilot-framework.git",
+    "branch": "master",
+    "start_time": "2026-08-26T19:44:06",
+    "end_time": "2026-08-26T22:00:00",
+    "duration_seconds": 1800,
+    "total_steps": 8,
+    "commit": "dcc9456",
+    "environment": "本地 Docker 容器（Tier 1 业务预构建镜像 hub.oepkgs.net/neocopilot/framework-baseimg:0.10.0-x86，x86_64），TTFHW 仓库验证",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "deepseek-v4-flash",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i5-12600KF",
+      "cpu_cores": 4,
+      "memory": "7.8Gi",
+      "disk": "18G 可用",
+      "docker_version": "26.1.3",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler（framework-baseimg 基础）",
+      "architecture": "x86_64",
+      "cpu_cores": 4,
+      "memory": "7.8Gi",
+      "container_name": "euler-copilot-framework-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/neocopilot/framework-baseimg:0.10.0-x86",
+      "selection_reason": "Tier 1：Dockerfile FROM 指向业务预构建镜像 hub.oepkgs.net/neocopilot/framework-baseimg:0.10.0-x86，拉取成功，直接使用",
+      "dependency_mapping": {
+        "from_dockerfile": "hub.oepkgs.net/neocopilot/framework-baseimg:0.10.0-x86",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "Dockerfile 镜像名（framework-baseimg:0.10.0-x86）",
+      "value": "x86_64（另有 Dockerfile-base-arm 支持 aarch64）"
+    },
+    "recommended_image": {
+      "source": "Dockerfile FROM",
+      "value": "hub.oepkgs.net/neocopilot/framework-baseimg:0.10.0-x86（Tier 1 业务预构建镜像）"
+    },
+    "dockerfile_dependencies": {
+      "source": "Dockerfile（基础镜像已含 Python 3.11.6/uv 与项目依赖；CMD: uv run --no-sync --no-dev apps/main.py）",
+      "value": [
+        {
+          "original": "基础镜像预装依赖",
+          "target_equivalent": "直接使用 Tier 1 镜像，跳过安装"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "pyproject.toml",
+      "value": [
+        "fastapi",
+        "uvicorn",
+        "lancedb",
+        "openai",
+        "pandas",
+        "sqlalchemy",
+        "mcp",
+        "minio",
+        "asyncpg",
+        "pymongo 等（requirements 由 uv.lock 管理）"
+      ]
+    },
+    "build_commands": {
+      "source": "Dockerfile CMD 与 pyproject",
+      "value": "uv run --no-sync --no-dev apps/main.py；编译检查：python -m compileall apps"
+    },
+    "ut_commands": {
+      "source": "pyproject.toml dev 依赖（pytest 8.3.5/pytest-mock）与 tests/ 目录",
+      "value": "pytest tests"
+    },
+    "sample_commands": {
+      "source": "sample/README.md（semantics 插件样例结构）",
+      "value": "导入样例用户工具 user_tool.py 并解析样例 yaml"
+    },
+    "special_dependencies": {
+      "source": "运行配置",
+      "value": [
+        "OPENAI_API_KEY 等 LLM 配置",
+        "MinIO/PostgreSQL/MongoDB 等外部服务"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-26T20:06:06",
+      "step": "document_reading",
+      "action": "读取 README/部署指南/Dockerfile/pyproject，提取依赖与入口",
+      "result": "成功",
+      "details": {},
+      "command": "cat README.md; cat Dockerfile; cat pyproject.toml",
+      "success": true,
+      "output": "Tier 1 信号：Dockerfile FROM 业务预构建镜像",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-26T20:06:06",
+      "step": "image_selection",
+      "action": "拉取业务预构建镜像 framework-baseimg:0.10.0-x86",
+      "result": "Tier 1 业务预构建镜像",
+      "details": {},
+      "command": "docker pull hub.oepkgs.net/neocopilot/framework-baseimg:0.10.0-x86",
+      "success": true,
+      "output": "拉取成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 150
+    },
+    {
+      "timestamp": "2026-08-26T20:06:06",
+      "step": "container_setup",
+      "action": "启动容器并验证预装依赖",
+      "result": "成功",
+      "details": {},
+      "command": "docker run -d --name euler-copilot-framework-ttfhw ... framework-baseimg:0.10.0-x86",
+      "success": true,
+      "output": "/app/.venv 依赖 import 验证通过，Python 3.11.6",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-26T20:06:06",
+      "step": "build_attempt",
+      "action": "执行代码编译与应用依赖验证",
+      "result": "成功",
+      "details": {},
+      "command": "python -m compileall apps; import fastapi,lancedb,openai,...",
+      "success": true,
+      "output": "编译通过，核心依赖就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-26T20:06:06",
+      "step": "build_retry",
+      "action": "应用启动冒烟（文档 CMD）",
+      "result": "部分成功",
+      "details": {},
+      "command": "OPENAI_API_KEY=sk-placeholder timeout 20 python apps/main.py",
+      "success": false,
+      "output": "import 至 MinioClient 处停止：外部服务凭据未配置",
+      "error": "",
+      "returncode": 120,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-08-26T20:06:06",
+      "step": "ut_execution",
+      "action": "安装 pytest 并执行单元测试",
+      "result": "失败",
+      "details": {},
+      "command": "uv pip install pytest pytest-mock; pytest tests -q --continue-on-collection-errors",
+      "success": false,
+      "output": "34 failed / 14 passed / 20 errors",
+      "error": "",
+      "returncode": 1,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T20:06:06",
+      "step": "sample_execution",
+      "action": "解析样例 yaml 并导入样例工具",
+      "result": "部分成功",
+      "details": {},
+      "command": "yaml.safe_load(sample/**/*.yaml); import user_tool",
+      "success": false,
+      "output": "yaml 4 个文件解析通过；user_tool.py 报 NameError: Dict 未定义",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-26T20:06:06",
+      "step": "cleanup",
+      "action": "清理验证容器",
+      "result": "成功",
+      "details": {},
+      "command": "docker rm -f euler-copilot-framework-ttfhw",
+      "success": true,
+      "output": "",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "未发现 .pre-commit-config.yaml；pyproject.toml dev 依赖含 ruff，本次仅扫描配置未执行。",
+      "pre_commit": {
+        "configured": false,
+        "config_file": null,
+        "status": "未配置",
+        "duration_seconds": 0
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "hub.oepkgs.net/neocopilot/framework-baseimg:0.10.0-x86",
+      "summary": "仓库无 .devcontainer 配置；验证使用 Dockerfile 指定的业务预构建镜像（Tier 1）。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 60,
+      "compiler": "Python 3.11.6 / uv 0.6.9",
+      "concurrency": 1,
+      "concurrency_ratio": "100%（单任务）",
+      "notes": "Tier 1 镜像内 /app/.venv 预装依赖验证通过（fastapi/lancedb/openai/pandas/sqlalchemy/uvicorn/mcp/minio import 正常）；python -m compileall apps 编译通过；完整服务启动依赖 OPENAI_API_KEY/MinIO/数据库等外部配置，冒烟启动在配置阶段停止",
+      "artifacts": [
+        {
+          "name": "euler-copilot-framework 后端服务",
+          "path": "apps/main.py",
+          "size": "",
+          "type": "python-app"
+        }
+      ]
+    },
+    "ut": {
+      "status": "failed",
+      "duration_seconds": 3,
+      "total": 68,
+      "passed": 14,
+      "failed": 34,
+      "skipped": 0,
+      "failures": [
+        {
+          "test_name": "tests/common/test_config.py",
+          "error": "FileNotFoundError: config/config.toml（补齐示例配置后仍失败：配置项不完整）"
+        },
+        {
+          "test_name": "tests/common/test_security.py::test_encrypt",
+          "error": "FileNotFoundError"
+        },
+        {
+          "test_name": "tests/common/test_wordscheck.py",
+          "error": "检查初始化失败"
+        },
+        {
+          "test_name": "tests/entities/test_plugin.py",
+          "error": "pydantic 校验/数据断言失败"
+        },
+        {
+          "test_name": "tests/scripts/test_user_exporter.py",
+          "error": "ModuleNotFoundError: apps.utils（模块不存在）"
+        },
+        {
+          "test_name": "tests/entities/test_blacklist.py 等 20 个收集错误",
+          "error": "apps.schemas.blacklist 等模块缺失（测试与代码不同步）"
+        }
+      ],
+      "note": "34 failed / 14 passed / 20 collection errors；失败主因：测试引用已不存在的模块（apps.utils、apps.schemas.blacklist）、配置示例不完整（Secret key 为空）、部分测试与依赖不兼容"
+    },
+    "sample": {
+      "status": "failed",
+      "duration_seconds": 5,
+      "results": [
+        {
+          "sample_name": "样例 yaml 结构解析",
+          "execution_status": "success",
+          "output_summary": "sample/**/*.yaml 共 4 个文件均可正常解析",
+          "execution_time": "1s"
+        },
+        {
+          "sample_name": "样例用户工具 user_tool.py 导入",
+          "execution_status": "failed",
+          "output_summary": "导入报 NameError: name 'Dict' is not defined（缺 from typing import Dict, Any）",
+          "execution_time": "2s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-26T21:40:00",
+      "title": "README 无构建/测试说明",
+      "body": "README 仅介绍产品功能与部署指南链接，未提供本地构建、测试、样例执行命令；安装章节缺失",
+      "source": "README.md"
+    },
+    {
+      "time": "2026-08-26T21:45:00",
+      "title": "测试与代码不同步",
+      "body": "tests/scripts/test_user_exporter.py 引用不存在的 apps.utils 模块；tests/entities/test_blacklist.py 引用不存在的 apps.schemas.blacklist 模块，导致 20 个测试收集失败",
+      "source": "tests/"
+    },
+    {
+      "time": "2026-08-26T21:48:00",
+      "title": "配置示例不完整",
+      "body": "assets/.config.example.toml 未提供测试所需的 Secret key 等字段；代码期望 /workspace/config/config.toml，仓库未随代码提供该文件",
+      "source": "apps/common/config.py"
+    },
+    {
+      "time": "2026-08-26T21:50:00",
+      "title": "样例工具存在代码缺陷",
+      "body": "sample/call/test_call/user_tool.py 使用 Dict/Any 未导入，样例无法直接运行",
+      "source": "sample/call/test_call/user_tool.py"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-26T21:30:00",
+      "problem": "pytest 收集阶段 20 个测试报 ModuleNotFoundError/FileNotFoundError",
+      "solution": "定位为测试引用缺失模块（apps.utils、apps.schemas.blacklist）与缺 config/config.toml；按仓库示例 assets/.config.example.toml 补齐配置后重跑，仍有 34 failed/14 passed/20 errors，判定测试套件与当前代码不同步",
+      "source": "tests/"
+    },
+    {
+      "timestamp": "2026-08-26T21:35:00",
+      "problem": "应用启动冒烟在 import 阶段报 openai.OpenAIError: api_key 未设置；设置占位 key 后又在 MinioClient 类级实例化处报缺凭据",
+      "solution": "确认完整启动依赖 OPENAI_API_KEY 与 MinIO/数据库等外部服务，属部署配置范畴；以 compileall + 依赖 import 作为构建验证",
+      "source": "apps/main.py / apps/common/minio.py"
+    }
+  ]
+}

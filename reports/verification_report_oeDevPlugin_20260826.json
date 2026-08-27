@@ -1,0 +1,637 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/openeuler/oeDevPlugin.git",
+    "branch": "master",
+    "start_time": "2026-08-26T21:02:00",
+    "end_time": "2026-08-26T21:13:19",
+    "duration_seconds": 679,
+    "total_steps": 16,
+    "commit": "874c0a27e233f28f4d0e59df2e3d9da7cce129db",
+    "environment": "Docker 26.1.3，x86_64 宿主，容器 openEuler 22.03 LTS SP1",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "gpt-5（Codex 主代理）",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "Intel Core i5-12600KF（12th Gen）",
+      "cpu_cores": 4,
+      "memory": "13.2Gi",
+      "disk": "63G（可用约 8.9G）",
+      "docker_version": "26.1.3",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "openEuler 22.03 LTS SP1",
+      "architecture": "x86_64",
+      "cpu_cores": 4,
+      "memory": "13Gi",
+      "container_name": "oedevplugin-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "oedevplugin-ttfhw（基于 openeuler/openeuler:22.03-lts-sp1，镜像 1.16GB）",
+      "selection_reason": "Tier 2 Dockerfile 构建：仓库无预构建镜像信号（devcontainer.json 使用 build.dockerfile 无 image 字段、README 无 docker pull 自定义镜像、Dockerfile FROM 为纯基础 OS），仓库内存在 .devcontainer/Dockerfile，原样 docker build 成功，未触发 Tier 3 从零安装",
+      "dependency_mapping": {
+        "from_dockerfile": "openeuler/openeuler:22.03-lts-sp1",
+        "from_readme": "README.dev.md / .devcontainer/README.devcontainer.md 仅要求 Node/npm 与全局 @vscode/vsce（打包用）",
+        "mappings": [
+          {
+            "original": "dnf install -y gcc gcc-c++ make git curl wget tar unzip xz jq which",
+            "target": "已由 Tier 2 镜像内置（openEuler dnf 原样安装）",
+            "source": ".devcontainer/Dockerfile"
+          },
+          {
+            "original": "dnf install -y xorg-x11-server-Xvfb 及 Electron 运行库",
+            "target": "已由 Tier 2 镜像内置（xvfb-run 可用）",
+            "source": ".devcontainer/Dockerfile"
+          },
+          {
+            "original": "Node.js 22.14.0 tarball",
+            "target": "已由 Tier 2 镜像内置（/usr/local 解压）",
+            "source": ".devcontainer/Dockerfile"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.dev.md / .devcontainer/Dockerfile",
+      "value": "x86_64 / aarch64（文档未明确限制，Dockerfile 按 uname -m 自动选择 Node 发行版 x64/arm64）"
+    },
+    "recommended_image": {
+      "source": ".devcontainer/Dockerfile FROM / devcontainer.json",
+      "value": "openeuler/openeuler:22.03-lts-sp1（devcontainer 基础镜像，Node 22.14.0 官方 tarball）"
+    },
+    "dockerfile_dependencies": {
+      "source": ".devcontainer/Dockerfile",
+      "value": [
+        {
+          "original": "dnf install -y ca-certificates curl gcc gcc-c++ git jq make openssh-clients procps-ng sudo tar unzip vim wget which xz",
+          "target_equivalent": "与 Dockerfile 原样一致（openEuler dnf 包名，Tier 2 直接构建镜像）"
+        },
+        {
+          "original": "dnf install -y alsa-lib at-spi2-atk atk cups-libs dbus gtk3 libX11 libXScrnSaver libXcomposite libXcursor libXdamage libXext libXfixes libXi libXrandr libXrender libXtst libdrm libsecret libxkbcommon mesa-libGL mesa-libgbm nspr nss pango xorg-x11-server-Xvfb",
+          "target_equivalent": "与 Dockerfile 原样一致（Electron/VS Code 运行库与 Xvfb）"
+        },
+        {
+          "original": "Node.js 22.14.0 官方预编译 tarball（nodejs.org，失败回退 npmmirror）",
+          "target_equivalent": "与 Dockerfile 原样一致（/usr/local 解压安装）"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "package.json + webview-ui/package.json + README.dev.md",
+      "value": [
+        "node >= 22.14.0（Dockerfile 安装）",
+        "npm",
+        "@vscode/vsce（npm install -g，打包 vsix 需要）",
+        "typescript / tsc（扩展编译 npm run compile）",
+        "vite / vue-tsc / vue3 + element-plus（webview-ui 构建）",
+        "eslint（lint）",
+        "@vscode/test-electron + @vscode/test-cli + mocha（扩展测试，需 xvfb）"
+      ]
+    },
+    "build_commands": {
+      "source": "README.dev.md 快速开始 + package.json scripts + .devcontainer/post_install.sh",
+      "value": "npm run install:all（根目录与 webview-ui 分别 npm install --registry=https://registry.npmmirror.com）→ npm run build:webview（vue-tsc && vite build）→ npm run compile（tsc -p ./）"
+    },
+    "ut_commands": {
+      "source": "README.dev.md / .devcontainer/README.devcontainer.md + .vscode-test.mjs",
+      "value": "xvfb-run -a npm test（pretest 为 npm run compile && npm run lint；@vscode/test-electron 运行 out/test/**/*.test.js，首次需下载 VS Code 约 1.1GB）"
+    },
+    "sample_commands": {
+      "source": "README.dev.md 快速开始",
+      "value": "npm run dev:web（纯浏览器 Web 开发）/ npm run dev（VS Code 插件调试）/ npm run pack:vsix（打包本地 vsix 插件）"
+    },
+    "special_dependencies": {
+      "source": "README.dev.md + .devcontainer/README.devcontainer.md",
+      "value": [
+        "npm install -g @vscode/vsce（打包依赖，全局安装）",
+        "测试需下载真实 VS Code/Electron（解压约 1.1GB），缓存目录 .vscode-test",
+        "npm 镜像源 https://registry.npmmirror.com（package.json install:all 与 Dockerfile 默认）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-26T21:02:10",
+      "step": "document_reading",
+      "action": "读取 README.md/README_EN.md，逐条核对其中链接（gitee 营销页等），判断与编译/测试/依赖无关",
+      "result": "成功",
+      "details": {
+        "files": [
+          "README.md",
+          "README_EN.md"
+        ],
+        "links": [
+          "https://blog.gitee.com",
+          "https://gitee.com/explore",
+          "https://gitee.com/gvp",
+          "https://gitee.com/help",
+          "https://gitee.com/gitee-stars"
+        ]
+      },
+      "command": "cat README.md README_EN.md",
+      "success": true,
+      "output": "README 为模板占位内容（介绍/软件架构/安装教程均为 xxxx 占位），链接均为 gitee 营销/帮助页，与构建测试无关",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T21:02:30",
+      "step": "document_reading",
+      "action": "读取 README.dev.md/README.dev_EN.md/.devcontainer/README.devcontainer.md，提取快速开始命令与依赖（vsce、install:all、dev:web、dev、pack:vsix）",
+      "result": "成功",
+      "details": {
+        "files": [
+          "README.dev.md",
+          "README.dev_EN.md",
+          ".devcontainer/README.devcontainer.md"
+        ],
+        "build": "npm run install:all → build:webview → compile",
+        "ut": "xvfb-run -a npm test",
+        "sample": "npm run dev:web / dev / pack:vsix"
+      },
+      "command": "cat README.dev.md README.dev_EN.md .devcontainer/README.devcontainer.md",
+      "success": true,
+      "output": "工程为 VS Code 扩展（Node/TS + Vue3 webview），打包依赖 @vscode/vsce 需全局安装；npm 镜像 registry.npmmirror.com",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-26T21:02:50",
+      "step": "document_reading",
+      "action": "读取 package.json/webview-ui/package.json/.vscode-test.mjs/tsconfig.json/rollup.config.mjs，确认构建与测试脚本、依赖清单",
+      "result": "成功",
+      "details": {
+        "scripts": [
+          "build:webview",
+          "compile",
+          "lint",
+          "test",
+          "pack:vsix"
+        ],
+        "test_files": "out/test/**/*.test.js"
+      },
+      "command": "cat package.json webview-ui/package.json .vscode-test.mjs",
+      "success": true,
+      "output": "根工程 devDependencies 含 typescript/eslint/@vscode/test-electron 等；webview-ui 依赖 vue3/element-plus/vite；单测文件 src/test/extension.test.ts",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-26T21:03:05",
+      "step": "static_analysis_scan",
+      "action": "检查根目录 .pre-commit-config.yaml 是否存在并解析 hook 列表；检查 .lint-runner.yaml/.lintrunner.toml 等配置",
+      "result": "成功",
+      "details": {
+        "pre_commit_configured": true,
+        "hooks": 13,
+        "lint_runner_configured": false
+      },
+      "command": "cat .pre-commit-config.yaml && ls .lint-runner.yaml .lintrunner.toml 2>/dev/null",
+      "success": true,
+      "output": ".pre-commit-config.yaml 存在（13 个 hook）；未发现 lint-runner 配置；按技能要求不执行 pre-commit",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T21:03:20",
+      "step": "devcontainer_scan",
+      "action": "扫描 .devcontainer/ 目录并读取 devcontainer.json、Dockerfile、post_install.sh，记录镜像与配置摘要",
+      "result": "成功",
+      "details": {
+        "config_dir": ".devcontainer",
+        "image_mode": "build.dockerfile",
+        "base_image": "openeuler/openeuler:22.03-lts-sp1",
+        "remote_user": "vscode"
+      },
+      "command": "cat .devcontainer/devcontainer.json .devcontainer/Dockerfile .devcontainer/post_install.sh",
+      "success": true,
+      "output": "devcontainer 基于 openEuler 22.03 LTS SP1，Node 22.14.0；无预构建 image 字段，判定不触发 Tier 1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T21:06:00",
+      "step": "image_selection",
+      "action": "探测 Tier 1 预构建镜像信号：devcontainer.json image 字段、README docker pull 命令、Dockerfile FROM 非基础 OS、registry 域名链接",
+      "result": "Tier 2 Dockerfile 构建",
+      "details": {
+        "tier1_trigger": false,
+        "reason": "devcontainer.json 使用 build.dockerfile 且无 image 字段；README 无 docker pull 自定义镜像；Dockerfile FROM openeuler/openeuler:22.03-lts-sp1 为纯基础 OS",
+        "tier2_selected": true,
+        "dockerfile": ".devcontainer/Dockerfile"
+      },
+      "command": "grep -E '\"(image|build)\"' .devcontainer/devcontainer.json && head -5 .devcontainer/Dockerfile",
+      "success": true,
+      "output": "未命中 Tier 1，命中 Tier 2（仓库内存在 Dockerfile），按原样构建，无需降级到 Tier 3",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T21:06:30",
+      "step": "container_setup",
+      "action": "Tier 2 原样构建 .devcontainer/Dockerfile 为 oedevplugin-ttfhw 镜像",
+      "result": "成功",
+      "details": {
+        "image": "oedevplugin-ttfhw",
+        "size": "1.16GB",
+        "base": "openeuler/openeuler:22.03-lts-sp1",
+        "node": "v22.14.0"
+      },
+      "command": "docker build -f .devcontainer/Dockerfile -t oedevplugin-ttfhw .",
+      "success": true,
+      "output": "dnf update/install（约 248s）+ Node 22.14.0 tarball（约 39s）全部成功，镜像构建完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 292
+    },
+    {
+      "timestamp": "2026-08-26T21:11:30",
+      "step": "container_setup",
+      "action": "启动 oeDevPlugin-ttfhw 容器并挂载仓库到 /workspace（.vscode-test 用命名卷避免污染工作区）",
+      "result": "成功",
+      "details": {
+        "container": "oedevplugin-ttfhw",
+        "mount": "/root/ttfhw-work/oeDevPlugin:/workspace",
+        "workspace": "/workspace"
+      },
+      "command": "docker run -d --name oedevplugin-ttfhw -v /root/ttfhw-work/oeDevPlugin:/workspace -v oedevplugin-vscode-test:/workspace/.vscode-test -w /workspace oedevplugin-ttfhw sleep infinity",
+      "success": true,
+      "output": "容器启动成功，进入 sleep infinity 等待执行验证命令",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-26T21:11:40",
+      "step": "dependency_verification",
+      "action": "容器内验证关键依赖已存在（Tier 2 跳过 OS 级依赖安装）：OS/架构/CPU/内存、node、npm、gcc、g++、make、git、curl、wget、Xvfb、python3",
+      "result": "成功",
+      "details": {
+        "os": "openEuler release 22.03 (LTS-SP1)",
+        "node": "v22.14.0",
+        "npm": "10.9.2",
+        "gcc": "10.3.1",
+        "xvfb": "/usr/bin/Xvfb"
+      },
+      "command": "docker exec oedevplugin-ttfhw bash -lc 'node --version; npm --version; gcc --version; which Xvfb python3'",
+      "success": true,
+      "output": "所有关键依赖均存在：Node v22.14.0、npm 10.9.2、GCC 10.3.1、Xvfb、python3 3.9.9",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3
+    },
+    {
+      "timestamp": "2026-08-26T21:12:30",
+      "step": "dependency_installation",
+      "action": "执行 npm run install:all（根目录与 webview-ui 分别 npm install，registry=npmmirror）",
+      "result": "成功",
+      "details": {
+        "root_packages": 345,
+        "webview_packages": 484,
+        "registry": "https://registry.npmmirror.com"
+      },
+      "command": "docker exec -u root oedevplugin-ttfhw bash -lc 'cd /workspace && npm run install:all'",
+      "success": true,
+      "output": "added 345 packages（根）/ added 484 packages（webview-ui），仅有废弃依赖告警，无错误",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 17
+    },
+    {
+      "timestamp": "2026-08-26T21:12:50",
+      "step": "build_attempt",
+      "action": "执行 npm run build:webview（vue-tsc 类型检查 + vite build，产出 webview-ui/build）",
+      "result": "成功",
+      "details": {
+        "modules": 1574,
+        "build_time": "8.41s",
+        "output": "webview-ui/build/index.html + assets/index.js + assets/index.css"
+      },
+      "command": "docker exec -u root oedevplugin-ttfhw bash -lc 'cd /workspace && time npm run build:webview'",
+      "success": true,
+      "output": "✓ 1574 modules transformed, built in 8.41s；index.js 505.00 kB、index.css 209.47 kB（仅有 chunk 体积告警与 sass 弃用告警）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-08-26T21:13:20",
+      "step": "build_attempt",
+      "action": "执行 npm run compile（tsc -p ./ 编译扩展，产出 out/）",
+      "result": "成功",
+      "details": {
+        "output": "out/extension.js 及 panels/provider/repos/service/test/utils 等子目录",
+        "compile_time": "1.97s"
+      },
+      "command": "docker exec -u root oedevplugin-ttfhw bash -lc 'cd /workspace && time npm run compile'",
+      "success": true,
+      "output": "tsc 编译无错误，out/ 共 112K，extension.js 3.1KB",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-26T21:13:40",
+      "step": "ut_execution",
+      "action": "在 Xvfb 虚拟显示下执行 xvfb-run -a npm test（pretest: compile + lint；@vscode/test-electron 运行 out/test/**/*.test.js）",
+      "result": "成功",
+      "details": {
+        "suite": "Extension Test Suite",
+        "cases": "Sample test",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "test_time": "49ms",
+        "vs_code_download": "首次运行自动下载 VS Code 到命名卷 .vscode-test"
+      },
+      "command": "docker exec -u root oedevplugin-ttfhw bash -lc 'cd /workspace && time timeout 900 xvfb-run -a npm test'",
+      "success": true,
+      "output": "Extension Test Suite ✔ Sample test，1 passing (49ms)，Exit code: 0，总耗时 42.325s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 42
+    },
+    {
+      "timestamp": "2026-08-26T21:14:30",
+      "step": "dependency_installation",
+      "action": "按 README.dev.md 前置要求全局安装 @vscode/vsce（打包 vsix 依赖）",
+      "result": "成功",
+      "details": {
+        "package": "@vscode/vsce",
+        "scope": "global"
+      },
+      "command": "docker exec -u root oedevplugin-ttfhw bash -lc 'npm install -g @vscode/vsce'",
+      "success": true,
+      "output": "vsce 全局安装成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-08-26T21:14:50",
+      "step": "sample_execution",
+      "action": "执行样例 1：npm run dev:web 启动 webview-ui 浏览器开发服务并 curl 验证页面",
+      "result": "成功",
+      "details": {
+        "url": "http://localhost:5173/",
+        "http_code": 200,
+        "note": "vite 默认绑定 IPv6 localhost（::1），curl 127.0.0.1 被拒，改用 localhost 验证"
+      },
+      "command": "docker exec -u root oedevplugin-ttfhw bash -lc 'cd /workspace/webview-ui && (nohup npm run dev > /tmp/devweb.log 2>&1 &); sleep 10; curl -sS -o /dev/null -w \"HTTP %{http_code}\" http://localhost:5173/'",
+      "success": true,
+      "output": "VITE v5.4.11 ready in 2361ms；HTTP 200，返回 Vue 应用 HTML",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 12
+    },
+    {
+      "timestamp": "2026-08-26T21:15:10",
+      "step": "sample_execution",
+      "action": "执行样例 2：npm run pack:vsix 打包本地插件（vsce package --no-dependencies）",
+      "result": "成功",
+      "details": {
+        "artifact": "openeuler-vscode-0.0.1.vsix",
+        "size": "277.53KB",
+        "files": 31
+      },
+      "command": "docker exec -u root oedevplugin-ttfhw bash -lc 'cd /workspace && npm run pack:vsix'",
+      "success": true,
+      "output": "DONE Packaged: /workspace/openeuler-vscode-0.0.1.vsix (31 files, 277.53 KB)，总耗时 24.8s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 35
+    },
+    {
+      "timestamp": "2026-08-26T21:13:40",
+      "step": "ut_execution",
+      "action": "在 Xvfb 虚拟显示下执行 xvfb-run -a npm test（pretest: compile + lint；@vscode/test-electron 运行 out/test/**/*.test.js）",
+      "result": "成功",
+      "details": {
+        "suite": "Extension Test Suite",
+        "cases": "Sample test",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "test_time": "49ms",
+        "vs_code_download": "首次运行自动下载 VS Code 到命名卷 .vscode-test"
+      },
+      "command": "docker exec -u root oedevplugin-ttfhw bash -lc 'cd /workspace && time timeout 900 xvfb-run -a npm test'",
+      "success": true,
+      "output": "Extension Test Suite ✔ Sample test，1 passing (49ms)，Exit code: 0，总耗时 42.325s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 42
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到根目录 .pre-commit-config.yaml（configured=true），共 13 个 hook：pre-commit-hooks 通用 8 个（trailing-whitespace/end-of-file-fixer/check-yaml/check-json/check-xml/check-merge-conflict/check-added-large-files/detect-private-key）、gitleaks、codespell、markdownlint（--fix）、local prettier、local eslint。未检测到 .lint-runner 相关配置。按技能要求仅检查配置，不执行 pre-commit。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置，未执行（仅配置检查）",
+        "duration_seconds": 0,
+        "total_hooks": 13,
+        "executed_in_verification": false,
+        "hooks": [
+          {
+            "id": "trailing-whitespace",
+            "repo": "pre-commit-hooks"
+          },
+          {
+            "id": "end-of-file-fixer",
+            "repo": "pre-commit-hooks"
+          },
+          {
+            "id": "check-yaml",
+            "repo": "pre-commit-hooks"
+          },
+          {
+            "id": "check-json",
+            "repo": "pre-commit-hooks"
+          },
+          {
+            "id": "check-xml",
+            "repo": "pre-commit-hooks"
+          },
+          {
+            "id": "check-merge-conflict",
+            "repo": "pre-commit-hooks"
+          },
+          {
+            "id": "check-added-large-files",
+            "repo": "pre-commit-hooks"
+          },
+          {
+            "id": "detect-private-key",
+            "repo": "pre-commit-hooks"
+          },
+          {
+            "id": "gitleaks",
+            "repo": "gitleaks"
+          },
+          {
+            "id": "codespell",
+            "repo": "codespell"
+          },
+          {
+            "id": "markdownlint",
+            "repo": "markdownlint-cli"
+          },
+          {
+            "id": "prettier",
+            "repo": "local"
+          },
+          {
+            "id": "eslint",
+            "repo": "local"
+          }
+        ],
+        "note": "另有注释掉的 webview-ui eslint-webview hook（依赖链缺少 eslint-config-prettier，未启用）"
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        "devcontainer.json",
+        "Dockerfile",
+        "post_install.sh",
+        "README.devcontainer.md",
+        ".env.example"
+      ],
+      "original_base_image": "openeuler/openeuler:22.03-lts-sp1",
+      "used_image": "openeuler/openeuler:22.03-lts-sp1（经 .devcontainer/Dockerfile 构建的开发镜像）",
+      "summary": "devcontainer.json 使用 build.dockerfile 方式（无预构建 image 字段，不触发 Tier 1）；remoteUser=vscode，workspaceFolder=/workspace，postCreateCommand 执行 post_install.sh（npm ci → build:webview → compile → xvfb-run npm test，测试失败重试 3 次）。Dockerfile 基于 openEuler 22.03 LTS SP1 安装系统工具链、Electron 运行库与 Xvfb，并用官方 tarball 安装 Node 22.14.0。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 22,
+      "cmake": "无（Node/TypeScript + Vite 工程，非 CMake 工程）",
+      "compiler": "typescript 5.3.3（tsc）、vue-tsc 2.0.13 + vite 5.2.8（webview-ui）",
+      "concurrency": 1,
+      "concurrency_ratio": "20%（容器 4 核 × 20% = 0.8，向下取整至少 1）",
+      "notes": "首次构建即成功：npm run install:all（根 345 包 + webview-ui 484 包，约 17s）→ npm run build:webview（8.41s 构建）→ npm run compile（1.97s）。构建无缺依赖问题，无需重试。",
+      "artifacts": [
+        {
+          "name": "extension.js",
+          "path": "out/extension.js",
+          "size": "3.1KB",
+          "type": "js 扩展主入口"
+        },
+        {
+          "name": "out/（扩展编译产物目录）",
+          "path": "out/",
+          "size": "112K",
+          "type": "tsc 编译产物"
+        },
+        {
+          "name": "index.js",
+          "path": "webview-ui/build/assets/index.js",
+          "size": "507KB",
+          "type": "webview 前端 bundle"
+        },
+        {
+          "name": "index.css",
+          "path": "webview-ui/build/assets/index.css",
+          "size": "209KB",
+          "type": "webview 样式"
+        },
+        {
+          "name": "index.html",
+          "path": "webview-ui/build/index.html",
+          "size": "0.36KB",
+          "type": "webview 入口页"
+        }
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 42,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "failures": []
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 47,
+      "results": [
+        {
+          "sample_name": "npm run dev:web（webview-ui Vite 浏览器开发）",
+          "execution_status": "success",
+          "output_summary": "VITE v5.4.11 ready in 2361ms，监听 localhost:5173；curl http://localhost:5173/ 返回 HTTP 200，HTML 为 Vue 应用入口（含 /@vite/client）。",
+          "execution_time": "12s"
+        },
+        {
+          "sample_name": "npm run pack:vsix（打包可安装插件）",
+          "execution_status": "success",
+          "output_summary": "安装全局 @vscode/vsce 后执行 pack:vsix，产出 /workspace/openeuler-vscode-0.0.1.vsix（31 个文件，277.53KB），包含 out/ 编译产物与 webview-ui/build。",
+          "execution_time": "35s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-26T21:02:10",
+      "title": "README.md/README_EN.md 为模板占位内容",
+      "body": "主 README 的安装教程、使用说明等均为 xxxx 占位，未提供任何构建/测试/环境要求信息；真实开发入口在 README.dev.md，对新用户不友好。",
+      "source": "README.md / README_EN.md"
+    },
+    {
+      "time": "2026-08-26T21:02:50",
+      "title": "package.json repository.url 与实际仓库地址不一致",
+      "body": "package.json 中 repository.url 指向 gitee.com/kunpeng_compute/openeuler-vscode，而当前仓库实际为 gitcode.com/openeuler/oeDevPlugin，可能导致 vsce 发布/溯源信息错误。",
+      "source": "package.json"
+    },
+    {
+      "time": "2026-08-26T21:15:10",
+      "title": "VSIX 打包未排除开发配置文件",
+      "body": ".vscodeignore 未排除 .pre-commit-config.yaml、.markdownlint.yaml、.codespellrc、.devcontainer 等开发期文件，导致打包出的 VSIX 携带约 10 个非运行时文件（277.53KB，功能无影响但可精简）。",
+      "source": ".vscodeignore / vsce package 输出"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-26T21:05:40",
+      "problem": "docker build 时使用镜像名 oeDevPlugin-ttfhw 含大写字母，Docker 报 invalid tag 错误。",
+      "solution": "将镜像名改为小写 oedevplugin-ttfhw 后重新构建成功。",
+      "source": "docker build 命令"
+    },
+    {
+      "timestamp": "2026-08-26T21:14:50",
+      "problem": "样例 dev:web 中 curl http://127.0.0.1:5173/ 返回 Connection refused，怀疑服务未启动。",
+      "solution": "排查发现 Vite 默认绑定 IPv6 localhost（::1），改用 curl http://localhost:5173/ 验证，返回 HTTP 200，服务正常。",
+      "source": "样例执行（npm run dev:web）"
+    }
+  ]
+}
