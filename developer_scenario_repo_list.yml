@@ -269,15 +269,15 @@ OpenEuler:
       branch: master
       component: OpenEuler
     - name: openeuler-jenkins
-      url: "https://gitcode.com/ConneRa1/openeuler-jenkins.git"
+      url: "https://gitcode.com/openeuler/openeuler-jenkins.git"
       branch: master
       component: OpenEuler
     - name: powerapi
       url: "https://gitcode.com/openeuler/powerapi.git"
       branch: master
       component: OpenEuler
-    - name: radiaTest
-      url: "https://gitcode.com/ConneRa1/radiaTest.git"
+    - name: eagle
+      url: "https://gitcode.com/openeuler/eagle.git"
       branch: master
       component: OpenEuler
 
