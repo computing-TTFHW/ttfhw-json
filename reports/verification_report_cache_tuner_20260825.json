@@ -1,0 +1,610 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/openeuler/cache_tuner.git",
+    "branch": "ttfhw-verify-20260825",
+    "start_time": "2026-08-25T17:26:13",
+    "end_time": "2026-08-25T17:42:00",
+    "duration_seconds": 947,
+    "total_steps": 25,
+    "commit": "ecffce81596870c2ccc5c7634e3df5dde1812e40",
+    "environment": "远程 openEuler 24.03 aarch64 (Kunpeng 920 7270Z) 123.60.114.33:33408，docker 容器 openEuler 24.03 LTS-SP4，--privileged --network host，挂载 /home/yyy/cache_tuner:/workspace 与 /usr/src/kernels",
+    "verifier": "opencode / ttfhw-verify-smart"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "aarch64",
+      "cpu_model": "Kunpeng 920 7270Z @ 2.9GHz",
+      "cpu_cores": 128,
+      "memory": "470G",
+      "disk": "/home 可用 75G",
+      "docker_version": "18.09.0"
+    },
+    "container": {
+      "os": "openEuler 24.03 (LTS-SP4)",
+      "architecture": "aarch64",
+      "cpu_cores": 128,
+      "memory": "470G",
+      "container_name": "cache_tuner-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp4",
+      "selection_reason": "Tier 3 基础 OS 从零安装：仓库无 Dockerfile/无预构建镜像/无 devcontainer；镜像与宿主 OS 一致（openEuler 24.03），内核模块需匹配宿主内核 6.6.0-159.4.8.161.oe2403sp4.aarch64，本地已有该镜像"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "cache_stash/cache_stash.c verify_cpu_part() + 远程主机 lscpu",
+      "value": "aarch64 (arm64)，仅支持 HISI LINXICORE9100 CPU（CPU part 0xD02，鲲鹏 920 7270Z）"
+    },
+    "recommended_image": {
+      "source": "仓库无 Dockerfile、README 无镜像说明、无 devcontainer",
+      "value": "无预构建镜像，Tier 3 基础 OS 从零安装（openEuler 24.03 LTS，与宿主一致）"
+    },
+    "dockerfile_dependencies": {
+      "source": "仓库无 Dockerfile",
+      "value": "无 Dockerfile"
+    },
+    "dependencies": {
+      "source": "cache_stash/Makefile（kbuild 内核模块）+ run-clang-tidy.sh",
+      "value": [
+        "gcc",
+        "gcc-c++",
+        "make",
+        "cmake",
+        "git",
+        "bc",
+        "python3",
+        "kmod（insmod/rmmod）",
+        "内核头文件 /lib/modules/$(uname -r)/build，需匹配宿主内核 6.6.0-159.4.8.161.oe2403sp4"
+      ]
+    },
+    "build_commands": {
+      "source": "cache_stash/Makefile default 目标（kbuild）",
+      "value": "cd cache_stash && make（展开为 make -C /lib/modules/$(uname -r)/build M=$PWD modules，产物 cache_stash.ko）"
+    },
+    "ut_commands": {
+      "source": "cache_stash/test/test_functional.sh、test_boundary.sh、test_performance.sh",
+      "value": "需先 insmod cache_stash.ko 并确认 /sys/kernel/cache_stash/（llc_enable/l2_enable/l2_target/status）存在，再执行 bash test_functional.sh --skip-checks / test_boundary.sh --skip-checks / test_performance.sh --skip-checks"
+    },
+    "sample_commands": {
+      "source": "仓库无样例脚本/文档，README 仅 4 行简介",
+      "value": "无（test/ 下 3 个测试脚本即唯一验证入口）"
+    },
+    "special_dependencies": {
+      "source": "无",
+      "value": []
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-08-25T17:26:20",
+      "step": "document_reading",
+      "action": "检查 cache_tuner 仓库 git 状态",
+      "result": "成功",
+      "details": {
+        "branch": "ttfhw-verify",
+        "remote": "https://gitcode.com/cloudyyy1234/cache_tuner.git",
+        "head": "ecffce8"
+      },
+      "command": "git branch --show-current; git remote -v; git log --oneline -8",
+      "success": true,
+      "output": "当前分支 ttfhw-verify，远程 cloudyyy1234/cache_tuner，HEAD ecffce8",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-25T17:26:30",
+      "step": "branch_setup",
+      "action": "新建验证分支",
+      "result": "成功",
+      "details": {
+        "new_branch": "ttfhw-verify-20260825"
+      },
+      "command": "git checkout -b ttfhw-verify-20260825",
+      "success": true,
+      "output": "已切换到新分支 ttfhw-verify-20260825（从 ttfhw-verify HEAD ecffce8 拉出）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-25T17:27:10",
+      "step": "document_reading",
+      "action": "读取 README.md",
+      "result": "成功",
+      "details": {
+        "file": "README.md",
+        "link_count": 0
+      },
+      "command": "cat README.md",
+      "success": true,
+      "output": "README 仅 4 行项目简介，无任何外部链接，文档闭包无外部文档可跟",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-25T17:27:10",
+      "step": "document_reading",
+      "action": "读取 cache_stash/Makefile 提取构建入口",
+      "result": "成功",
+      "details": {
+        "file": "cache_stash/Makefile",
+        "build_system": "kbuild"
+      },
+      "command": "cat cache_stash/Makefile",
+      "success": true,
+      "output": "obj-m := cache_stash.o；make -C /lib/modules/$(uname -r)/build M=$PWD modules",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-25T17:27:10",
+      "step": "document_reading",
+      "action": "读取三个测试脚本",
+      "result": "成功",
+      "details": {
+        "files": [
+          "test_functional.sh",
+          "test_boundary.sh",
+          "test_performance.sh"
+        ]
+      },
+      "command": "cat cache_stash/test/*.sh",
+      "success": true,
+      "output": "测试均依赖 insmod 模块 + /sys/kernel/cache_stash/ sysfs，root 权限运行；功能/边界/性能三类",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1
+    },
+    {
+      "timestamp": "2026-08-25T17:27:10",
+      "step": "document_reading",
+      "action": "检查 Dockerfile/CI/devcontainer/README 链接",
+      "result": "成功",
+      "details": {
+        "dockerfile": "无",
+        "ci": "无",
+        "devcontainer": "无",
+        "readme_links": "无"
+      },
+      "command": "git ls-tree -r --name-only HEAD",
+      "success": true,
+      "output": "仓库 12 个文件，无 Dockerfile、无 CI、无 .devcontainer、README 无链接",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-25T17:27:20",
+      "step": "document_reading",
+      "action": "检查远程机器 CPU、内核与远程仓库状态",
+      "result": "成功",
+      "details": {
+        "os": "openEuler 24.03 (LTS-SP3)",
+        "cpu": "Kunpeng 920 7270Z (part 0xd02)",
+        "kernel": "6.6.0-159.4.8.161.oe2403sp4.aarch64",
+        "kernel_devel": "kernel-devel-6.6.0-159.4.8.161.oe2403sp4.aarch64 已安装"
+      },
+      "command": "uname -a; cat /etc/os-release; rpm -qa|grep kernel-devel; git -C /home/yyy/cache_tuner branch",
+      "success": true,
+      "output": "远端 /home/yyy/cache_tuner 为 ttfhw-verify 分支副本，内容与新分支一致；宿主已装匹配内核的 kernel-devel",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-08-25T17:27:20",
+      "step": "document_reading",
+      "action": "NPU 需求扫描",
+      "result": "成功",
+      "details": {
+        "npu_required": false
+      },
+      "command": "grep -riE 'CANN|Ascend|torch_npu|davinci|昇腾' .",
+      "success": true,
+      "output": "未命中 NPU 关键词；'910' 仅出现在 CPU part ID 名称 LINXICORE9100 中，非 NPU",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-25T17:27:50",
+      "step": "image_selection",
+      "action": "镜像 Tier 决策",
+      "result": "Tier 3 基础 OS 从零安装",
+      "details": {
+        "tier": 3,
+        "reason": "仓库无 Dockerfile、无预构建镜像信号、无 devcontainer",
+        "image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp4"
+      },
+      "command": "",
+      "success": true,
+      "output": "内核模块需匹配宿主内核，选择与宿主同版本的 openEuler 镜像",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-25T17:28:00",
+      "step": "static_analysis_scan",
+      "action": "扫描 pre-commit 配置",
+      "result": "成功",
+      "details": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "hooks": [
+          "trailing-whitespace",
+          "end-of-file-fixer",
+          "check-yaml",
+          "check-merge-conflict",
+          "check-added-large-files",
+          "detect-private-key",
+          "gitleaks",
+          "codespell",
+          "clang-format",
+          "clang-tidy"
+        ]
+      },
+      "command": "ls .pre-commit-config.yaml",
+      "success": true,
+      "output": "10 个 hook：基础 6 项 + gitleaks + codespell + clang-format + clang-tidy；未执行，仅记录配置",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-25T17:28:00",
+      "step": "static_analysis_scan",
+      "action": "扫描 lint-runner 配置",
+      "result": "成功",
+      "details": {
+        "configured": false
+      },
+      "command": "ls .lint-runner.yaml .lintrunner.toml 2>/dev/null",
+      "success": true,
+      "output": "无 lint-runner 配置",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-25T17:28:00",
+      "step": "devcontainer_scan",
+      "action": "扫描 .devcontainer 目录",
+      "result": "跳过",
+      "details": {
+        "exists": false
+      },
+      "command": "ls -d .devcontainer 2>/dev/null",
+      "success": true,
+      "output": "无 .devcontainer 目录",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-25T17:28:30",
+      "step": "image_selection",
+      "action": "Tier 3 基础镜像选择",
+      "result": "Tier 3 基础 OS 从零安装",
+      "details": {
+        "image": "hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp4",
+        "exist_local": true
+      },
+      "command": "docker images | grep openeuler",
+      "success": true,
+      "output": "本地已有 24.03-lts-sp4 镜像（215MB），无需重新拉取",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 0
+    },
+    {
+      "timestamp": "2026-08-25T17:28:40",
+      "step": "container_setup",
+      "action": "启动特权容器并挂载代码与内核构建树",
+      "result": "成功",
+      "details": {
+        "container": "cache_tuner-ttfhw",
+        "mounts": [
+          "/home/yyy/cache_tuner:/workspace",
+          "/lib/modules:/lib/modules:ro",
+          "/usr/src/kernels:/usr/src/kernels:ro"
+        ],
+        "network": "host（容器内 DNS 无法解析仓库源，使用 host 网络）"
+      },
+      "command": "docker run -d --privileged --network host --name cache_tuner-ttfhw -v /home/yyy/cache_tuner:/workspace -v /lib/modules:/lib/modules:ro -v /usr/src/kernels:/usr/src/kernels:ro hub.oepkgs.net/openeuler/openeuler:24.03-lts-sp4 sleep infinity",
+      "success": true,
+      "output": "容器启动成功，uname -r 与宿主一致，/lib/modules/$(uname -r)/build 符号链接可解析到 /usr/src/kernels",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-08-25T17:29:00",
+      "step": "dependency_installation",
+      "action": "首次安装工具链含 kernel-devel 失败",
+      "result": "失败",
+      "details": {
+        "error": "Disk Requirements: At least 99MB more space needed on the /usr/lib/modules filesystem"
+      },
+      "command": "dnf install -y gcc gcc-c++ make cmake git bc python3 kernel-devel",
+      "success": false,
+      "output": "/lib/modules 以只读挂载进容器，dnf 尝试向 /lib/modules 写入 kernel-devel 失败",
+      "error": "只读挂载导致 dnf 无法写入 /lib/modules",
+      "returncode": 1,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-08-25T17:30:00",
+      "step": "dependency_installation",
+      "action": "重装工具链（不含 kernel-devel）",
+      "result": "成功",
+      "details": {
+        "packages": "gcc/gcc-c++/make/cmake/git/bc/python3/kmod",
+        "reason": "宿主已装匹配内核的 kernel-devel，/usr/src/kernels 已挂载，容器内无需再装 kernel-devel"
+      },
+      "command": "dnf install -y gcc gcc-c++ make cmake git bc python3 kmod",
+      "success": true,
+      "output": "Complete! gcc (GCC) 12.3.1；GNU Make 4.4.1；insmod/rmmod 可用",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-08-25T17:31:00",
+      "step": "dependency_verification",
+      "action": "验证容器内工具链与内核构建树",
+      "result": "成功",
+      "details": {
+        "kernel": "6.6.0-159.4.8.161.oe2403sp4.aarch64",
+        "build_symlink": "/lib/modules/$(uname -r)/build -> /usr/src/kernels/$(uname -r)"
+      },
+      "command": "gcc --version; make --version; ls -l /lib/modules/$(uname -r)/build",
+      "success": true,
+      "output": "工具链齐全，内核构建树符号链接可解析",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-25T17:31:20",
+      "step": "build_attempt",
+      "action": "kbuild 编译内核模块",
+      "result": "成功",
+      "details": {
+        "command": "make",
+        "target": "make -C /lib/modules/$(uname -r)/build M=/workspace/cache_stash modules",
+        "duration": "1.421s",
+        "warning": "编译器与内核编译版本差异 (12.3.1-110 vs 12.3.1-111)，非致命"
+      },
+      "command": "cd /workspace/cache_stash && make",
+      "success": true,
+      "output": "CC [M] cache_stash.o -> MODPOST -> LD [M] cache_stash.ko，real 0m1.421s，BUILD_EXIT=0，产物 cache_stash.ko 393960 字节",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-25T17:32:00",
+      "step": "ut_execution",
+      "action": "加载 cache_stash.ko 内核模块",
+      "result": "成功",
+      "details": {
+        "sysfs": "/sys/kernel/cache_stash/ {llc_enable, l2_enable, l2_target, status}",
+        "status": "LLC Enabled / L2 Disabled，12 LLC 地址受控"
+      },
+      "command": "insmod cache_stash.ko",
+      "success": true,
+      "output": "verify_cpu_part 通过（宿主 Kunpeng 920 part 0xD02），sysfs 就绪",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 4
+    },
+    {
+      "timestamp": "2026-08-25T17:32:30",
+      "step": "ut_execution",
+      "action": "运行 test_functional.sh（功能测试）",
+      "result": "成功",
+      "details": {
+        "passed": 19,
+        "failed": 0,
+        "overall": "ALL TESTS PASSED"
+      },
+      "command": "bash test/test_functional.sh --skip-checks",
+      "success": true,
+      "output": "覆盖属性存在性/状态读写/开关切换/寄存器详情/压力/并发/混合操作，19/19 通过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-08-25T17:32:50",
+      "step": "ut_execution",
+      "action": "运行 test_boundary.sh（边界测试）",
+      "result": "成功",
+      "details": {
+        "passed": 33,
+        "failed": 0,
+        "overall": "ALL BOUNDARY TESTS PASSED"
+      },
+      "command": "bash test/test_boundary.sh --skip-checks",
+      "success": true,
+      "output": "覆盖非法输入/边界值/稳定性/描述符泄漏/硬件错误处理/大输入等，33/33 通过",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15
+    },
+    {
+      "timestamp": "2026-08-25T17:33:10",
+      "step": "ut_execution",
+      "action": "运行 test_performance.sh（性能测试）",
+      "result": "成功",
+      "details": {
+        "mixed_ops": "avg 17.8μs/次，56001 次/s"
+      },
+      "command": "bash test/test_performance.sh --skip-checks",
+      "success": true,
+      "output": "LLC/L2 读写与混合操作指标正常，Complex Mixed Operations 平均 17.8μs/次",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 12
+    },
+    {
+      "timestamp": "2026-08-25T17:33:30",
+      "step": "ut_execution",
+      "action": "卸载模块并确认清理",
+      "result": "成功",
+      "details": {},
+      "command": "rmmod cache_stash",
+      "success": true,
+      "output": "RMMOD_OK",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-25T17:35:00",
+      "step": "sample_execution",
+      "action": "扫描样例入口",
+      "result": "跳过",
+      "details": {
+        "examples_dir": "无",
+        "sample_docs": "无"
+      },
+      "command": "find /workspace -iname '*example*' -o -iname '*sample*'; ls examples 2>/dev/null",
+      "success": true,
+      "output": "仓库无样例，不执行；test/ 下 3 个测试脚本即唯一验证入口",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2
+    },
+    {
+      "timestamp": "2026-08-25T17:42:00",
+      "step": "cleanup",
+      "action": "删除验证容器并确认模块已卸载",
+      "result": "成功",
+      "details": {},
+      "command": "docker rm -f cache_tuner-ttfhw; lsmod|grep -c cache_stash",
+      "success": true,
+      "output": "容器已删除，cache_stash 模块未加载（计数 0）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 pre-commit 配置（.pre-commit-config.yaml），含 clang-format、clang-tidy、gitleaks、codespell、pre-commit-hooks 基础项等 10 个钩子；未执行 pre-commit run，仅记录配置。无 lint-runner 配置",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "仅检查配置，未执行",
+        "duration_seconds": 0,
+        "total_hooks": 10,
+        "executed_in_verification": false
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "无",
+      "config_files": [],
+      "original_base_image": "无",
+      "used_image": "无",
+      "summary": "仓库无 .devcontainer 目录，devcontainer 扫描未命中"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 1.4,
+      "artifacts": [
+        {
+          "name": "cache_stash.ko",
+          "path": "cache_stash/cache_stash.ko",
+          "size": "393960 字节 (385K)",
+          "type": "内核模块 (kbuild，ARM aarch64)"
+        }
+      ],
+      "compiler": "gcc (GCC) 12.3.1 (openEuler 12.3.1-110.oe2403sp4)",
+      "cmake": "未使用（kbuild 构建系统，cmake 3.31.12 已装备用）",
+      "notes": "vermagic=6.6.0-159.4.8.161.oe2403sp4.aarch64 SMP mod_unload modversions；唯一的非致命告警为编译器与内核编译版本差异 (110 vs 111)"
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 52,
+      "total": 52,
+      "passed": 52,
+      "failed": 0,
+      "failures": [],
+      "skipped": 0,
+      "summary": "insmod 后 sysfs 正常（llc_enable/l2_enable/l2_target/status，12 LLC + 12 L2 地址受控）；test_functional.sh 19/19 通过，test_boundary.sh 33/33 通过，test_performance.sh 指标正常，rmmod 清理成功"
+    },
+    "sample": {
+      "status": "not_run",
+      "duration_seconds": 0,
+      "results": [],
+      "reason": "仓库无样例脚本/样例文档（README 仅 4 行简介，无 examples/ 目录）；test/ 下 3 个测试脚本即唯一验证入口，已在步骤 6 单元测试中完整执行"
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-08-25T17:40:00",
+      "title": "README 无构建/测试/样例说明，无任何链接",
+      "body": "外部开发者无法按文档复现构建；README 仅 4 行项目简介，构建命令、依赖清单、测试入口均未说明",
+      "source": "README.md"
+    },
+    {
+      "time": "2026-08-25T17:40:00",
+      "title": "仓库无 Dockerfile/CI/devcontainer，构建环境需手工准备",
+      "body": "内核模块构建依赖 gcc/make 与宿主内核构建树（/lib/modules/$(uname -r)/build），需提供 Dockerfile 或 CI 工作流才能容器化复现",
+      "source": "仓库根目录扫描"
+    },
+    {
+      "time": "2026-08-25T17:40:00",
+      "title": "测试脚本前置条件（root + 指定 CPU）未声明",
+      "body": "test/ 下脚本需 root 权限且仅支持 HISI LINXICORE9100 CPU（鲲鹏 920 part 0xD02），README 未声明硬件与权限要求",
+      "source": "cache_stash/test/*.sh"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-08-25T17:29:00",
+      "problem": "容器预装 gcc/make 时误带 kernel-devel，因 /lib/modules 以只读挂载导致 dnf 写入失败（Disk Requirements 报 99MB 空间不足）",
+      "solution": "移除 kernel-devel 安装项：宿主已装匹配内核的 kernel-devel，/usr/src/kernels 已挂载进容器，无需容器重复安装",
+      "source": "步骤 4 依赖安装"
+    },
+    {
+      "timestamp": "2026-08-25T17:28:40",
+      "problem": "容器内 /lib/modules/$(uname -r)/build 是符号链接，指向 /usr/src/kernels/$(uname -r)，若仅挂载 /lib/modules 将无法解析构建树",
+      "solution": "同时挂载 /usr/src/kernels:/usr/src/kernels:ro，保证构建树可通过符号链接访问",
+      "source": "构建阶段 / 容器挂载"
+    },
+    {
+      "timestamp": "2026-08-25T17:28:40",
+      "problem": "openEuler 基础镜像默认网络 DNS 无法稳定解析仓库源，可能造成 dnf 安装失败",
+      "solution": "容器以 --network host 启动，复用宿主网络",
+      "source": "步骤 4 依赖安装"
+    },
+    {
+      "timestamp": "2026-08-25T17:33:30",
+      "problem": "openEuler 最小基础镜像无 insmod/rmmod（kmod 未安装），模块加载与卸载不可用",
+      "solution": "dnf install -y kmod 后 insmod/rmmod 可用",
+      "source": "步骤 6 单元测试"
+    }
+  ]
+}

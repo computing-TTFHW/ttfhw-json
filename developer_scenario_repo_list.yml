@@ -236,32 +236,12 @@ OpenEuler:
       url: "https://gitcode.com/openeuler/witty-service.git"
       branch: master
       component: OpenEuler
-    - name: stratovirt
-      url: "https://gitcode.com/openeuler/stratovirt.git"
-      branch: master
-      component: OpenEuler
     - name: bishengjdk-8
       url: "https://gitcode.com/openeuler/bishengjdk-8.git"
       branch: master
       component: OpenEuler
-    - name: A-guard
-      url: "https://gitcode.com/openeuler/A-guard.git"
-      branch: master
-      component: OpenEuler
     - name: cache_tuner
       url: "https://gitcode.com/openeuler/cache_tuner.git"
-      branch: master
-      component: OpenEuler
-    - name: ccb
-      url: "https://gitcode.com/ConneRa1/ccb.git"
-      branch: master
-      component: OpenEuler
-    - name: euler-copilot-framework
-      url: "https://gitcode.com/openeuler/euler-copilot-framework.git"
-      branch: master
-      component: OpenEuler
-    - name: euler-copilot-rag
-      url: "https://gitcode.com/openeuler/euler-copilot-rag.git"
       branch: master
       component: OpenEuler
     - name: euler-copilot-shell
@@ -270,10 +250,6 @@ OpenEuler:
       component: OpenEuler
     - name: heolleo
       url: "https://gitcode.com/openeuler/heolleo.git"
-      branch: master
-      component: OpenEuler
-    - name: mem_hot
-      url: "https://gitcode.com/openeuler/mem_hot.git"
       branch: master
       component: OpenEuler
     - name: oeAware-manager
@@ -288,20 +264,8 @@ OpenEuler:
       url: "https://gitcode.com/openeuler/oeDevPlugin.git"
       branch: master
       component: OpenEuler
-    - name: oec-application
-      url: "https://gitcode.com/openeuler/oec-application.git"
-      branch: master
-      component: OpenEuler
     - name: openeuler-jenkins
       url: "https://gitcode.com/ConneRa1/openeuler-jenkins.git"
-      branch: master
-      component: OpenEuler
-    - name: openeuler-obs
-      url: "https://gitcode.com/ConneRa1/openeuler-obs.git"
-      branch: master
-      component: OpenEuler
-    - name: openeuler-os-build
-      url: "https://gitcode.com/openeuler/openeuler-os-build.git"
       branch: master
       component: OpenEuler
     - name: powerapi
@@ -310,10 +274,6 @@ OpenEuler:
       component: OpenEuler
     - name: radiaTest
       url: "https://gitcode.com/ConneRa1/radiaTest.git"
-      branch: master
-      component: OpenEuler
-    - name: sysHAX
-      url: "https://gitcode.com/openeuler/sysHAX.git"
       branch: master
       component: OpenEuler
 
