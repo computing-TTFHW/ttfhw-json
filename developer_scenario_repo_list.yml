@@ -480,10 +480,6 @@ BoostKit:
       url: "https://gitcode.com/boostkit/omnioperator.git"
       branch: master
       component: BoostKit
-    - name: omnistatestore
-      url: "https://gitcode.com/boostkit/omnistatestore.git"
-      branch: master
-      component: BoostKit
     - name: rapidjson
       url: "https://gitcode.com/boostkit/rapidjson.git"
       branch: dev
