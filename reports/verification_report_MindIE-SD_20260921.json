@@ -1,0 +1,801 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/MindIE-SD.git",
+    "repo_path": "/workspace/MindIE-SD",
+    "branch": "dev",
+    "start_time": "2026-09-21T20:26:00+08:00",
+    "end_time": "2026-09-21T21:17:18+08:00",
+    "duration_seconds": 3078,
+    "total_steps": 18,
+    "commit": "3bde8c32b472ca5bf7701fafe1e3747e4c6c39cc",
+    "environment": "omni A5 容器镜像 quay.io/ascend/vllm-omni:v0.28.0-a5（Ubuntu 22.04.5 LTS / x86_64 / Python 3.12.13 / CANN 9.1.0 / torch 2.10.0+cpu / torch_npu 2.10.0.post4 / gcc 11），宿主机 openEuler 22.03 LTS-SP4，8x Ascend950PR（A5）。仓库自带 docker/omni/Dockerfile.a5.ubuntu 即以该镜像为 FROM。",
+    "verifier": "dsh / ttfhw-verify (compile-verify)"
+  },
+  "token_usage": {
+    "tool": "dsh",
+    "model": "",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64 (AMD EPYC 9575F 64-Core Processor, 2 sockets)",
+      "cpu_model": "AMD EPYC 9575F 64-Core Processor",
+      "cpu_cores": 256,
+      "memory": "1.5Ti total (298Gi used, 1.2Ti available)",
+      "disk": "/dev/mapper/openeuler-root 3.3T total, 171G available (95% used)；docker 数据盘 /home/docker 位于 /dev/mapper/openeuler-home，验证开始时已 100% 占用",
+      "docker_version": "26.1.3",
+      "npu": "8x Ascend950PR (driver npu-smi 25.7.rc1.6, 每卡 HBM 114688MB)，容器内 torch.npu.is_available()=True, device_count=8"
+    },
+    "container": {
+      "os": "Ubuntu 22.04.5 LTS (Jammy)",
+      "architecture": "x86_64",
+      "cpu_cores": 256,
+      "memory": "1.5Ti (共享宿主机)",
+      "python": "3.12.13 (/usr/local/python3.12.13, pip 25.x)",
+      "cann": "9.1.0 (/usr/local/Ascend/ascend-toolkit/latest, compiler/version.info Version=9.1.0)",
+      "torch": "2.10.0+cpu (compiled_with_cxx11_abi=True)",
+      "torch_npu": "2.10.0.post4",
+      "gcc": "11",
+      "cmake": "4.4.2",
+      "npu_arch": "Ascend950PR_957b (A5)",
+      "pre_installed_packages": 310,
+      "name": "mindiesd-ttfhw",
+      "image": "quay.io/ascend/vllm-omni:v0.28.0-a5"
+    },
+    "image_source": {
+      "type": "repo_provided_omni_image",
+      "image_name": "quay.io/ascend/vllm-omni:v0.28.0-a5",
+      "selection_reason": "采用仓库自带 docker/omni/Dockerfile.a5.ubuntu 的基础镜像。该 Dockerfile 的 FROM 即 quay.io/ascend/vllm-omni:v0.28.0-a5，面向昇腾 A5 系列、linux/amd64，已预装 CANN 9.1.0 + torch + torch_npu + vllm_omni 及全部构建工具链（cmake/gcc/msopgen），与本机 Ascend950PR 完全匹配，因此直接以该 omni 镜像起容器做源码构建验证，省去安装 CANN/torch 的步骤。仓库 A5 镜像 tag 为 mindiesd:v3.1.0-cann9.1.0-torch_npu2.10.0-a5-ubuntu22.04-py3.12-x86_64。",
+      "dependency_mapping": {
+        "from_dockerfile": "docker/omni/Dockerfile.a5.ubuntu (FROM quay.io/ascend/vllm-omni:v0.28.0-a5)",
+        "mappings": [
+          {
+            "original": "quay.io/ascend/vllm-omni:v0.28.0-a5（基础镜像，含 CANN 9.1.0 / torch 2.10.0 / torch_npu 2.10.0.post4）",
+            "target_equivalent": "直接 docker run 使用，无需替换；本机已缓存该镜像"
+          },
+          {
+            "original": "Dockerfile 中 pip install mindiesd==3.1.0（镜像预装的发布版 mindiesd）",
+            "target_equivalent": "验证目标为 dev 源码构建，故用源码 python setup.py bdist_wheel 产出的 mindiesd-3.1.0 wheel 覆盖安装"
+          },
+          {
+            "original": "requirements.txt: strenum / examples 依赖 timm",
+            "target_equivalent": "镜像未预装，验证时通过内网代理 pip 安装 strenum、timm、diffusers、transformers、huggingface_hub"
+          }
+        ]
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md + docs/zh/installation.md + docker/omni/Dockerfile.a5.ubuntu",
+      "value": "MindIE SD 是 MindIE 的视图生成（Stable Diffusion）推理模型套件，提供昇腾 NPU 上的端到端推理。支持 x86_64/linux amd64 与 aarch64，覆盖 Atlas 800I A2/A3 及昇腾 A5 系列；本次在 A5（Ascend950PR）x86_64 上验证。"
+    },
+    "recommended_image": {
+      "source": "docker/omni/OVERVIEW.zh.md + docker/omni/Dockerfile.a5.ubuntu + docs/zh/installation.md",
+      "value": "仓库提供 vLLM-Omni + MindIE-SD 集成镜像，A5 版本 tag 为 mindiesd:v3.1.0-cann9.1.0-torch_npu2.10.0-a5-ubuntu22.04-py3.12-x86_64，基础镜像 quay.io/ascend/vllm-omni:v0.28.0-a5。本次直接使用该基础 omni 镜像作为构建环境。"
+    },
+    "dockerfile_dependencies": {
+      "source": "docker/omni/Dockerfile.a5.ubuntu",
+      "value": [
+        {
+          "original": "FROM quay.io/ascend/vllm-omni:v0.28.0-a5",
+          "openEuler_equivalent": "直接复用（linux/amd64 通用镜像）"
+        },
+        {
+          "original": "pip install mindiesd==3.1.0",
+          "openEuler_equivalent": "改为源码构建产物 mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl"
+        },
+        {
+          "original": "pip install --no-deps msprobe==0.1.4",
+          "openEuler_equivalent": "未使用（与构建验证无关）"
+        },
+        {
+          "original": "pip install msmodelslim==8.2.1",
+          "openEuler_equivalent": "未使用"
+        },
+        {
+          "original": "pip install --no-deps msprof-analyze==26.0.0",
+          "openEuler_equivalent": "未使用"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "requirements.txt + requirements-test.txt + docs/zh/installation.md + setup.py",
+      "value": [
+        "Python >= 3.10（容器 3.12.13）",
+        "torch / torch_npu 2.6~2.10（docs 声明范围；requirements.txt 却固定 2.9.0）",
+        "CANN Toolkit 9.0.1 + CANN ops 算子包（容器 CANN 9.1.0）",
+        "triton-ascend==3.2.1（仅 triton-ascend.osinfra.cn 源提供）",
+        "运行依赖 einops / numpy>=1.26.4 / safetensors / strenum / zmq / decorator / scipy / attrs",
+        "测试依赖 coverage>=7.6.10 / pytest>=8.3.2 / timm>=0.9.12 / packaging"
+      ]
+    },
+    "build_commands": {
+      "source": "docs/zh/installation.md 源码安装章节 + setup.py CustomBuildPy",
+      "value": "pip install -r requirements.txt --extra-index-url https://triton-ascend.osinfra.cn/pypi/simple --trusted-host triton-ascend.osinfra.cn && python setup.py bdist_wheel （内部依次调用 build/build_ops.sh 构建 AscendC 算子、build/build_plugin.sh 构建 PyTorch 插件）"
+    },
+    "ut_commands": {
+      "source": "docs/zh/developer_guide/test.md + tests/run_UT_test.sh + tests/run_test.sh",
+      "value": "CPU 友好单测：bash tests/run_UT_test.sh（coverage + unittest + pytest tests/UT）；全量测试：cd tests/ && bash run_test.sh --all（默认 ALL，含 NPU 依赖用例；另有 --cpu_only / --npu_only）"
+    },
+    "sample_commands": {
+      "source": "examples/dummy_run/README.md",
+      "value": "python examples/dummy_run/wan_infer.py --device_id 3 --num_layers 2（空权重运行验证，仅下载 KB 级配置，不依赖真实权重；可选 --compile / --quant bf16|w8a8|fp32 / --no-skip-vae）"
+    },
+    "special_dependencies": {
+      "source": "docs/zh/installation.md + docker/omni/Dockerfile.a5.ubuntu + examples/dummy_run/requirements.txt",
+      "value": [
+        "CANN Toolkit 开发套件包与 CANN ops 算子包，需 source /usr/local/Ascend/ascend-toolkit/set_env.sh",
+        "AscendC 算子编译依赖 msopgen（CANN 自带）与 ccec/bisheng 编译器",
+        "样例依赖 diffusers>=0.40.0、transformers>=4.56.0、huggingface_hub>=0.23.0，并需访问 huggingface.co 下载配置文件",
+        "测试需昇腾 NPU（NPU 依赖用例）"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-09-21T20:26:00+08:00",
+      "step": "document_reading",
+      "action": "克隆 MindIE-SD dev 分支到本地工作区",
+      "result": "成功",
+      "details": {
+        "branch": "dev",
+        "depth": 1,
+        "commit": "3bde8c32b472ca5bf7701fafe1e3747e4c6c39cc"
+      },
+      "command": "git clone --depth 1 -b dev https://gitcode.com/Ascend/MindIE-SD.git MindIE-SD",
+      "success": true,
+      "output": "最新提交 3bde8c32 [Bugfix][ops] 修复 quant_four_over_six_a5 与 eagle_ffn 的 Ops::Base::ToString 重定义导致全量构建链接失败",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 90
+    },
+    {
+      "timestamp": "2026-09-21T20:28:00+08:00",
+      "step": "document_reading",
+      "action": "读取 README.md，确认产品定位、安装与快速入门入口",
+      "result": "成功",
+      "details": {
+        "file": "README.md"
+      },
+      "command": "",
+      "success": true,
+      "output": "MindIE SD 为 SD 系列大模型提供昇腾端到端推理；安装支持 pip / 源码 / 镜像三种方式；最新动态 09/20 完成 Qwen-Image-2.1 适配",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-09-21T20:29:00+08:00",
+      "step": "document_reading",
+      "action": "读取安装指导，提取依赖、源码安装与镜像安装命令",
+      "result": "成功",
+      "details": {
+        "file": "docs/zh/installation.md"
+      },
+      "command": "",
+      "success": true,
+      "output": "Pytorch/TorchNPU 2.6~2.10，CANN 9.0.1；源码安装 python setup.py bdist_wheel；镜像安装基于 quay.io/ascend/vllm-omni",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 40
+    },
+    {
+      "timestamp": "2026-09-21T20:30:00+08:00",
+      "step": "document_reading",
+      "action": "读取测试文档，确认 CPU/NPU 测试入口",
+      "result": "成功",
+      "details": {
+        "file": "docs/zh/developer_guide/test.md"
+      },
+      "command": "",
+      "success": true,
+      "output": "run_UT_test.sh（CPU 友好）；run_test.sh --all / --cpu_only / --npu_only",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-09-21T20:31:00+08:00",
+      "step": "document_reading",
+      "action": "读取 omni A5 镜像说明与 Dockerfile，确认基础镜像与运行参数",
+      "result": "成功",
+      "details": {
+        "files": [
+          "docker/omni/OVERVIEW.zh.md",
+          "docker/omni/Dockerfile.a5.ubuntu"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "A5 镜像 tag v3.1.0-cann9.1.0-torch_npu2.10.0-a5-ubuntu22.04-py3.12-x86_64，FROM quay.io/ascend/vllm-omni:v0.28.0-a5",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 40
+    },
+    {
+      "timestamp": "2026-09-21T20:32:00+08:00",
+      "step": "document_reading",
+      "action": "读取 setup.py 与 requirements.txt，确认构建流程与依赖",
+      "result": "成功",
+      "details": {
+        "files": [
+          "setup.py",
+          "requirements.txt",
+          "requirements-test.txt"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "CustomBuildPy 调用 build_ops.sh + build_plugin.sh；requirements 固定 torch==2.9.0/torch_npu==2.9.0、triton>=3.5.0 且 triton-ascend==3.2.1",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 40
+    },
+    {
+      "timestamp": "2026-09-21T20:33:00+08:00",
+      "step": "static_analysis_scan",
+      "action": "扫描 pre-commit 配置",
+      "result": "成功",
+      "details": {
+        "file": ".pre-commit-config.yaml",
+        "repos": 11,
+        "hooks": 25,
+        "minimum_pre_commit_version": "4.0.0"
+      },
+      "command": "",
+      "success": true,
+      "output": "25 个 hook：trailing-whitespace/end-of-file-fixer/check-yaml/check-json 等 7 个基础检查，ruff-check/ruff-format，codespell，pylint，bandit，typos，markdownlint x2，本地 kb-lint/run-evals-selftest 等 7 个自检，clang-format，clang-tidy，gitleaks-offline-scan",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20
+    },
+    {
+      "timestamp": "2026-09-21T20:33:20+08:00",
+      "step": "static_analysis_scan",
+      "action": "检查 lint-runner 配置",
+      "result": "成功",
+      "details": {
+        "pattern": [
+          ".lintrunner.toml",
+          ".lintrunner.yaml",
+          ".lint-runner.yaml"
+        ]
+      },
+      "command": "",
+      "success": true,
+      "output": "未找到 lint-runner 配置文件（仓库统一使用 pre-commit）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5
+    },
+    {
+      "timestamp": "2026-09-21T20:33:30+08:00",
+      "step": "devcontainer_scan",
+      "action": "扫描 .devcontainer 配置",
+      "result": "成功",
+      "details": {
+        "dir": ".devcontainer"
+      },
+      "command": "",
+      "success": true,
+      "output": ".devcontainer/cpu/devcontainer.json 存在（image 固定为 ascend_mindie_ubuntu_x86:20260305_ubuntu24_3.0.0_cann8.5.1_torch2.9.0_py311）；.devcontainer/npu/ 仅有 .gitkeeper，未提供 NPU devcontainer",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 10
+    },
+    {
+      "timestamp": "2026-09-21T20:36:40+08:00",
+      "step": "container_setup",
+      "action": "以仓库 omni A5 镜像启动验证容器并挂载源码与 4 张 NPU",
+      "result": "成功",
+      "details": {
+        "image": "quay.io/ascend/vllm-omni:v0.28.0-a5",
+        "name": "mindiesd-ttfhw",
+        "devices": [
+          "davinci0-3",
+          "davinci_manager",
+          "devmm_svm",
+          "hisi_hdc"
+        ]
+      },
+      "command": "docker run -d --privileged --shm-size=8g --device /dev/davinci0..3 ... -v <src>:/workspace/MindIE-SD <image> sleep infinity",
+      "success": true,
+      "output": "容器内 torch.npu.is_available()=True, device_count=8；torch 2.10.0+cpu / torch_npu 2.10.0.post4 / CANN 9.1.0 / Python 3.12.13",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 60
+    },
+    {
+      "timestamp": "2026-09-21T20:38:00+08:00",
+      "step": "dependency_installation",
+      "action": "安装镜像缺失的运行/测试依赖",
+      "result": "成功",
+      "details": {
+        "packages": [
+          "strenum",
+          "timm"
+        ],
+        "proxy": "内网 http 代理"
+      },
+      "command": "pip install strenum timm",
+      "success": true,
+      "output": "成功安装 StrEnum-0.4.15、timm-1.0.29；torch/torch_npu/triton-ascend 沿用镜像预装版本，未按 requirements.txt 降级",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 45
+    },
+    {
+      "timestamp": "2026-09-21T20:45:29+08:00",
+      "step": "build",
+      "action": "源码构建 wheel（AscendC 算子 + PyTorch 插件）",
+      "result": "成功",
+      "details": {
+        "duration_seconds": 175,
+        "wheel": "mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl"
+      },
+      "command": "cd /workspace/MindIE-SD && python3 setup.py bdist_wheel",
+      "success": true,
+      "output": "Building Ascend operators (13 个算子, compute units: ascend910/910b/910_93/950) -> CPack 生成 CANN-custom_ops--linux.x86_64.run -> 安装到 build/ -> 构建 PyTorch 插件 libPTAExtensionOPS.so -> 打包 wheel；构建成功，耗时 175s",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 175
+    },
+    {
+      "timestamp": "2026-09-21T20:48:30+08:00",
+      "step": "dependency_installation",
+      "action": "安装源码构建出的 wheel 并校验插件",
+      "result": "成功",
+      "details": {
+        "wheel": "dist/mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
+        "size": "63M"
+      },
+      "command": "pip install --no-deps --force-reinstall dist/mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
+      "success": true,
+      "output": "覆盖安装成功；site-packages/mindiesd/plugin/libPTAExtensionOPS.so 存在且可加载（导入时 OptionRegister 正常注册）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30
+    },
+    {
+      "timestamp": "2026-09-21T20:49:19+08:00",
+      "step": "ut",
+      "action": "运行 CPU 友好单元测试入口 run_UT_test.sh",
+      "result": "部分成功",
+      "details": {
+        "total": 186,
+        "passed": 185,
+        "failed": 1
+      },
+      "command": "cd /workspace/MindIE-SD && bash tests/run_UT_test.sh",
+      "success": false,
+      "output": "coverage+unittest 阶段 34 tests OK；pytest tests/UT 阶段 185 passed, 1 failed（tests/UT/benchmark/test_benchmark_report.py::test_load_report_entries_merges_multiple_runs，合并多次 run 时新旧 mtime 覆盖断言失败）",
+      "error": "1 failed",
+      "returncode": 1,
+      "duration_seconds": 19
+    },
+    {
+      "timestamp": "2026-09-21T20:49:40+08:00",
+      "step": "ut",
+      "action": "运行全量测试套件（CPU + NPU）",
+      "result": "部分成功",
+      "details": {
+        "total": 754,
+        "passed": 628,
+        "failed": 2,
+        "errors": 16,
+        "skipped": 108
+      },
+      "command": "cd /workspace/MindIE-SD/tests && bash run_test.sh --all",
+      "success": false,
+      "output": "83 个测试块：628 passed / 2 failed / 16 errors / 108 skipped；失败集中在 ops/norm_rope_concat（NPU device error 507035 与形状断言）、quantization/test_quantize.py::test_weight_quantize_with_w4a16（weight should be contiguous）与 layers/flash_attn/test_sparse_linear_attn.py A5 BSA tiling；另 tests/ops/quant_four_over_six_a5/test_quant_four_over_six_a5.py 因缺失 ref_golden_46 模块导入失败",
+      "error": "2 failures + 16 errors",
+      "returncode": 1,
+      "duration_seconds": 1532
+    },
+    {
+      "timestamp": "2026-09-21T21:16:39+08:00",
+      "step": "sample",
+      "action": "运行 dummy_run Wan2.2 空权重推理样例",
+      "result": "成功",
+      "details": {
+        "duration_seconds": 39,
+        "model": "Wan-AI/Wan2.2-T2V-A14B-Diffusers",
+        "num_layers": 2,
+        "device_id": 3
+      },
+      "command": "python3 examples/dummy_run/wan_infer.py --device_id 3 --num_layers 2",
+      "success": true,
+      "output": "自动下载 KB 级配置文件后完成前向推理：text_encoder timed 100.52ms / transformer timed 2872.36ms / OVERALL TOTAL 5165.94ms；日志输出 'Wan2.2 dummy weight verification PASSED'",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 39
+    },
+    {
+      "timestamp": "2026-09-21T21:17:00+08:00",
+      "step": "remediation",
+      "action": "清理长期未使用的 docker 镜像并重定向构建临时目录",
+      "result": "成功",
+      "details": {
+        "removed_images": 7,
+        "freed_image_layers_gb": 28.3,
+        "tmpdir": "/root/.cache/ttfhw_tmp"
+      },
+      "command": "docker rmi <7 个无容器引用的旧镜像>；export TMPDIR=/root/.cache/ttfhw_tmp",
+      "success": true,
+      "output": "验证开始时 docker 数据盘 /home 已 100% 占用，导致 CANN-custom_ops .run 自解压失败；删除 alpine/msinsight/ubuntu/vllm-ascend-nightly/wrq_qfa/wan-smoke/vllm-cann92-x64 共 7 个无任何容器引用的镜像，并将 TMPDIR 指向宿主机 170G 可用分区后构建成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 120
+    },
+    {
+      "timestamp": "2026-09-21T21:19:32+08:00",
+      "step": "build",
+      "action": "CI 缓存复用对照构建（补充测量）",
+      "result": "成功",
+      "details": {
+        "env": "SKIP_ALL_OPS_PLUGIN_BUILD=1",
+        "duration_seconds": 155
+      },
+      "command": "cd /workspace/MindIE-SD && SKIP_ALL_OPS_PLUGIN_BUILD=1 python3 setup.py bdist_wheel",
+      "success": true,
+      "output": "检测到 ops artifacts complete，跳过 kernel 编译（make incremental）；复用 libPTAExtensionOPS.so 跳过插件编译；Build completed successfully",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 155
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "已配置 pre-commit（根目录 .pre-commit-config.yaml），共 11 个 repo、25 个 hook，minimum_pre_commit_version=4.0.0；涵盖基础文件检查（trailing-whitespace/end-of-file-fixer/check-yaml/check-added-large-files/check-merge-conflict/detect-private-key/check-json）、C++ 与 Python 静态检查（clang-format/clang-tidy/ruff-check/ruff-format/codespell/pylint/bandit/typos/markdownlint）、安全扫描（gitleaks-offline-scan）以及仓库本地自检 hook（kb-lint、run-evals-selftest 等）。本次仅检查配置存在性与 hook 清单，未安装 pre-commit、未执行 pre-commit run。lint-runner 未配置。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置, 未执行 (仅检查配置)",
+        "duration_seconds": 0,
+        "total_hooks": 25,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 25,
+        "executed_in_verification": false,
+        "failures": [],
+        "hooks": [
+          {
+            "hook_name": "trailing-whitespace",
+            "repo": "pre-commit/pre-commit-hooks",
+            "rev": "v4.6.0"
+          },
+          {
+            "hook_name": "end-of-file-fixer",
+            "repo": "pre-commit/pre-commit-hooks",
+            "rev": "v4.6.0"
+          },
+          {
+            "hook_name": "check-yaml",
+            "repo": "pre-commit/pre-commit-hooks",
+            "rev": "v4.6.0"
+          },
+          {
+            "hook_name": "check-added-large-files",
+            "repo": "pre-commit/pre-commit-hooks",
+            "rev": "v4.6.0"
+          },
+          {
+            "hook_name": "check-merge-conflict",
+            "repo": "pre-commit/pre-commit-hooks",
+            "rev": "v4.6.0"
+          },
+          {
+            "hook_name": "detect-private-key",
+            "repo": "pre-commit/pre-commit-hooks",
+            "rev": "v4.6.0"
+          },
+          {
+            "hook_name": "check-json",
+            "repo": "pre-commit/pre-commit-hooks",
+            "rev": "v4.6.0"
+          },
+          {
+            "hook_name": "ruff-check",
+            "repo": "ruff-pre-commit",
+            "rev": "v0.14.14"
+          },
+          {
+            "hook_name": "ruff-format",
+            "repo": "ruff-pre-commit",
+            "rev": "v0.14.14"
+          },
+          {
+            "hook_name": "codespell",
+            "repo": "codespell",
+            "rev": "v2.4.1"
+          },
+          {
+            "hook_name": "pylint",
+            "repo": "pylint",
+            "rev": "v4.0.5"
+          },
+          {
+            "hook_name": "bandit",
+            "repo": "bandit",
+            "rev": "1.9.4"
+          },
+          {
+            "hook_name": "typos",
+            "repo": "typos",
+            "rev": "v1.32.0"
+          },
+          {
+            "hook_name": "markdownlint",
+            "repo": "markdownlint-cli",
+            "rev": "v0.44.0"
+          },
+          {
+            "hook_name": "kb-lint",
+            "repo": "local",
+            "rev": ""
+          },
+          {
+            "hook_name": "kb-lint-selftest",
+            "repo": "local",
+            "rev": ""
+          },
+          {
+            "hook_name": "run-evals-selftest",
+            "repo": "local",
+            "rev": ""
+          },
+          {
+            "hook_name": "stage-gate-selftest",
+            "repo": "local",
+            "rev": ""
+          },
+          {
+            "hook_name": "fusion-scope-selftest",
+            "repo": "local",
+            "rev": ""
+          },
+          {
+            "hook_name": "check-output-selftest",
+            "repo": "local",
+            "rev": ""
+          },
+          {
+            "hook_name": "collect-profile-selftest",
+            "repo": "local",
+            "rev": ""
+          },
+          {
+            "hook_name": "clang-format",
+            "repo": "mirrors-clang-format",
+            "rev": "v18.1.8"
+          },
+          {
+            "hook_name": "clang-tidy",
+            "repo": "local",
+            "rev": ""
+          },
+          {
+            "hook_name": "gitleaks-offline-scan",
+            "repo": "local",
+            "rev": ""
+          }
+        ]
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        "cpu/devcontainer.json",
+        "README.md"
+      ],
+      "original_base_image": "swr.cn-north-4.myhuaweicloud.com/inference/ascend_mindie_ubuntu_x86:20260305_ubuntu24_3.0.0_cann8.5.1_torch2.9.0_py311",
+      "used_image": "quay.io/ascend/vllm-omni:v0.28.0-a5",
+      "summary": "仓库提供 .devcontainer/cpu/devcontainer.json（VS Code Dev Containers 配置），其 image 固定为华为云 ascend_mindie_ubuntu_x86:20260305_ubuntu24_3.0.0_cann8.5.1_torch2.9.0_py311（CANN 8.5.1 / torch 2.9.0 / py3.11）；.devcontainer/npu/ 目录为空（仅 .gitkeeper），未提供 NPU 开发容器。本次验证未使用该 devcontainer 镜像，而是按用户要求直接使用仓库 docker/omni 的 A5 omni 镜像（quay.io/ascend/vllm-omni:v0.28.0-a5）起容器，与本机 Ascend950PR 匹配且免去 CANN/torch 安装。"
+    },
+    "build": {
+      "status": "成功",
+      "duration_seconds": 175,
+      "artifacts": [
+        {
+          "name": "dist/mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
+          "size": "63M"
+        },
+        {
+          "name": "mindiesd/plugin/libPTAExtensionOPS.so",
+          "size": "3.7M"
+        },
+        {
+          "name": "mindiesd/ops/vendors (AscendC 算子交付件)",
+          "size": "150M"
+        },
+        {
+          "name": "build/output/CANN-custom_ops--linux.x86_64.run",
+          "size": "96M"
+        },
+        {
+          "name": "build/compile_commands_ascendc.json",
+          "size": "478K"
+        }
+      ],
+      "notes": "python3 setup.py bdist_wheel 全量构建：13 个 AscendC 算子（laser_attention/la_preprocess/ada_block_sparse_attention/sparse_block_estimate/norm_rope_concat/quant_flash_attn/quant_flash_attn_metadata/fused_infer_attention_score/eagle_quant_block_sparse_attention/eagle_block_sparse_attention/mul_add/eagle_ffn/quant_four_over_six_a5）x 4 个 compute unit（ascend910/910b/910_93/950），随后构建 PyTorch 插件并打包 wheel，成功。镜像优化效果：CANN/torch/torch_npu/编译工具链全部预装，无需安装 CANN 与 torch，仅补装 strenum/timm。 另做了一次 CI 缓存复用对照构建（export SKIP_ALL_OPS_PLUGIN_BUILD=1）：build_ascendc_ops.sh 检测到算子产物完整后跳过 kernel 编译（make incremental），setup.py 复用已构建的 libPTAExtensionOPS.so 跳过插件编译，rc=0，耗时 155s，相比全量 175s 节省约 11%。",
+      "cached_build": {
+        "env": "SKIP_ALL_OPS_PLUGIN_BUILD=1",
+        "status": "成功",
+        "duration_seconds": 155,
+        "note": "跳过 kernel 编译与插件编译，仅重打包/安装算子产物与 wheel。"
+      }
+    },
+    "ut": {
+      "status": "部分成功",
+      "duration_seconds": 1551,
+      "total": 754,
+      "passed": 628,
+      "failed": 18,
+      "skipped": 108,
+      "failures": [
+        {
+          "test": "tests/UT/benchmark/test_benchmark_report.py::test_load_report_entries_merges_multiple_runs",
+          "error": "AssertionError: assert 1.0 == 99.0，多 run 合并时未按最新 mtime 覆盖同名 slot"
+        },
+        {
+          "test": "tests/quantization/test_quantize.py::TestWeightQuantize::test_weight_quantize_with_w4a16",
+          "error": "RuntimeError: weight should be contiguous (mindiesd/quantization/layer.py:144 torch_npu.npu_convert_weight_to_int4pack)"
+        },
+        {
+          "test": "tests/ops/norm_rope_concat/test_norm_rope_concat.py (TestNormRopeConcatNPU 等)",
+          "error": "RuntimeError: copy_between_host_and_device_opapi ... device error type 3, error code is 507035（14 errors）；TestNormRopeConcatIntegration 形状断言失败 2 例（torch.Size([1,8,10,64]) != (1,8,30,64)）"
+        },
+        {
+          "test": "tests/layers/flash_attn/test_sparse_linear_attn.py::TestSparseLinearAttentionNPU::test_a5_ascendc_block64_fp16_and_bf16",
+          "error": "aclnnBlockSparseAttentionV2 执行失败（GetBsaTiling failed / inner_precise must be 4 on 950 series devices）"
+        },
+        {
+          "test": "tests/ops/quant_four_over_six_a5/test_quant_four_over_six_a5.py",
+          "error": "ModuleNotFoundError: No module named 'ref_golden_46'（第 368 行 import ref_golden_46 as ref46，测试模块导入失败，0 用例执行）"
+        }
+      ],
+      "failure_reason": "18 项失败/错误：norm_rope_concat 14 errors + 2 failures（NPU 设备报错 507035 与形状断言）、w4a16 量化 1 error、A5 BSA 1 error；另有 quant_four_over_six_a5 测试因缺失 ref_golden_46 模块无法导入。其余 628 项通过。",
+      "note": "两阶段：run_UT_test.sh 186 项（185 passed/1 failed，19s）；run_test.sh --all 754 项（628 passed/2 failed/16 errors/108 skipped，1532s）。",
+      "python": {
+        "status": "部分成功",
+        "total": 754,
+        "passed": 628,
+        "failed": 18,
+        "modules": [
+          {
+            "name": "run_UT_test.sh (tests/UT)",
+            "total": 186,
+            "passed": 185,
+            "failed": 1,
+            "duration_seconds": 19
+          },
+          {
+            "name": "run_test.sh --all (全量 CPU+NPU)",
+            "total": 754,
+            "passed": 628,
+            "failed": 18,
+            "duration_seconds": 1532
+          }
+        ]
+      }
+    },
+    "sample": {
+      "status": "成功",
+      "duration_seconds": 39,
+      "results": [
+        {
+          "sample_name": "examples/dummy_run/wan_infer.py (Wan2.2 T2V 空权重前向)",
+          "execution_status": "passed",
+          "output_summary": "自动从 HuggingFace 下载 Wan-AI/Wan2.2-T2V-A14B-Diffusers 的 13 个 KB 级配置文件，在 NPU device 3 上完成 2 层 transformer 的空权重前向推理。耗时统计：Warmup text_encoder 139.53ms / transformer 2324.88ms；Timed text_encoder 100.52ms / transformer 2872.36ms；OVERALL TOTAL 5165.94ms。日志输出 'Wan2.2 dummy weight verification PASSED'。",
+          "execution_time": "39s"
+        }
+      ]
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-09-21T20:32:00+08:00",
+      "title": "requirements.txt 的 torch/torch_npu 版本与文档声明及仓库自带镜像不一致",
+      "body": "docs/zh/installation.md 声明支持 Pytorch/TorchNPU 2.6~2.10，且仓库自带的 A5 omni 镜像实际提供 torch_npu 2.10.0.post4；但 requirements.txt 仍固定 torch==2.9.0 与 torch_npu==2.9.0。按 README 源码安装执行 pip install -r requirements.txt 会把镜像中 2.10.0 的 torch/torch_npu 降级为 2.9.0，既与镜像自带的 CANN 9.1.0 组合未经验证，也可能破坏 torch_npu 与 CANN 的 ABI 匹配。建议将 requirements.txt 的 torch/torch_npu 改为与文档一致的区间约束。",
+      "source": "requirements.txt vs docs/zh/installation.md vs docker/omni/Dockerfile.a5.ubuntu"
+    },
+    {
+      "time": "2026-09-21T20:32:00+08:00",
+      "title": "requirements.txt 中 triton 与 triton-ascend 版本约束互相冲突",
+      "body": "requirements.txt 同时声明 triton>=3.5.0 与 triton-ascend==3.2.1；而 docs/zh/installation.md 明确说明部分算子依赖 triton-ascend==3.2.1。triton-ascend 3.2.x 与 triton 3.2.x 配套，triton>=3.5.0 无法与该 triton-ascend 版本共存，按 requirements.txt 安装会出现依赖冲突或被迫升级 triton 导致 triton-ascend 不可用。建议统一为 triton-ascend 所要求的 triton 版本区间。",
+      "source": "requirements.txt + docs/zh/installation.md"
+    },
+    {
+      "time": "2026-09-21T20:33:30+08:00",
+      "title": ".devcontainer 的镜像版本与文档要求不一致，且缺少 NPU 开发容器",
+      "body": ".devcontainer/cpu/devcontainer.json 的 image 固定为 ascend_mindie_ubuntu_x86:20260305_ubuntu24_3.0.0_cann8.5.1_torch2.9.0_py311，其 CANN 为 8.5.1，低于 docs/zh/installation.md 要求的 CANN 9.0.1；同时 .devcontainer/npu/ 目录为空（仅占位 .gitkeeper），未提供 NPU 开发容器，而仓库测试包含大量必须依赖 NPU 的用例。建议同步 devcontainer 镜像版本并补充 NPU 开发容器配置。",
+      "source": ".devcontainer/cpu/devcontainer.json + .devcontainer/npu/ + docs/zh/installation.md"
+    },
+    {
+      "time": "2026-09-21T20:33:30+08:00",
+      "title": "示例依赖 examples/dummy_run/requirements.txt 同样固定 torch==2.9.0",
+      "body": "examples/dummy_run/requirements.txt 固定 torch==2.9.0 / torch_npu==2.9.0 / torchvision==0.24.0，与 docs/zh/installation.md 的 2.6~2.10 支持范围以及 omni 镜像实际提供的 2.10.0 组合不一致，按示例文档安装会与容器既有环境冲突。",
+      "source": "examples/dummy_run/requirements.txt"
+    },
+    {
+      "time": "2026-09-21T21:00:00+08:00",
+      "title": "算子单测依赖未文档化的外部 golden 模块 ref_golden_46",
+      "body": "tests/ops/quant_four_over_six_a5/test_quant_four_over_six_a5.py 第 368 行 import ref_golden_46 as ref46，但仓库中不存在该模块，导致整份测试文件在收集阶段即导入失败（0 用例执行）。该依赖既未在 requirements-test.txt 中声明，也未在测试文档中说明获取方式。建议将 golden oracle 纳入仓库或补充获取/生成说明。",
+      "source": "tests/ops/quant_four_over_six_a5/test_quant_four_over_six_a5.py + requirements-test.txt"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "problem": "宿主机 docker 数据盘（/dev/mapper/openeuler-home，挂载 /home，Docker Root Dir=/home/docker）在验证开始时已 100% 占用，首次构建在 CPack 生成 CANN-custom_ops--linux.x86_64.run 后自解压阶段失败：'Not enough space left in /root (0 KB) to decompress ... (256472 KB)'。",
+      "solution": "① 删除 7 个无任何容器引用的长期未使用镜像（alpine/msinsight/ubuntu/vllm-ascend-nightly/wrq_qfa/wan-smoke/vllm-cann92-x64），回收镜像层约 28.3GB；② 将构建 TMPDIR/TMP/TEMP 指向挂载自宿主机可用分区（170G 可用）的 /root/.cache/ttfhw_tmp，使 .run 自解压不再写入已满的 overlay。重跑构建后 175s 成功产出 wheel。"
+    },
+    {
+      "problem": "omni 镜像内置代理 http_proxy/https_proxy 指向 141.4.133.178:3128，该代理不可达（Connection refused），导致 pip 无法安装任何依赖。",
+      "solution": "改用宿主机可用的内网代理（通过 docker exec -e 传入），pip 安装依赖成功。"
+    },
+    {
+      "problem": "使用内网代理访问 huggingface.co 时，dummy_run 样例报 '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain'。",
+      "solution": "将宿主机包含企业 CA 的 CA bundle 拷贝进容器，并导出 SSL_CERT_FILE / REQUESTS_CA_BUNDLE / CURL_CA_BUNDLE 指向该文件，样例成功下载配置并 PASSED。"
+    },
+    {
+      "problem": "镜像未预装 requirements.txt 中的 strenum 与测试依赖 timm，直接运行测试会 ImportError。",
+      "solution": "通过内网代理 pip install strenum timm；为避免破坏镜像中 torch_npu 2.10.0 与 CANN 9.1.0 的匹配，未执行 requirements.txt 的 torch/torch_npu 降级安装。"
+    },
+    {
+      "problem": "首次 dummy_run 样例进程在下载配置到 5/13 时被信号 137 终止，仅打印到 38% 进度。",
+      "solution": "禁用 HuggingFace Xet 传输后端（HF_HUB_DISABLE_XET=1）并解决代理证书问题后重跑，样例正常完成（rc=0，39s）。"
+    },
+    {
+      "problem": "全量测试中 ops/norm_rope_concat 出现 14 个 NPU 设备错误（device error type 3, error code 507035）与 2 个形状断言失败；w4a16 量化用例报 'weight should be contiguous'；A5 BSA 用例报 aclnnBlockSparseAttentionV2 tiling 失败；quant_four_over_six_a5 测试因缺失 ref_golden_46 模块导入失败。",
+      "solution": "作为验证结论如实记录并纳入失败清单与文档缺口；本次验证未修改仓库代码，未修复上述缺陷。"
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-09-21T20:26:00+08:00",
+      "phase": "获取",
+      "status": "success",
+      "minutes": 19.48,
+      "details": {
+        "summary": "git clone dev 分支（commit 3bde8c32）；读取 README / 安装指导 / 测试文档 / docker-omni A5 镜像说明；以 quay.io/ascend/vllm-omni:v0.28.0-a5 启动容器（CANN 9.1.0、torch_npu 2.10.0.post4、编译工具链已预装）；仅补装 strenum/timm。镜像优化使该阶段从上一版的 60min 降至约 19.5min。"
+      }
+    },
+    {
+      "timestamp": "2026-09-21T20:45:29+08:00",
+      "phase": "编译构建",
+      "status": "success",
+      "minutes": 2.92,
+      "details": {
+        "summary": "python3 setup.py bdist_wheel：13 个 AscendC 算子 x ascend910/910b/910_93/950 + PyTorch 插件；产出 mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl (63M)、libPTAExtensionOPS.so (3.7M)、ops vendors (150M)。"
+      }
+    },
+    {
+      "timestamp": "2026-09-21T20:49:19+08:00",
+      "phase": "测试",
+      "status": "partial",
+      "minutes": 25.85,
+      "details": {
+        "summary": "bash tests/run_UT_test.sh（186 项，1 failed）与 cd tests && bash run_test.sh --all（754 项：628 passed / 2 failed / 16 errors / 108 skipped）。"
+      }
+    },
+    {
+      "timestamp": "2026-09-21T21:16:39+08:00",
+      "phase": "样例",
+      "status": "success",
+      "minutes": 0.65,
+      "details": {
+        "summary": "python3 examples/dummy_run/wan_infer.py --device_id 3 --num_layers 2，Wan2.2 空权重前向推理 PASSED。"
+      }
+    }
+  ]
+}
