@@ -228,20 +228,12 @@ PTA:
 OpenEuler:
   description: "OpenEuler 开发者场景验证代码仓列表"
   repos:
-    - name: Kernel
-      url: "https://gitcode.com/openeuler/kernel.git"
-      branch: OLK-6.6
-      component: OpenEuler
     - name: PolyMind
       url: "https://gitcode.com/openeuler/polymind.git"
       branch: master
       component: OpenEuler
     - name: Witty-Service
       url: "https://gitcode.com/openeuler/witty-service.git"
-      branch: master
-      component: OpenEuler
-    - name: bishengjdk-8
-      url: "https://gitcode.com/openeuler/bishengjdk-8.git"
       branch: master
       component: OpenEuler
     - name: cache_tuner
@@ -278,6 +270,10 @@ OpenEuler:
       component: OpenEuler
     - name: eagle
       url: "https://gitcode.com/openeuler/eagle.git"
+      branch: master
+      component: OpenEuler
+    - name: wittyhub-cli
+      url: "https://gitcode.com/openeuler/wittyhub-cli.git"
       branch: master
       component: OpenEuler
 
