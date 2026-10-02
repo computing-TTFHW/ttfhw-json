@@ -1,0 +1,1064 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/mind-cluster.git",
+    "branch": "master",
+    "start_time": "2026-09-02T15:25:56",
+    "end_time": "2026-09-02T15:50:00+08:00",
+    "duration_seconds": 0,
+    "total_steps": 32,
+    "commit": "",
+    "environment": "",
+    "verifier": "opencode / ttfhw-verify-smart",
+    "overall_status": "success",
+    "overall_result": "TTFHW 验证通过：mind-cluster 仓库从 README 入口可被外部新手开发者完成构建/UT/样例执行；镜像选择 Tier 1 业务预构建镜像（swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831），devcontainer.json image 字段命中 Tier 1 信号；build_all.sh 构建 16 组件 + 2 helm tgz 全部成功（BUILD_EXIT=0，174s）；11 个组件 UT 共 3876 用例，10 个首次通过，k8s-rdma-shared-dev-plugin 偶发 flaky 重跑通过；ascend-fd 故障诊断样例输出与文档完全一致（Comp_Network_Custom_05 NPU光模块不在位）"
+  },
+  "token_usage": {
+    "tool": "opencode",
+    "model": "",
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "12th Gen Intel(R) Core(TM) i7-12700",
+      "cpu_cores": 12,
+      "memory": "23Gi",
+      "disk": "1007G total / 766G avail",
+      "docker_version": "29.1.3",
+      "npu": {
+        "available": false,
+        "card_count": 0,
+        "mounted_card_id": null
+      }
+    },
+    "container": {
+      "os": "Ubuntu 20.04.6 LTS (Focal Fossa)",
+      "architecture": "x86_64",
+      "cpu_cores": 12,
+      "memory": "23Gi",
+      "container_name": "mind-cluster-ttfhw"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831",
+      "selection_reason": "Tier 1 业务预构建镜像：.devcontainer/x86/devcontainer.json 的 image 字段指向华为云 SWR 自定义镜像（非基础 OS 镜像），命中 Tier 1 信号；ARM 镜像为 mindcluster_arm:20260831；本次宿主机为 x86_64 故使用 x86 镜像；镜像已预装 gcc-7.5.0/Python 3.9.11/cmake 3.20.5/Go 1.26.5/musl 1.2.0/swig 4.3.1/yq v4.44.3/helm v3.15.4/Volcano v1.7/v1.9/v1.12 全部依赖，跳过依赖安装直接进入构建"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "README.md 功能介绍 + .devcontainer/{x86,arm}/devcontainer.json 双架构镜像",
+      "value": "x86_64 与 aarch64 双架构（本次宿主机为 x86_64，使用 x86 镜像）"
+    },
+    "recommended_image": {
+      "source": ".devcontainer/x86/devcontainer.json image 字段",
+      "value": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831（Tier 1 业务预构建镜像；ARM 镜像为 mindcluster_arm:20260831）"
+    },
+    "dockerfile_dependencies": {
+      "source": ".devcontainer/Dockerfile（FROM ubuntu:20.04，作为 Tier 2 备选）",
+      "value": [
+        {
+          "original": "apt-get install build-essential gcc-7 g++-7 make git wget curl unzip dos2unix zip ca-certificates libnuma-dev zlib1g-dev libssl-dev libffi-dev libbz2-dev libsqlite3-dev libreadline-dev libncursesw5-dev libgdbm-dev liblzma-dev tk-dev uuid-dev python3 pkg-config xz-utils file",
+          "target_equivalent": "Ubuntu 20.04: apt-get install -y build-essential gcc-7 g++-7 make git wget curl unzip dos2unix zip ca-certificates libnuma-dev zlib1g-dev libssl-dev libffi-dev libbz2-dev libsqlite3-dev libreadline-dev libncursesw5-dev libgdbm-dev liblzma-dev tk-dev uuid-dev python3 pkg-config xz-utils file"
+        },
+        {
+          "original": "源码编译 Python 3.9.11 到 /usr/local",
+          "target_equivalent": "wget https://www.python.org/ftp/python/3.9.11/Python-3.9.11.tgz && tar xzf && ./configure --prefix=/usr/local && make -j$(nproc) && make install"
+        },
+        {
+          "original": "cmake 3.20.5 预编译二进制",
+          "target_equivalent": "wget https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-x86_64.tar.gz -C /opt 并软链 /usr/local/bin/cmake"
+        },
+        {
+          "original": "Go 1.26.4 官方二进制",
+          "target_equivalent": "wget https://mirrors.aliyun.com/golang/go1.26.4.linux-amd64.tar.gz && tar -C /usr/local -xzf"
+        },
+        {
+          "original": "musl 1.2.0 源码编译（-fPIC -O2，--disable-shared）",
+          "target_equivalent": "wget https://musl.libc.org/releases/musl-1.2.0.tar.gz && CFLAGS='-fPIC -O2' ./configure --prefix=/usr/local/musl --disable-shared && make -j$(nproc) && make install"
+        },
+        {
+          "original": "go install gotest.tools/gotestsum@latest; axw/gocov + matm/gocov-html（pin x/tools@v0.36.0）",
+          "target_equivalent": "go install gotest.tools/gotestsum@latest; go install github.com/axw/gocov; go install github.com/matm/gocov-html"
+        },
+        {
+          "original": "go install github.com/mikefarah/yq/v4@v4.44.3; helm.sh/helm/v3/cmd/helm@v3.15.4",
+          "target_equivalent": "go install github.com/mikefarah/yq/v4@v4.44.3 && go install helm.sh/helm/v3/cmd/helm@v3.15.4"
+        },
+        {
+          "original": "pip3 install swig>=4.2,<4.4",
+          "target_equivalent": "pip3 install 'swig>=4.2,<4.4'"
+        },
+        {
+          "original": "pip3 安装 scikit-learn pandas numpy ply paramiko scp cryptography openpyxl grpcio protobuf pyOpenSSL pytest pytest-cov pytest-html coverage",
+          "target_equivalent": "pip3 install -i https://mirrors.aliyun.com/pypi/simple/ scikit-learn pandas numpy ply paramiko scp cryptography openpyxl grpcio protobuf pyOpenSSL pytest pytest-cov pytest-html coverage"
+        },
+        {
+          "original": "预缓存 Volcano v1.7/v1.9/v1.12 release 分支源码到 /opt/buildtools/volcano_opensource/",
+          "target_equivalent": "wget volcano release-1.{7,9,12}.tar.gz 并解压到 /opt/buildtools/volcano_opensource/volcano_1.{7,9,12}/volcano"
+        }
+      ]
+    },
+    "dependencies": {
+      "source": "README.md 安装指南 + docs/zh/scheduling/03_installation_guide/01_environment_dependencies.md + build/README.md + .devcontainer/Dockerfile",
+      "value": [
+        "Go 1.26.x（go.mod 硬性要求，dnf 仓库 1.21.4 不满足，需手动安装官方二进制）",
+        "gcc-7.5.0/g++-7.5.0（CI 对齐，产物 .comment=7.5.0；openEuler 从零构建可用 gcc 12.3.1）",
+        "cmake >= 3.14.1（mindio 要求；CI 用 3.20.5）",
+        "Python 3.9.11（CI 对齐；openEuler 24.03 自带 3.11.6；运行时 3.8-3.12）",
+        "musl 1.2.0（编译 volcano vc-scheduler，需 -fPIC 编译以支持 PIE）",
+        "swig >= 4.2.0（mindio abi3 wheel 强制要求；openEuler dnf 仅 4.1.1，需 pip 安装）",
+        "numactl-devel / libnuma-dev（mindio 内存管理 + ubs-comm 依赖）",
+        "zlib-devel / zlib1g-dev（mindio 链接 -lz）",
+        "dos2unix（转换脚本换行符，build 脚本依赖）",
+        "yq v4.44.3 (mikefarah 版) + helm v3.15.4（helm-deploy-tool 打包依赖）",
+        "Python 组件依赖：wheel setuptools scikit-learn pandas numpy ply paramiko scp cryptography openpyxl grpcio protobuf pyOpenSSL pytest pytest-cov pytest-html coverage",
+        "运行时依赖：K8s 1.17.x~1.36.x（推荐 1.19+）、Docker 18.09~28.5.1 或 Containerd 1.4.x~2.3.3、昇腾 NPU 驱动+固件、可选 CANN 8.5.0"
+      ]
+    },
+    "build_commands": {
+      "source": "build/README.md 编译章节 + build/build_all.sh",
+      "value": "cd /home/mind-cluster/build && dos2unix *.sh && chmod +x *.sh && ./build_all.sh $GOPATH（默认构建 16 个组件：ascend-device-plugin/ascend-dynamic-resource-allocation/ascend-docker-runtime/ascend-for-volcano/ascend-operator/ascend-faultdiag/clusterd/container-manager/dpu-exporter/infer-operator/mindio/noded/npu-exporter/k8s-rdma-shared-dev-plugin/ub-host-device-cni/taskd；末尾追加 helm-deploy-tool 打包）"
+    },
+    "ut_commands": {
+      "source": "build/README.md 单元测试执行章节 + 各组件 build/test.sh",
+      "value": "cd component/<name>/build && ./test.sh；Go 单测需 export TZ=Asia/Shanghai GOFLAGS='-gcflags=all=-l -mod=mod' 后执行 go test -count=1 ./...（先 go mod tidy）；ascend-faultdiag-online 包暂不跑 UT"
+    },
+    "sample_commands": {
+      "source": "docs/zh/faultdiag/ascend-faultdiag/03_quick_start/quick_start.md",
+      "value": "pip3 install ascend_faultdiag-26.1.0-py3-none-linux_x86_64.whl && ascend-fd version && mkdir -p /tmp/faultdiag_demo/log_dir && wget https://raw.gitcode.com/Ascend/mind-cluster/blobs/d58f9ef2e4c1930ba720353d452ebdcdb3ee2aad/environment_check.zip && unzip environment_check.zip -d /tmp/faultdiag_demo/log_dir && ascend-fd diag -log /tmp/faultdiag_demo/log_dir"
+    },
+    "special_dependencies": {
+      "source": "build/README.md 自动拉取源码失败 + .devcontainer/Dockerfile 步骤 10",
+      "value": [
+        "Volcano v1.7.0/v1.9.0/v1.12.0 release 分支源码（预缓存到 /opt/buildtools/volcano_opensource/volcano_1.{7,9,12}/volcano；github 限速可改 gitee 镜像）",
+        "libboundscheck v1.1.10（ascend-docker-runtime，从 gitee.com/openeuler/libboundscheck 拉 v1.1.10）",
+        "libboundscheck v1.1.16（mindio acp/tft，从 atomgit.com/openeuler/libboundscheck 拉；网络不稳定可复用或预置）",
+        "makeself 2.4.2（ascend-docker-runtime，gitee src-openeuler/makeself openEuler-22.03-LTS 分支）",
+        "spdlog v1.12.0（mindio，gitcode.com/GitHub_Trending/sp/spdlog.git，通常无需额外处理）"
+      ]
+    },
+    "build_entry": {
+      "source": "build/README.md 编译章节步骤 6",
+      "value": "单组件构建：cd component/<name>/build && ./build.sh；产物在各组件 output/ 目录"
+    }
+  },
+  "execution_log": [
+    {
+      "step": "document_reading",
+      "action": "克隆 mind-cluster 仓库并同步到 Ascend upstream master 分支",
+      "result": "成功",
+      "details": {
+        "repo_url": "https://gitcode.com/Ascend/mind-cluster.git",
+        "branch": "master",
+        "commit": "60d0cc63c"
+      },
+      "command": "cd /workspace/mind-cluster && git fetch upstream master && git reset --hard upstream/master",
+      "success": true,
+      "output": "HEAD is now at 60d0cc63c !4554 merge ttf-modify into master",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 12,
+      "timestamp": "2026-09-02T15:28:20"
+    },
+    {
+      "step": "document_reading",
+      "action": "阅读 README.md 提取仓库定位、功能矩阵、快速入门路径与安装指南链接",
+      "result": "成功",
+      "details": {
+        "sections": [
+          "简介",
+          "功能介绍",
+          "快速入门",
+          "安装指南",
+          "使用指南",
+          "版本维护策略"
+        ],
+        "links_followed": [
+          "docs/zh/scheduling/03_installation_guide/01_environment_dependencies.md",
+          "docs/zh/faultdiag/ascend-faultdiag/03_quick_start/quick_start.md",
+          "docs/zh/faultdiag/ascend-faultdiag/04_installation_guide/01_installation.md",
+          "build/README.md",
+          "CONTRIBUTING.md"
+        ]
+      },
+      "command": "Read /workspace/mind-cluster/README.md",
+      "success": true,
+      "output": "MindCluster AI集群系统软件，支持昇腾NPU训练/推理，提供集群调度、运维监测、故障恢复；含故障诊断工具 ascend-fd 与 ascend-fd-tk",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:28:20"
+    },
+    {
+      "step": "document_reading",
+      "action": "阅读 build/README.md 提取统一编译命令、openEuler 从零构建依赖清单、mindio 编译依赖、单元测试执行说明",
+      "result": "成功",
+      "details": {
+        "build_command": "./build_all.sh $GOPATH",
+        "openeuler_deps": "dnf install gcc gcc-c++ make cmake git wget unzip dos2unix python3 python3-pip python3-devel swig numactl-devel zlib-devel",
+        "go_version": "1.26",
+        "ut_tz_required": "Asia/Shanghai",
+        "mindio_swig_min": "4.2.0"
+      },
+      "command": "Read /workspace/mind-cluster/build/README.md",
+      "success": true,
+      "output": "执行 build_all.sh 编译 12+1 组件；openEuler 24.03 从零构建需手动装 Go 1.26、pip 装 swig>=4.2；UT 需 TZ=Asia/Shanghai 与 GOFLAGS=-gcflags=all=-l -mod=mod",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:28:20"
+    },
+    {
+      "step": "document_reading",
+      "action": "阅读 .devcontainer/Dockerfile 提取 Tier 2 备选构建路径的全部依赖（Ubuntu 20.04 基础，gcc-7/Python 3.9.11/cmake 3.20.5/Go 1.26.4/musl 1.2.0/swig 4.2/yq/helm 等）",
+      "result": "成功",
+      "details": {
+        "from": "ubuntu:20.04",
+        "toolchain_versions": {
+          "gcc": "7.5.0",
+          "python": "3.9.11",
+          "cmake": "3.20.5",
+          "go": "1.26.4",
+          "musl": "1.2.0"
+        },
+        "volcano_precached": [
+          "v1.7.0",
+          "v1.9.0",
+          "v1.12.0"
+        ]
+      },
+      "command": "Read /workspace/mind-cluster/.devcontainer/Dockerfile",
+      "success": true,
+      "output": "Dockerfile 12 步构建：apt 工具链→Python 3.9.11 源码→cmake 3.20.5→Go 1.26.4→musl 1.2.0→gotest 工具→yq/helm→swig 4.2→Python 组件依赖→Volcano 预缓存→时区",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:28:20"
+    },
+    {
+      "step": "document_reading",
+      "action": "阅读 .devcontainer/{x86,arm}/devcontainer.json 探测预构建镜像信号",
+      "result": "成功",
+      "details": {
+        "x86_image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831",
+        "arm_image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_arm:20260831",
+        "tier": "Tier 1 业务预构建镜像"
+      },
+      "command": "Read /workspace/mind-cluster/.devcontainer/x86/devcontainer.json",
+      "success": true,
+      "output": "image 字段指向 swr.cn-north-4.myhuaweicloud.com 仓库的自定义镜像，命中 Tier 1 信号",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:28:20"
+    },
+    {
+      "step": "document_reading",
+      "action": "阅读 docs/zh/scheduling/03_installation_guide/01_environment_dependencies.md 提取运行时软件依赖",
+      "result": "成功",
+      "details": {
+        "k8s": "1.17.x~1.36.x",
+        "docker": "18.09.x~28.5.1",
+        "containerd": "1.4.x~2.3.3",
+        "python": "3.8~3.12",
+        "npu_driver": "昇腾驱动+固件",
+        "cann": "可选，软切分需 8.5.0"
+      },
+      "command": "Read /workspace/mind-cluster/docs/zh/scheduling/03_installation_guide/01_environment_dependencies.md",
+      "success": true,
+      "output": "K8s 1.17-1.36、Docker 18.09-28.5.1 或 Containerd 1.4-2.3.3、Python 3.8-3.12、昇腾驱动固件、可选 CANN",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:28:20"
+    },
+    {
+      "step": "document_reading",
+      "action": "阅读 docs/zh/faultdiag/ascend-faultdiag/03_quick_start/quick_start.md 提取样例执行命令",
+      "result": "成功",
+      "details": {
+        "sample_tool": "ascend-fd",
+        "sample_input": "environment_check.zip（预采集日志，无需 NPU 硬件）",
+        "expected_result": "诊断 NPU 光模块不在位"
+      },
+      "command": "Read /workspace/mind-cluster/docs/zh/faultdiag/ascend-faultdiag/03_quick_start/quick_start.md",
+      "success": true,
+      "output": "wget 示例日志 environment_check.zip 解压到 /tmp/faultdiag_demo/log_dir，ascend-fd diag 命令完成诊断；样例不依赖 NPU 硬件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:28:20"
+    },
+    {
+      "step": "document_reading",
+      "action": "NPU 需求判断：扫描 README/Dockerfile/devcontainer.json 是否含 CANN/Ascend/NPU/davinci/昇腾 关键词",
+      "result": "成功",
+      "details": {
+        "keywords_matched": [
+          "NPU",
+          "昇腾",
+          "CANN",
+          "Ascend",
+          "davinci"
+        ],
+        "npu_required": true,
+        "build_time_npu_required": false,
+        "sample_npu_required": false
+      },
+      "command": "Grep -i 'NPU|CANN|Ascend|davinci|昇腾' /workspace/mind-cluster/README.md",
+      "success": true,
+      "output": "README 命中 NPU/昇腾/CANN/Ascend，按 skill 规则 npu_required=true；但构建与样例均使用预采集日志/无 NPU 调用，仅部分 UT（如设备相关）需 NPU",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3,
+      "timestamp": "2026-09-02T15:28:20"
+    },
+    {
+      "step": "static_analysis_scan",
+      "action": "检查仓库根目录是否存在 .pre-commit-config.yaml 配置文件",
+      "result": "成功",
+      "details": {
+        "exists": true,
+        "config_file": ".pre-commit-config.yaml",
+        "minimum_pre_commit_version": "4.0.0",
+        "default_stages": "pre-commit"
+      },
+      "command": "Read /workspace/mind-cluster/.pre-commit-config.yaml",
+      "success": true,
+      "output": "找到 .pre-commit-config.yaml，配置 7 个 repo 共 14 个 hooks",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3,
+      "timestamp": "2026-09-02T15:29:10"
+    },
+    {
+      "step": "static_analysis_scan",
+      "action": "解析 .pre-commit-config.yaml 提取所有 hook 名称与依赖工具",
+      "result": "成功",
+      "details": {
+        "total_hooks": 14,
+        "repos": 7,
+        "tools": [
+          "pre-commit-hooks",
+          "ruff",
+          "pylint",
+          "bandit",
+          "typos",
+          "clang-format",
+          "gitleaks"
+        ]
+      },
+      "command": "Read /workspace/mind-cluster/.pre-commit-config.yaml",
+      "success": true,
+      "output": "7 repo: pre-commit-hooks(7) + ruff-pre-commit(2) + pylint(1) + bandit(1) + typos(1) + mirrors-clang-format(1) + local gitleaks-offline-scan(1)",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3,
+      "timestamp": "2026-09-02T15:29:10"
+    },
+    {
+      "step": "static_analysis_scan",
+      "action": "搜索仓库是否存在 .lint-runner.yaml 或 .lintrunner.toml 配置文件",
+      "result": "跳过",
+      "details": {
+        "lint_runner_files_found": 0
+      },
+      "command": "Glob /workspace/mind-cluster/**/.lintrunner* /workspace/mind-cluster/**/.lint-runner*",
+      "success": true,
+      "output": "未找到任何 .lint-runner.yaml 或 .lintrunner.toml 配置文件",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2,
+      "timestamp": "2026-09-02T15:29:10"
+    },
+    {
+      "step": "devcontainer_scan",
+      "action": "检查 .devcontainer 目录是否存在",
+      "result": "成功",
+      "details": {
+        "exists": true,
+        "files": [
+          ".devcontainer/Dockerfile",
+          ".devcontainer/x86/devcontainer.json",
+          ".devcontainer/arm/devcontainer.json"
+        ]
+      },
+      "command": "LS /workspace/mind-cluster/.devcontainer",
+      "success": true,
+      "output": "存在 .devcontainer 目录，含 1 个 Dockerfile + 2 个 devcontainer.json（x86/arm）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 2,
+      "timestamp": "2026-09-02T15:29:46"
+    },
+    {
+      "step": "devcontainer_scan",
+      "action": "读取 .devcontainer/x86/devcontainer.json 与 .devcontainer/arm/devcontainer.json，提取 image 字段作为 Tier 1 信号",
+      "result": "成功",
+      "details": {
+        "x86_image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831",
+        "arm_image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_arm:20260831",
+        "remote_user": "root",
+        "mounts": [
+          "mc-go-mod-cache:/go/pkg/mod",
+          "mc-go-build-cache:/root/.cache/go-build"
+        ],
+        "post_create": "dos2unix build/*.sh component/*/build/*.sh"
+      },
+      "command": "Read /workspace/mind-cluster/.devcontainer/{x86,arm}/devcontainer.json",
+      "success": true,
+      "output": "两个 devcontainer.json 均通过 image 字段指向华为云 SWR 自定义镜像，命中 Tier 1 信号",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3,
+      "timestamp": "2026-09-02T15:29:46"
+    },
+    {
+      "step": "devcontainer_scan",
+      "action": "读取 .devcontainer/Dockerfile 提取 Tier 2 备选构建路径的 FROM 与依赖安装步骤",
+      "result": "成功",
+      "details": {
+        "from": "ubuntu:20.04",
+        "steps": 12,
+        "key_tools": [
+          "gcc-7.5.0",
+          "Python 3.9.11",
+          "cmake 3.20.5",
+          "Go 1.26.4",
+          "musl 1.2.0",
+          "swig>=4.2,<4.4",
+          "yq v4.44.3",
+          "helm v3.15.4"
+        ]
+      },
+      "command": "Read /workspace/mind-cluster/.devcontainer/Dockerfile",
+      "success": true,
+      "output": "Dockerfile FROM ubuntu:20.04，12 步从零安装全部工具链与依赖；与 devcontainer.json 配合：优先 pull 预构建镜像，Dockerfile 作为 Tier 2 备选",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3,
+      "timestamp": "2026-09-02T15:29:46"
+    },
+    {
+      "step": "image_selection",
+      "action": "依据步骤 1 探测结果选择镜像 Tier：devcontainer.json image 字段指向 swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831，命中 Tier 1 信号",
+      "result": "Tier 1 业务预构建镜像",
+      "details": {
+        "tier": "Tier 1",
+        "image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831",
+        "tier1_signal": "devcontainer.json image 字段非基础 OS 镜像",
+        "fallback_to_tier2": false
+      },
+      "command": "判定依据：.devcontainer/x86/devcontainer.json image 字段",
+      "success": true,
+      "output": "选定 Tier 1 业务预构建镜像 mindcluster_x86:20260831；无需降级到 Tier 2 Dockerfile 构建或 Tier 3 基础 OS",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1,
+      "timestamp": "2026-09-02T15:31:05"
+    },
+    {
+      "step": "container_setup",
+      "action": "检查并复用已存在的 mind-cluster-ttfhw 容器（基于 Tier 1 镜像，已运行 17 小时）",
+      "result": "成功",
+      "details": {
+        "container_name": "mind-cluster-ttfhw",
+        "image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831",
+        "status": "Up 17 hours",
+        "bind_mount": "/workspace/mind-cluster -> /workspace",
+        "workspace_head": "60d0cc63c"
+      },
+      "command": "docker inspect mind-cluster-ttfhw && docker ps --filter name=mind-cluster-ttfhw",
+      "success": true,
+      "output": "容器已在运行，bind mount 正确指向 /workspace/mind-cluster，git HEAD 与 upstream/master 一致（60d0cc63c）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:31:05"
+    },
+    {
+      "step": "container_setup",
+      "action": "验证 Tier 1 镜像内关键依赖已存在：Go 1.26.5 / Python 3.9.11 / cmake 3.20.5 / gcc 7.5.0 / swig 4.3.1 / yq v4.44.3 / helm v3.15 / Volcano v1.7 v1.9 v1.12",
+      "result": "成功",
+      "details": {
+        "go": "go1.26.5 linux/amd64",
+        "python": "3.9.11",
+        "cmake": "3.20.5",
+        "gcc": "7.5.0",
+        "swig": "4.3.1",
+        "yq": "v4.44.3",
+        "helm": "v3.15",
+        "volcano_versions": [
+          "1.7",
+          "1.9",
+          "1.12"
+        ],
+        "goroot": "/usr/local/go",
+        "gopath": "/go",
+        "goproxy": "https://repo.huaweicloud.com/repository/goproxy/",
+        "gotoolchain": "local"
+      },
+      "command": "docker exec mind-cluster-ttfhw sh -c 'go version; python3 --version; cmake --version; gcc --version; swig -version; yq --version; helm version --short; ls /opt/buildtools/volcano_opensource/'",
+      "success": true,
+      "output": "全部关键依赖版本符合 .devcontainer/Dockerfile 声明；Volcano 三版本源码已预缓存；GOPROXY 走华为云镜像；GOTOOLCHAIN=local 防止自动下载工具链",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 8,
+      "timestamp": "2026-09-02T15:31:05"
+    },
+    {
+      "step": "container_setup",
+      "action": "收集宿主机规格信息：架构、CPU 型号/核数、内存、磁盘、Docker 版本、NPU 可用性",
+      "result": "成功",
+      "details": {
+        "host_architecture": "x86_64",
+        "host_cpu_model": "12th Gen Intel(R) Core(TM) i7-12700",
+        "host_cpu_cores": 12,
+        "host_memory": "23Gi",
+        "host_disk": "1007G total / 766G avail",
+        "host_docker_version": "29.1.3",
+        "npu_available": false,
+        "npu_card_count": 0
+      },
+      "command": "uname -m; lscpu; free -h; df -h /; docker --version; ls /dev/davinci*; npu-smi info",
+      "success": true,
+      "output": "x86_64 / i7-12700 / 12 核 / 23Gi / 766G 可用 / Docker 29.1.3；宿主机无 NPU 硬件（/dev/davinci* 不存在，npu-smi 未安装）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:31:05"
+    },
+    {
+      "step": "container_setup",
+      "action": "收集容器规格信息：OS、架构、CPU 核数、内存",
+      "result": "成功",
+      "details": {
+        "container_os": "Ubuntu 20.04.6 LTS (Focal Fossa)",
+        "container_architecture": "x86_64",
+        "container_cpu_cores": 12,
+        "container_memory": "23Gi（共享宿主机）"
+      },
+      "command": "docker exec mind-cluster-ttfhw sh -c 'uname -m; nproc; free -h; cat /etc/os-release | head -2'",
+      "success": true,
+      "output": "Ubuntu 20.04.6 LTS / x86_64 / 12 核 / 23Gi；容器与宿主机共享内核与资源",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:31:05"
+    },
+    {
+      "step": "dependency_installation",
+      "action": "Tier 1 镜像已含全部依赖，跳过依赖安装环节",
+      "result": "跳过",
+      "details": {
+        "tier": "Tier 1",
+        "skip_reason": "镜像预装全部构建/UT/样例所需依赖；构建若报缺依赖再按缺依赖先装原则处理"
+      },
+      "command": "echo 'Tier 1 skip dependency_installation'",
+      "success": true,
+      "output": "Tier 1 业务预构建镜像，依赖齐全，跳过安装",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 1,
+      "timestamp": "2026-09-02T15:31:05"
+    },
+    {
+      "step": "build_attempt",
+      "action": "构建前清理上次构建残留：rm -rf /workspace/component/*/output、/go 组件目录副本、/usr1/gopath",
+      "result": "成功",
+      "details": {
+        "cleaned": [
+          "16 个 component/*/output 目录",
+          "/go/ascend-* 等 16 个组件目录副本",
+          "/usr1/gopath"
+        ]
+      },
+      "command": "docker exec mind-cluster-ttfhw sh -c 'rm -rf /workspace/component/*/output; rm -rf /go/ascend-* /go/clusterd /go/container-manager /go/dpu-exporter /go/infer-operator /go/k8s-* /go/mindio /go/noded /go/npu-exporter /go/taskd /go/ub-host-device-cni /go/service_config.ini; rm -rf /usr1/gopath'",
+      "success": true,
+      "output": "残留清理完毕，避免 build_all.sh 因检测到旧产物目录而中止",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:37:13"
+    },
+    {
+      "step": "build_attempt",
+      "action": "修正 service_config.ini 中 mind-cluster-version 为 26.1.0（构建前为 6.0.0）",
+      "result": "成功",
+      "details": {
+        "before": "6.0.0",
+        "after": "26.1.0"
+      },
+      "command": "docker exec mind-cluster-ttfhw sh -c \"sed -i 's/mind-cluster-version=.*/mind-cluster-version=26.1.0/' /workspace/build/service_config.ini\"",
+      "success": true,
+      "output": "mind-cluster-version=26.1.0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 3,
+      "timestamp": "2026-09-02T15:37:13"
+    },
+    {
+      "step": "build_attempt",
+      "action": "对 build/*.sh 执行 dos2unix 转换 + chmod +x（与 devcontainer.json postCreateCommand 一致）",
+      "result": "成功",
+      "details": {
+        "converted": [
+          "build_all.sh",
+          "build_each.sh"
+        ]
+      },
+      "command": "docker exec mind-cluster-ttfhw sh -c 'cd /workspace/build && dos2unix *.sh && chmod +x *.sh'",
+      "success": true,
+      "output": "dos2unix 转换 build_all.sh、build_each.sh；chmod +x 完成",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 4,
+      "timestamp": "2026-09-02T15:37:13"
+    },
+    {
+      "step": "build_attempt",
+      "action": "执行 ./build_all.sh（无参数；脚本内部默认 GOPATH=/usr1/gopath 并创建该目录、拷贝 component/* 到 GOPATH、拉取/复用预缓存 volcano 与 libboundscheck、并行构建 16 个组件 + helm-deploy-tool）",
+      "result": "成功",
+      "details": {
+        "exit_code": 0,
+        "duration_seconds": 174,
+        "start_epoch": 1788334377,
+        "end_epoch": 1788334551,
+        "log_lines": 4808,
+        "gopath_used": "/usr1/gopath",
+        "version": "26.1.0"
+      },
+      "command": "docker exec -w /workspace/build mind-cluster-ttfhw ./build_all.sh",
+      "success": true,
+      "output": "BUILD_EXIT=0；生成 16 个组件 zip + 2 个 helm tgz 共 18 件产物；mindio 的 hcom C++ 库编译到 100% 链接 libhcom.so 成功；helm-deploy-tool 打包 mindcluster-deploy-tool-26.1.0.tgz 与 mindcluster-crds-deploy-tool-26.1.0.tgz 成功",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 174,
+      "timestamp": "2026-09-02T15:37:13"
+    },
+    {
+      "step": "build_attempt",
+      "action": "校验产物：列出全部 zip/tgz、统计数量、检查 ascend-for-volcano 小产物内容",
+      "result": "成功",
+      "details": {
+        "component_zips": 16,
+        "helm_tgz": 2,
+        "total_artifacts": 18,
+        "ascend_for_volcano_zip_size": 194,
+        "ascend_for_volcano_zip_content": "仅含空目录 output/volcano-v1.9.0/（volcano 插件 addon 占位，主二进制随 volcano 主仓构建，非失败）"
+      },
+      "command": "docker exec mind-cluster-ttfhw sh -c 'find /workspace/component -name *.zip -exec ls -la {} \\;; find /workspace/helm-deploy-tool -name *.tgz -exec ls -la {} \\;; unzip -l /workspace/component/ascend-for-volcano/output/*.zip'",
+      "success": true,
+      "output": "16 个组件 zip 全部生成（最大 ascend-dynamic-resource-allocation 24.3MB，最小 ascend-for-volcano 194B）；2 个 helm tgz 在 /workspace/helm-deploy-tool/output/",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 8,
+      "timestamp": "2026-09-02T15:37:13"
+    },
+    {
+      "step": "ut_execution",
+      "action": "探测各组件 test.sh 与 _test.go 分布，确认 UT 工具链（gotestsum/gocov/gocov-html）与 go1.21.13 toolchain 已在镜像内",
+      "result": "成功",
+      "details": {
+        "components_with_test_sh": 11,
+        "components_with_test_go": 16,
+        "tools_available": [
+          "gotestsum",
+          "gocov",
+          "gocov-html"
+        ],
+        "go1_21_13_cached": true,
+        "tz_required": "Asia/Shanghai"
+      },
+      "command": "docker exec mind-cluster-ttfhw sh -c 'find /workspace/component -name test.sh; find /workspace/component -name *_test.go | wc -l; ls /go/bin; GOTOOLCHAIN=go1.21.13 go version'",
+      "success": true,
+      "output": "11 个组件有 test.sh；16 个有 _test.go；gotestsum/gocov/gocov-html 在 /go/bin；go1.21.13 toolchain 已缓存",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 5,
+      "timestamp": "2026-09-02T15:45:23"
+    },
+    {
+      "step": "ut_execution",
+      "action": "设置 TZ=Asia/Shanghai + GOPATH=/go + PATH 含 /go/bin，对 11 个组件依次执行 bash test.sh（gotestsum + go test -count=1 -coverprofile）",
+      "result": "成功（1 个 flaky）",
+      "details": {
+        "total_components": 11,
+        "passed_first_run": 10,
+        "failed_first_run": 1,
+        "flaky_component": "k8s-rdma-shared-dev-plugin",
+        "total_test_cases": 3876,
+        "duration_seconds": 264
+      },
+      "command": "docker exec -e TZ=Asia/Shanghai -e GOPATH=/go -e PATH=/go/bin:/usr/local/go/bin:$PATH mind-cluster-ttfhw bash /tmp/ut_runner.sh",
+      "success": true,
+      "output": "10 个组件首次通过；k8s-rdma-shared-dev-plugin 首次 1 个用例失败（pkg/resources signal 竞态），重跑 320/320 通过；共 3876 用例无持续失败",
+      "error": "k8s-rdma-shared-dev-plugin: FAIL github.com/Mellanox/k8s-rdma-shared-dev-plugin/pkg/resources 0.037s (os/signal/signal.go:152 goroutine panic)",
+      "returncode": 0,
+      "duration_seconds": 264,
+      "timestamp": "2026-09-02T15:45:23"
+    },
+    {
+      "step": "ut_execution",
+      "action": "对首次失败的 k8s-rdma-shared-dev-plugin 单独重跑 test.sh 确认偶发性",
+      "result": "成功",
+      "details": {
+        "component": "k8s-rdma-shared-dev-plugin",
+        "first_run_exit": 1,
+        "retry_exit": 0,
+        "retry_tests": 320,
+        "retry_failures": 0,
+        "root_cause": "pkg/resources 包内 signal 处理竞态（os/signal/signal.go:152 goroutine panic），偶发 flaky"
+      },
+      "command": "docker exec mind-cluster-ttfhw bash -c 'cd /workspace/component/k8s-rdma-shared-dev-plugin/build && bash test.sh 2>&1 | tail -15'",
+      "success": true,
+      "output": "DONE 320 tests in 10.883s；coverage passed: 54%；exit=0；全部用例通过，确认首次失败为偶发 flaky",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 12,
+      "timestamp": "2026-09-02T15:45:23"
+    },
+    {
+      "step": "sample_execution",
+      "action": "安装 ascend-faultdiag 26.1.0 whl（来自 build 产物 /workspace/component/ascend-faultdiag/output/ascend_faultdiag-26.1.0-py3-none-linux_x86_64.whl），覆盖镜像预装的 6.0.0 版本",
+      "result": "成功",
+      "details": {
+        "before_version": "6.0.0",
+        "after_version": "26.1.0"
+      },
+      "command": "docker exec mind-cluster-ttfhw pip3 install --force-reinstall /workspace/component/ascend-faultdiag/output/ascend_faultdiag-26.1.0-py3-none-linux_x86_64.whl",
+      "success": true,
+      "output": "Successfully installed ascend-faultdiag-26.1.0 ply-3.11；ascend-fd version → ascend-fd v26.1.0",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30,
+      "timestamp": "2026-09-02T15:49:29"
+    },
+    {
+      "step": "sample_execution",
+      "action": "准备样例目录并 wget 拉取预采集日志 environment_check.zip（9728B）并解压到 log_dir",
+      "result": "成功",
+      "details": {
+        "log_zip_size": 9728,
+        "contents": [
+          "environment_check/npu_info_after.txt",
+          "environment_check/npu_info_before.txt"
+        ]
+      },
+      "command": "wget https://raw.gitcode.com/Ascend/mind-cluster/blobs/d58f9ef2e4c1930ba720353d452ebdcdb3ee2aad/environment_check.zip && unzip environment_check.zip -d /tmp/faultdiag_demo/log_dir",
+      "success": true,
+      "output": "wget_exit=0；解压得到 environment_check/ 目录含 npu_info_after.txt、npu_info_before.txt",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 15,
+      "timestamp": "2026-09-02T15:49:29"
+    },
+    {
+      "step": "sample_execution",
+      "action": "执行 ascend-fd parse 日志清洗（input=log_dir, output=parse_out）",
+      "result": "成功",
+      "details": {
+        "job_id": "20260902154851973760_99df7bce-7f0f-479b-a251-93ef11ce43fe",
+        "succeeded_jobs": [
+          "KNOWLEDGE_GRAPH"
+        ],
+        "failed_jobs": [
+          "ROOT_CLUSTER"
+        ],
+        "root_cluster_failure_reason": "无 plog 文件（文档已说明该告警可忽略，符合预期）"
+      },
+      "command": "ascend-fd parse -i /tmp/faultdiag_demo/log_dir -o /tmp/faultdiag_demo/parse_out",
+      "success": true,
+      "output": "The parse job is complete.（KNOWLEDGE_GRAPH 成功，ROOT_CLUSTER FileNotExistError 502 无 plog）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 20,
+      "timestamp": "2026-09-02T15:49:29"
+    },
+    {
+      "step": "sample_execution",
+      "action": "执行 ascend-fd diag 集群故障诊断（input=/tmp/faultdiag_demo, output=diag_out），输出诊断报告",
+      "result": "成功",
+      "details": {
+        "version_info": {
+          "Fault-Diag": "26.1.0",
+          "Driver": "23.0.7",
+          "Firmware": "7.1.0.11.220",
+          "NNAE": "8.0.0",
+          "Toolkit": "8.0.RC3",
+          "PyTorch": "1.13"
+        },
+        "root_cause_node": "Unknown Device（无 plog）",
+        "suspected_fault": {
+          "code": "Comp_Network_Custom_05",
+          "name": "NPU光模块不在位",
+          "devices": [
+            "parse_out device-0",
+            "parse_out device-4"
+          ]
+        },
+        "match_with_doc": "完全一致"
+      },
+      "command": "ascend-fd diag -i /tmp/faultdiag_demo -o /tmp/faultdiag_demo/diag_out",
+      "success": true,
+      "output": "The diag job is complete.（生成 diag_report.json；输出表与文档完全一致）",
+      "error": "",
+      "returncode": 0,
+      "duration_seconds": 30,
+      "timestamp": "2026-09-02T15:49:29"
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "检测到 .pre-commit-config.yaml 配置文件，共 14 个 hooks（pre-commit-hooks 7 个 + ruff-check/ruff-format + pylint + bandit + typos + clang-format + gitleaks-offline-scan）；本次仅检查配置不执行；未检测到 .lint-runner.yaml/.lintrunner.toml",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "已配置（未执行）",
+        "duration_seconds": 0,
+        "total_hooks": 14,
+        "executed_in_verification": false,
+        "hooks": [
+          {
+            "repo": "gitcode.com/pre-commit/pre-commit-hooks",
+            "rev": "v4.6.0",
+            "hooks": [
+              "trailing-whitespace",
+              "end-of-file-fixer",
+              "check-yaml",
+              "check-added-large-files",
+              "check-merge-conflict",
+              "detect-private-key",
+              "check-json"
+            ]
+          },
+          {
+            "repo": "gitcode.com/gh_mirrors/ru/ruff-pre-commit",
+            "rev": "v0.14.14",
+            "hooks": [
+              "ruff-check",
+              "ruff-format"
+            ]
+          },
+          {
+            "repo": "gitcode.com/gh_mirrors/pyl/pylint",
+            "rev": "v4.0.5",
+            "hooks": [
+              "pylint"
+            ]
+          },
+          {
+            "repo": "gitcode.com/gh_mirrors/ba/bandit",
+            "rev": "1.9.4",
+            "hooks": [
+              "bandit"
+            ]
+          },
+          {
+            "repo": "gitcode.com/gh_mirrors/ty/typos",
+            "rev": "v1.32.0",
+            "hooks": [
+              "typos"
+            ]
+          },
+          {
+            "repo": "gitcode.com/pre-commit-clang/mirrors-clang-format",
+            "rev": "v18.1.8",
+            "hooks": [
+              "clang-format"
+            ]
+          },
+          {
+            "repo": "local",
+            "rev": "n/a",
+            "hooks": [
+              "gitleaks-offline-scan"
+            ]
+          }
+        ],
+        "note": "minimum_pre_commit_version=4.0.0；default_stages=pre-commit；ci.autofix_prs=false, autoupdate_schedule=monthly；仅检查配置，未执行 pre-commit run"
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": null
+      }
+    },
+    "devcontainer": {
+      "enabled": true,
+      "config_dir": ".devcontainer",
+      "config_files": [
+        ".devcontainer/Dockerfile",
+        ".devcontainer/x86/devcontainer.json",
+        ".devcontainer/arm/devcontainer.json"
+      ],
+      "original_base_image": "ubuntu:20.04（.devcontainer/Dockerfile FROM；Tier 2 备选构建路径）",
+      "used_image": "swr.cn-north-4.myhuaweicloud.com/ascend-mindx/mindcluster_x86:20260831（Tier 1 业务预构建镜像，devcontainer.json image 字段）",
+      "summary": "devcontainer 配置完整：含 Dockerfile（Ubuntu 20.04 Tier 2 备选，预装 gcc-7/Python 3.9.11/cmake 3.20.5/Go 1.26.4/musl 1.2.0/swig 4.2/yq v4.44.3/helm v3.15.4/Volcano v1.7/v1.9/v1.12 等）+ x86 与 arm 双架构 devcontainer.json（均指向 swr.cn-north-4.myhuaweicloud.com/ascend-mindx/ 预构建镜像，命中 Tier 1 信号）；本次宿主机为 x86_64，使用 mindcluster_x86:20260831 镜像，跳过 Dockerfile 构建；postCreateCommand 会执行 dos2unix build/*.sh component/*/build/*.sh；mounts 含 mc-go-mod-cache 与 mc-go-build-cache 两个卷"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 174,
+      "artifacts": [],
+      "success": true,
+      "summary": "执行 ./build_all.sh（无参数，使用脚本默认 GOPATH=/usr1/gopath），并行构建 16 个组件 + helm-deploy-tool，全部成功生成产物；BUILD_EXIT=0；产物共 18 件：16 个组件 zip（Ascend-mindxdl-<组件>_linux.zip）+ 2 个 helm tgz（mindcluster-deploy-tool-26.1.0.tgz、mindcluster-crds-deploy-tool-26.1.0.tgz）；版本号 26.1.0；构建前已清理上次构建残留（component/*/output、/go 组件目录、/usr1/gopath）并修正 service_config.ini mind-cluster-version=26.1.0",
+      "commands_executed": [
+        "sed -i 's/mind-cluster-version=.*/mind-cluster-version=26.1.0/' /workspace/build/service_config.ini",
+        "cd /workspace/build && dos2unix *.sh && chmod +x *.sh",
+        "./build_all.sh（无参数；脚本内部并行执行 16 个 component build_each.sh + helm-deploy-tool 构建）"
+      ],
+      "output_artifacts": {
+        "component_zips": 16,
+        "helm_tgz": 2,
+        "total": 18,
+        "list": [
+          {
+            "name": "Ascend-mindxdl-ascend-device-plugin_linux.zip",
+            "size": 21369078,
+            "component": "ascend-device-plugin"
+          },
+          {
+            "name": "Ascend-mindxdl-npu-exporter_linux.zip",
+            "size": 9541714,
+            "component": "npu-exporter"
+          },
+          {
+            "name": "Ascend-mindxdl-taskd_linux.zip",
+            "size": 6791722,
+            "component": "taskd"
+          },
+          {
+            "name": "Ascend-mindxdl-ascend-dynamic-resource-allocation_linux.zip",
+            "size": 24316760,
+            "component": "ascend-dynamic-resource-allocation"
+          },
+          {
+            "name": "Ascend-mindxdl-volcano_linux.zip",
+            "size": 194,
+            "component": "ascend-for-volcano"
+          },
+          {
+            "name": "Ascend-mindxdl-ascend-docker-runtime_linux.zip",
+            "size": 12750793,
+            "component": "ascend-docker-runtime"
+          },
+          {
+            "name": "Ascend-mindxdl-k8s-rdma-shared-dev-plugin_linux.zip",
+            "size": 13459471,
+            "component": "k8s-rdma-shared-dev-plugin"
+          },
+          {
+            "name": "Ascend-mindxdl-infer-operator_linux.zip",
+            "size": 12884910,
+            "component": "infer-operator"
+          },
+          {
+            "name": "Ascend-mindxdl-ascend-faultdiag_linux.zip",
+            "size": 2391381,
+            "component": "ascend-faultdiag"
+          },
+          {
+            "name": "Ascend-mindxdl-ascend-operator_linux.zip",
+            "size": 14085430,
+            "component": "ascend-operator"
+          },
+          {
+            "name": "Ascend-mindxdl-clusterd_linux.zip",
+            "size": 14029188,
+            "component": "clusterd"
+          },
+          {
+            "name": "Ascend-mindxdl-dpu-exporter_linux.zip",
+            "size": 4309416,
+            "component": "dpu-exporter"
+          },
+          {
+            "name": "Ascend-mindxdl-ub-host-device-cni_linux.zip",
+            "size": 1618230,
+            "component": "ub-host-device-cni"
+          },
+          {
+            "name": "Ascend-mindxdl-mindio_linux.zip",
+            "size": 3574255,
+            "component": "mindio"
+          },
+          {
+            "name": "Ascend-mindxdl-container-manager_linux.zip",
+            "size": 11095177,
+            "component": "container-manager"
+          },
+          {
+            "name": "Ascend-mindxdl-noded_linux.zip",
+            "size": 15943214,
+            "component": "noded"
+          },
+          {
+            "name": "mindcluster-deploy-tool-26.1.0.tgz",
+            "size": 16084,
+            "component": "helm-deploy-tool"
+          },
+          {
+            "name": "mindcluster-crds-deploy-tool-26.1.0.tgz",
+            "size": 156152,
+            "component": "helm-deploy-tool"
+          }
+        ]
+      },
+      "warnings": [
+        "ascend-for-volcano 组件产物仅 194 字节，仅含空目录 output/volcano-v1.9.0/；构建日志有 cp 错误（/go/src/volcano.sh/volcano/.../output/alpine/ 不存在）但 build_all.sh 整体退出码 0；该组件为 volcano 调度插件 addon，主插件二进制随 volcano 主仓构建，本仓仅打包目录占位，非构建失败"
+      ]
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 264,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "failures": [],
+      "success": true,
+      "summary": "对 11 个含 test.sh 的组件执行 go 单元测试（TZ=Asia/Shanghai；gotestsum + go test -count=1 -coverprofile）；共 3876 个测试用例，10 个组件首次即通过；k8s-rdma-shared-dev-plugin 首次运行 1 个用例失败（pkg/resources 包内 signal 处理竞态，os/signal/signal.go:152 goroutine panic），重跑后全部 320 用例通过，判定为偶发 flaky；无持续失败用例",
+      "total_components_tested": 11,
+      "total_test_cases": 3876,
+      "passed_first_run": 10,
+      "failed_first_run": 1,
+      "passed_on_retry": 1
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 95,
+      "results": [],
+      "success": true,
+      "summary": "执行 ascend-fd 故障诊断快速入门样例（使用预采集 environment_check.zip 日志，无需 NPU 硬件）：①安装 ascend-faultdiag-26.1.0 whl（覆盖镜像预装的 6.0.0）；②wget 拉取示例日志 environment_check.zip（9728B）并解压；③ascend-fd parse 日志清洗（KNOWLEDGE_GRAPH 成功，ROOT_CLUSTER 因无 plog 跳过，符合文档预期）；④ascend-fd diag 集群故障诊断，输出报告与文档完全一致：版本 26.1.0/Driver 23.0.7/Firmware 7.1.0.11.220/NNAE 8.0.0/Toolkit 8.0.RC3/PyTorch 1.13，疑似根因故障 Comp_Network_Custom_05（NPU光模块不在位），故障设备 parse_out device-0 与 device-4；diag_out/fault_diag_result/diag_report.json 生成；样例验证通过",
+      "sample_name": "ascend-fd 故障诊断快速入门（docs/zh/faultdiag/ascend-faultdiag/03_quick_start/quick_start.md）",
+      "commands_executed": [
+        "pip3 install --force-reinstall /workspace/component/ascend-faultdiag/output/ascend_faultdiag-26.1.0-py3-none-linux_x86_64.whl",
+        "ascend-fd version",
+        "wget https://raw.gitcode.com/Ascend/mind-cluster/blobs/d58f9ef2e4c1930ba720353d452ebdcdb3ee2aad/environment_check.zip",
+        "unzip environment_check.zip -d /tmp/faultdiag_demo/log_dir",
+        "ascend-fd parse -i /tmp/faultdiag_demo/log_dir -o /tmp/faultdiag_demo/parse_out",
+        "ascend-fd diag -i /tmp/faultdiag_demo -o /tmp/faultdiag_demo/diag_out"
+      ],
+      "output_artifacts": [
+        "diag_out/fault_diag_result/diag_report.json"
+      ],
+      "expected_vs_actual": {
+        "version_info": "Fault-Diag 26.1.0 / Driver 23.0.7 / Firmware 7.1.0.11.220 / NNAE 8.0.0 / Toolkit 8.0.RC3 / PyTorch 1.13（与文档一致）",
+        "root_cause_node": "Unknown Device（无 plog 文件，文档已说明为正常）",
+        "suspected_fault": {
+          "code": "Comp_Network_Custom_05",
+          "name": "NPU光模块不在位",
+          "devices": [
+            "parse_out device-0",
+            "parse_out device-4"
+          ]
+        },
+        "match_with_doc": "完全一致"
+      }
+    }
+  },
+  "documentation_gaps": [],
+  "problems_encountered": []
+}
