@@ -460,10 +460,6 @@ BoostKit:
       url: "https://gitcode.com/boostkit/flash-engram.git"
       branch: master
       component: BoostKit
-    - name: hyperscan
-      url: "https://gitcode.com/boostkit/hyperscan.git"
-      branch: master
-      component: BoostKit
     - name: kvecturbo
       url: "https://gitcode.com/boostkit/kvecturbo.git"
       branch: master
