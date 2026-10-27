@@ -76,28 +76,8 @@ HPCKit:
       url: "https://gitcode.com/kunpengcompute/kupl.git"
       branch: main
       component: HPCKit
-    - name: kutacc
-      url: "https://gitcode.com/kunpengcompute/kutacc.git"
-      branch: main
-      component: HPCKit
-    - name: kudnn
-      url: "https://gitcode.com/kunpengcompute/kudnn.git"
-      branch: main
-      component: HPCKit
     - name: kuqcd
       url: "https://gitcode.com/kunpengcompute/kuqcd.git"
-      branch: main
-      component: HPCKit
-    - name: hmpi
-      url: "https://gitcode.com/kunpengcompute/hmpi.git"
-      branch: main
-      component: HPCKit
-    - name: hucx
-      url: "https://gitcode.com/kunpengcompute/hucx.git"
-      branch: main
-      component: HPCKit
-    - name: xucg
-      url: "https://gitcode.com/kunpengcompute/xucg.git"
       branch: main
       component: HPCKit
     - name: kpex
