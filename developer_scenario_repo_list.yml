@@ -466,7 +466,7 @@ BoostKit:
       component: BoostKit
     - name: sonic-cpp
       url: "https://gitcode.com/boostkit/sonic-cpp.git"
-      branch: master
+      branch: dev_sve2-256
       component: BoostKit
 
 openGauss:
