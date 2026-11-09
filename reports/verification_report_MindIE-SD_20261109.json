@@ -216,7 +216,9 @@
         {
           "name": "mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
           "path": "dist/mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
-          "type": "wheel"
+          "type": "wheel",
+          "size": "30793390 bytes",
+          "sha256": "f4c878e3b073ce4f5fda5e62ab2f3ce526eb91e0df9b0b1ac6be24375fff40ad"
         }
       ],
       "notes": "增量打包17秒，不能宣称全量冷构建仅17秒。相同csrc/build首次950构建626秒；git diff已证实8701dab到cf16245的原生源码与构建脚本完全一致。",
@@ -230,7 +232,7 @@
         "any_single_command_over_one_hour": false,
         "conclusion": "上述步骤均未超过1小时；时间未超限不代表功能验证通过，NPU仍异常。"
       },
-      "failure_reason": ""
+      "failure_reason": "不适用：增量打包成功"
     },
     "ut": {
       "status": "partial_success",
@@ -282,7 +284,7 @@
           "output_summary": "Wan2.2 dummy weight verification PASSED。使用现有代理、受信CA和普通HTTP配置下载；NPU0尝试显存不足后在已确认空闲的NPU1按相同工作负载通过。"
         }
       ],
-      "failure_reason": ""
+      "failure_reason": "不适用：空闲NPU1样例通过"
     }
   },
   "documentation_gaps": [
