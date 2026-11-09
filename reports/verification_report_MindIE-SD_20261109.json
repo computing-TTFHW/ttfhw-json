@@ -1,0 +1,1218 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/MindIE-SD.git",
+    "start_time": "2026-11-09T20:17:11+08:00",
+    "end_time": "2026-11-09T21:07:57+08:00",
+    "duration_seconds": 3046,
+    "total_steps": 5,
+    "branch": "dev",
+    "commit": "03f6163bae52902ba539bd84d22671109adca61b",
+    "environment": "用户指定omni镜像新容器，dev固定提交叠加报告内五文件本地修复；不是上游未经修改代码的通过结论。原生构建未复用旧产物，Triton缓存及模型下载缓存独立。共享宿主机上既有NPU业务容器均为特权模式，本轮同样以特权容器运行，未设置任何可见设备掩码，测试与样例固定物理设备6。公开路径统一归一为/workspace/MindIE-SD；远端时钟经本地校准；耗时使用同钟差值。",
+    "verifier": "Claude Code",
+    "repo_path": "/workspace/MindIE-SD",
+    "verification_complete": true
+  },
+  "token_usage": {
+    "tool": "Claude Code",
+    "model": "claude-sonnet-4-6",
+    "input_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0,
+    "output_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "宿主机型号已脱敏",
+      "cpu_cores": 0,
+      "memory": "宿主机规格已脱敏",
+      "disk": "具体宿主路径与容量已脱敏，验证时空间充足",
+      "docker_version": "宿主机版本已脱敏"
+    },
+    "container": {
+      "os": "Ubuntu22.04.5",
+      "architecture": "x86_64",
+      "cpu_cores": 32,
+      "memory": "96GiB"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "quay.io/ascend/vllm-omni:v0.32.0-a5",
+      "selection_reason": "Tier 1：按用户指定复用本机已有omni业务镜像，新建容器；没有再次下载镜像。只对齐triton-ascend3.2.2.post2，保留镜像原装torch2.10.0+cpu、torch_npu2.10.0.post4、Python3.12.13、CANN9.1.0。",
+      "dependency_mapping": {
+        "from_dockerfile": "docker/omni/Dockerfile.a5.ubuntu",
+        "mappings": []
+      },
+      "image_identity": "sha256:f58501016e884358089dd6eba8aff3156c2b6c6eebb38734ac441b6b2964e532 amd64 25319921885"
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "x86_64 / Ascend950PR"
+    },
+    "recommended_image": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "quay.io/ascend/vllm-omni:v0.32.0-a5"
+    },
+    "dockerfile_dependencies": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": [
+        "业务预装环境；非基础OS从零安装"
+      ]
+    },
+    "dependencies": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": [
+        "Python3.12.13",
+        "torch2.10.0+cpu",
+        "torch_npu2.10.0.post4",
+        "triton-ascend3.2.2.post2",
+        "CANN9.1.0"
+      ]
+    },
+    "build_commands": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "cd build && bash build.sh；原生算子和插件全量冷构建；并发6（32核的20%取整），未设置任何跳过构建开关。"
+    },
+    "ut_commands": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "python3 tests/scripts/run_suites.py（默认依次运行完整CPU、完整NPU，再合并覆盖率并检查逐文件门禁）"
+    },
+    "sample_commands": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "HF_ENDPOINT=https://hf-mirror.com python3 examples/dummy_run/wan_infer.py --device_id 6 --num_layers 2"
+    },
+    "special_dependencies": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": [
+        "CANN/ATB环境脚本",
+        "examples/dummy_run/requirements.txt"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-11-09T20:17:11+08:00",
+      "step": "dependencies",
+      "action": "安装triton-ascend==3.2.2.post2 --no-deps；运行真实NPU张量预检",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-09T20:19:20+08:00"
+      },
+      "command": "安装triton-ascend==3.2.2.post2 --no-deps；运行真实NPU张量预检",
+      "duration_seconds": 129,
+      "success": true,
+      "output": "本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-11-09T20:19:20+08:00",
+      "step": "build",
+      "action": "cd build && bash build.sh",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-09T20:29:57+08:00"
+      },
+      "command": "cd build && bash build.sh",
+      "duration_seconds": 637,
+      "success": true,
+      "output": "本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-11-09T20:29:57+08:00",
+      "step": "wheel_install",
+      "action": "pip install --no-deps --force-reinstall dist/mindiesd-*.whl",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-09T20:30:41+08:00"
+      },
+      "command": "pip install --no-deps --force-reinstall dist/mindiesd-*.whl",
+      "duration_seconds": 44,
+      "success": true,
+      "output": "本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-11-09T20:30:41+08:00",
+      "step": "tests",
+      "action": "python3 tests/scripts/run_suites.py",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-09T20:59:06+08:00"
+      },
+      "command": "python3 tests/scripts/run_suites.py",
+      "duration_seconds": 1705,
+      "success": true,
+      "output": "本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-11-09T21:05:37+08:00",
+      "step": "sample",
+      "action": "HF_ENDPOINT=https://hf-mirror.com python3 examples/dummy_run/wan_infer.py --device_id 6 --num_layers 2",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-09T21:07:57+08:00"
+      },
+      "command": "HF_ENDPOINT=https://hf-mirror.com python3 examples/dummy_run/wan_infer.py --device_id 6 --num_layers 2",
+      "duration_seconds": 140,
+      "success": true,
+      "output": "本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "本地Python补丁使用仓库Ruff配置检查；未执行全仓pre-commit。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "not_run",
+        "duration_seconds": 0,
+        "total_hooks": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "failures": []
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "quay.io/ascend/vllm-omni:v0.32.0-a5",
+      "summary": "使用远程独立Docker容器完成验证。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 637,
+      "artifacts": [
+        {
+          "name": "mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
+          "path": "dist/mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
+          "type": "wheel",
+          "sha256": "sha256:7f0862a3cbab0b3eacbfa8e861d045a1ba1a81a16737b2d40e1bebcd2870b67f"
+        }
+      ],
+      "failure_reason": "本阶段成功，无失败原因",
+      "notes": "完整原生冷构建；无旧so、build目录产物复用。CANN9.1 include目录由本地CMake补丁补齐，未用CPLUS_INCLUDE_PATH。"
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 1705,
+      "total": 3508,
+      "passed": 3087,
+      "failed": 0,
+      "skipped": 421,
+      "failures": [],
+      "failure_reason": "全量入口成功，无失败原因",
+      "details": {
+        "cpu": {
+          "status": "success",
+          "passed": 2330,
+          "failed": 0,
+          "skipped": 8,
+          "error": 0,
+          "subtests_passed": 618,
+          "pytest_seconds": 60.895,
+          "raw_junit": {
+            "tests": 2956,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 8
+          },
+          "pytest_summary": "2330 passed, 8 skipped, 388 warnings, 618 subtests passed in 60.91s (0:01:00)",
+          "skip_reasons": {
+            "Skip NPU-dependent tests when MINDIE_TEST_MODE is CPU.": 8
+          }
+        },
+        "npu": {
+          "status": "success",
+          "passed": 757,
+          "failed": 0,
+          "skipped": 413,
+          "error": 0,
+          "subtests_passed": 646,
+          "pytest_seconds": 1561.945,
+          "raw_junit": {
+            "tests": 1816,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 413
+          },
+          "pytest_summary": "757 passed, 413 skipped, 391 warnings, 646 subtests passed in 1561.95s (0:26:01)",
+          "skip_reasons": {
+            "eagle_block_sparse_attention positive is not registered for A5; OpDef AddConfig=('ascend910b', 'ascend910_93')": 8,
+            "eagle_indexed_gate_norm_modulate positive is not registered for A5; OpDef AddConfig=('ascend910b',)": 36,
+            "eagle_quant_batch_matmul_swiglu positive is not registered for A5; OpDef AddConfig=('ascend910b',)": 256,
+            "eagle_split_norm_rope_concat positive is not registered for A5; OpDef AddConfig=('ascend910b',)": 38,
+            "laser_attention positive is not registered for A5; OpDef AddConfig=('ascend910', 'ascend910b', 'ascend910_93')": 8,
+            "LA is unsupported on A5": 1,
+            "laser_attention has no native OpDef registration for A5": 5,
+            "ada_block_sparse_attention has no native OpDef registration for A5": 3,
+            "Direct rf_v2 backend is unavailable on A5; public API routes to rf_v3.": 4,
+            "Block64 BSA requires A5 with CANN >= 9.2.0.": 1,
+            "inner_precise=0 with bf16 is unsupported on 950 series devices.": 1,
+            "Cross-device checks require a reliable NPU mapping: Cannot identify npu-smi device mapping columns": 20,
+            "A2/A3 INT8 test": 3,
+            "MXFP8 dispatch equivalence requires CANN >= 9.2.0": 1,
+            "la_preprocess has no native OpDef registration for A5": 20,
+            "rain_fusion_attention (sparse_flash_attn_rf_v2) is unsupported on A5; routed to rf_v3.": 4,
+            "MXFP4 BSA path requires aclnnBlockSparseAttentionV3 (newest CANN); skipped on CANN without V3.": 4
+          }
+        },
+        "count_scope": "主用例计数来自pytest汇总，子测试单列；raw_junit含子测试，不能直接与主用例相加。",
+        "file_coverage": [
+          {
+            "file": "mindiesd/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 8,
+            "total": 8
+          },
+          {
+            "file": "mindiesd/cache_agent/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 2,
+            "total": 2
+          },
+          {
+            "file": "mindiesd/cache_agent/attention_cache.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 30,
+            "total": 30
+          },
+          {
+            "file": "mindiesd/cache_agent/cache.py",
+            "percent": 92.62672811059907,
+            "passed": true,
+            "covered": 201,
+            "total": 217
+          },
+          {
+            "file": "mindiesd/cache_agent/cache_agent.py",
+            "percent": 97.82608695652173,
+            "passed": true,
+            "covered": 90,
+            "total": 92
+          },
+          {
+            "file": "mindiesd/cache_agent/dit_block_cache.py",
+            "percent": 91.78082191780823,
+            "passed": true,
+            "covered": 134,
+            "total": 146
+          },
+          {
+            "file": "mindiesd/compilation/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 19,
+            "total": 19
+          },
+          {
+            "file": "mindiesd/compilation/_custom_decomposition.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 4,
+            "total": 4
+          },
+          {
+            "file": "mindiesd/compilation/aclgraph_backend.py",
+            "percent": 89.1826923076923,
+            "passed": true,
+            "covered": 371,
+            "total": 416
+          },
+          {
+            "file": "mindiesd/compilation/compiliation_config.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 85,
+            "total": 85
+          },
+          {
+            "file": "mindiesd/compilation/graph_splitter.py",
+            "percent": 93.37349397590361,
+            "passed": true,
+            "covered": 155,
+            "total": 166
+          },
+          {
+            "file": "mindiesd/compilation/mindie_sd_backend.py",
+            "percent": 86.4963503649635,
+            "passed": true,
+            "covered": 237,
+            "total": 274
+          },
+          {
+            "file": "mindiesd/compilation/npugraph_ex_backend.py",
+            "percent": 98.26589595375722,
+            "passed": true,
+            "covered": 170,
+            "total": 173
+          },
+          {
+            "file": "mindiesd/compilation/passes/__init__.py",
+            "percent": 97.91666666666667,
+            "passed": true,
+            "covered": 47,
+            "total": 48
+          },
+          {
+            "file": "mindiesd/compilation/passes/gelu_quant_pass.py",
+            "percent": 96.29629629629629,
+            "passed": true,
+            "covered": 104,
+            "total": 108
+          },
+          {
+            "file": "mindiesd/compilation/passes/gm_pass_base.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 23,
+            "total": 23
+          },
+          {
+            "file": "mindiesd/compilation/passes/pattern_match_pass.py",
+            "percent": 92.14285714285714,
+            "passed": true,
+            "covered": 129,
+            "total": 140
+          },
+          {
+            "file": "mindiesd/compilation/passes/redundant_node_elimination_pass.py",
+            "percent": 98.73417721518987,
+            "passed": true,
+            "covered": 78,
+            "total": 79
+          },
+          {
+            "file": "mindiesd/compilation/passes/register_pattern_to_pass.py",
+            "percent": 94.73684210526316,
+            "passed": true,
+            "covered": 36,
+            "total": 38
+          },
+          {
+            "file": "mindiesd/compilation/passes/rope_cast_pass.py",
+            "percent": 93.07692307692308,
+            "passed": true,
+            "covered": 121,
+            "total": 130
+          },
+          {
+            "file": "mindiesd/compilation/patterns/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 19,
+            "total": 19
+          },
+          {
+            "file": "mindiesd/compilation/patterns/adalayernorm_pattern.py",
+            "percent": 89.1891891891892,
+            "passed": true,
+            "covered": 33,
+            "total": 37
+          },
+          {
+            "file": "mindiesd/compilation/patterns/gelu_pattern.py",
+            "percent": 90.3225806451613,
+            "passed": true,
+            "covered": 28,
+            "total": 31
+          },
+          {
+            "file": "mindiesd/compilation/patterns/group_norm_silu_pattern.py",
+            "percent": 88.38709677419355,
+            "passed": true,
+            "covered": 137,
+            "total": 155
+          },
+          {
+            "file": "mindiesd/compilation/patterns/minimax_h3_adaln_pattern.py",
+            "percent": 97.14285714285714,
+            "passed": true,
+            "covered": 34,
+            "total": 35
+          },
+          {
+            "file": "mindiesd/compilation/patterns/minimax_h3_gate_pattern.py",
+            "percent": 96.96969696969697,
+            "passed": true,
+            "covered": 32,
+            "total": 33
+          },
+          {
+            "file": "mindiesd/compilation/patterns/minimax_h3_rmsnorm_pattern.py",
+            "percent": 93.47826086956522,
+            "passed": true,
+            "covered": 43,
+            "total": 46
+          },
+          {
+            "file": "mindiesd/compilation/patterns/minimax_h3_rope_pattern.py",
+            "percent": 92.3076923076923,
+            "passed": true,
+            "covered": 48,
+            "total": 52
+          },
+          {
+            "file": "mindiesd/compilation/patterns/minimax_h3_swiglu_pattern.py",
+            "percent": 96.66666666666667,
+            "passed": true,
+            "covered": 29,
+            "total": 30
+          },
+          {
+            "file": "mindiesd/compilation/patterns/mul_add_pattern.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 25,
+            "total": 25
+          },
+          {
+            "file": "mindiesd/compilation/patterns/norm_out_adalayernorm_pattern.py",
+            "percent": 90.9090909090909,
+            "passed": true,
+            "covered": 30,
+            "total": 33
+          },
+          {
+            "file": "mindiesd/compilation/patterns/qwen_residual_gate_pattern.py",
+            "percent": 88.67924528301887,
+            "passed": true,
+            "covered": 47,
+            "total": 53
+          },
+          {
+            "file": "mindiesd/compilation/patterns/qwen_rope_pattern.py",
+            "percent": 93.02325581395348,
+            "passed": true,
+            "covered": 40,
+            "total": 43
+          },
+          {
+            "file": "mindiesd/compilation/patterns/rms_norm_pattern.py",
+            "percent": 93.54838709677419,
+            "passed": true,
+            "covered": 58,
+            "total": 62
+          },
+          {
+            "file": "mindiesd/compilation/patterns/rope_pattern.py",
+            "percent": 85.96491228070175,
+            "passed": true,
+            "covered": 49,
+            "total": 57
+          },
+          {
+            "file": "mindiesd/compilation/patterns/wan_adalayernorm_pattern.py",
+            "percent": 88.88888888888889,
+            "passed": true,
+            "covered": 32,
+            "total": 36
+          },
+          {
+            "file": "mindiesd/compilation/patterns/wan_residual_gate_pattern.py",
+            "percent": 85.71428571428571,
+            "passed": true,
+            "covered": 42,
+            "total": 49
+          },
+          {
+            "file": "mindiesd/compilation/patterns/wan_rmsnorm_pattern.py",
+            "percent": 92.10526315789474,
+            "passed": true,
+            "covered": 35,
+            "total": 38
+          },
+          {
+            "file": "mindiesd/compilation/patterns/wan_rope_pattern.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 49,
+            "total": 49
+          },
+          {
+            "file": "mindiesd/env.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 10,
+            "total": 10
+          },
+          {
+            "file": "mindiesd/eplb/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 4,
+            "total": 4
+          },
+          {
+            "file": "mindiesd/eplb/collector.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 30,
+            "total": 30
+          },
+          {
+            "file": "mindiesd/eplb/dispatcher.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 71,
+            "total": 71
+          },
+          {
+            "file": "mindiesd/eplb/eplb_scheduler.py",
+            "percent": 84.66257668711657,
+            "passed": true,
+            "covered": 138,
+            "total": 163
+          },
+          {
+            "file": "mindiesd/eplb/greedy_algorithm.py",
+            "percent": 81.58508158508158,
+            "passed": true,
+            "covered": 350,
+            "total": 429
+          },
+          {
+            "file": "mindiesd/eplb/task_handler.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 49,
+            "total": 49
+          },
+          {
+            "file": "mindiesd/eplb/task_manager.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 94,
+            "total": 94
+          },
+          {
+            "file": "mindiesd/eplb/task_payload.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 32,
+            "total": 32
+          },
+          {
+            "file": "mindiesd/eplb/task_transfer.py",
+            "percent": 92.10526315789474,
+            "passed": true,
+            "covered": 35,
+            "total": 38
+          },
+          {
+            "file": "mindiesd/layers/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 17,
+            "total": 17
+          },
+          {
+            "file": "mindiesd/layers/_custom_ops.py",
+            "percent": 82.68072289156626,
+            "passed": true,
+            "covered": 549,
+            "total": 664
+          },
+          {
+            "file": "mindiesd/layers/activation.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 26,
+            "total": 26
+          },
+          {
+            "file": "mindiesd/layers/adalayernorm.py",
+            "percent": 94.73684210526316,
+            "passed": true,
+            "covered": 144,
+            "total": 152
+          },
+          {
+            "file": "mindiesd/layers/eagle_ffn_linear.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 30,
+            "total": 30
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 14,
+            "total": 14
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/ascend_laser_attention.py",
+            "percent": 93.6842105263158,
+            "passed": true,
+            "covered": 89,
+            "total": 95
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/ascend_laser_preprocess.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 33,
+            "total": 33
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/attention_forward.py",
+            "percent": 97.27272727272727,
+            "passed": true,
+            "covered": 107,
+            "total": 110
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/attention_forward_varlen.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 55,
+            "total": 55
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/attention_func.py",
+            "percent": 91.52542372881356,
+            "passed": true,
+            "covered": 162,
+            "total": 177
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/attention_operate.py",
+            "percent": 97.36842105263158,
+            "passed": true,
+            "covered": 74,
+            "total": 76
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/common.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 57,
+            "total": 57
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/fused_attn_score.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 78,
+            "total": 78
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/fused_infer_attention_score.py",
+            "percent": 94.83870967741936,
+            "passed": true,
+            "covered": 147,
+            "total": 155
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/prompt_flash_attn.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 89,
+            "total": 89
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/quant_attention_mxfp4.py",
+            "percent": 92.92035398230088,
+            "passed": true,
+            "covered": 105,
+            "total": 113
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/quant_flash_attn.py",
+            "percent": 96.29629629629629,
+            "passed": true,
+            "covered": 104,
+            "total": 108
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/sparse_flash_attn.py",
+            "percent": 98.11320754716981,
+            "passed": true,
+            "covered": 104,
+            "total": 106
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/sparse_flash_attn_ada_bsa.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 17,
+            "total": 17
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/sparse_flash_attn_rf_v2.py",
+            "percent": 94.35146443514644,
+            "passed": true,
+            "covered": 451,
+            "total": 478
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/sparse_flash_attn_rf_v3.py",
+            "percent": 92.75700934579439,
+            "passed": true,
+            "covered": 397,
+            "total": 428
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/sparse_linear_attn.py",
+            "percent": 98.63013698630137,
+            "passed": true,
+            "covered": 144,
+            "total": 146
+          },
+          {
+            "file": "mindiesd/layers/flash_attn/sparse_linear_attn_triton.py",
+            "percent": 97.67441860465117,
+            "passed": true,
+            "covered": 1008,
+            "total": 1032
+          },
+          {
+            "file": "mindiesd/layers/fused_moe.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 13,
+            "total": 13
+          },
+          {
+            "file": "mindiesd/layers/index_modulation.py",
+            "percent": 97.96747967479675,
+            "passed": true,
+            "covered": 241,
+            "total": 246
+          },
+          {
+            "file": "mindiesd/layers/moe/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 2,
+            "total": 2
+          },
+          {
+            "file": "mindiesd/layers/moe/comm_ops.py",
+            "percent": 88.67924528301887,
+            "passed": true,
+            "covered": 47,
+            "total": 53
+          },
+          {
+            "file": "mindiesd/layers/moe/experts_selector.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 35,
+            "total": 35
+          },
+          {
+            "file": "mindiesd/layers/moe/moe.py",
+            "percent": 97.59036144578313,
+            "passed": true,
+            "covered": 81,
+            "total": 83
+          },
+          {
+            "file": "mindiesd/layers/moe/moe_context.py",
+            "percent": 82.5503355704698,
+            "passed": true,
+            "covered": 246,
+            "total": 298
+          },
+          {
+            "file": "mindiesd/layers/moe/moe_dataclass.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 74,
+            "total": 74
+          },
+          {
+            "file": "mindiesd/layers/moe/moe_mlp.py",
+            "percent": 93.93939393939394,
+            "passed": true,
+            "covered": 93,
+            "total": 99
+          },
+          {
+            "file": "mindiesd/layers/moe/token_dispatcher.py",
+            "percent": 98.39357429718875,
+            "passed": true,
+            "covered": 245,
+            "total": 249
+          },
+          {
+            "file": "mindiesd/layers/muls_add.py",
+            "percent": 90.0,
+            "passed": true,
+            "covered": 45,
+            "total": 50
+          },
+          {
+            "file": "mindiesd/layers/norm.py",
+            "percent": 96.15384615384616,
+            "passed": true,
+            "covered": 200,
+            "total": 208
+          },
+          {
+            "file": "mindiesd/layers/norm_rope_concat.py",
+            "percent": 98.05825242718447,
+            "passed": true,
+            "covered": 202,
+            "total": 206
+          },
+          {
+            "file": "mindiesd/layers/quant/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 0,
+            "total": 0
+          },
+          {
+            "file": "mindiesd/layers/quant/block_quant.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 55,
+            "total": 55
+          },
+          {
+            "file": "mindiesd/layers/register_ops.py",
+            "percent": 87.37864077669903,
+            "passed": true,
+            "covered": 90,
+            "total": 103
+          },
+          {
+            "file": "mindiesd/layers/residual_gate_add.py",
+            "percent": 94.11764705882354,
+            "passed": true,
+            "covered": 112,
+            "total": 119
+          },
+          {
+            "file": "mindiesd/layers/rms_norm_indexed_scale_shift_dynamic_mx_quant.py",
+            "percent": 91.48494288681205,
+            "passed": true,
+            "covered": 881,
+            "total": 963
+          },
+          {
+            "file": "mindiesd/layers/rope.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 85,
+            "total": 85
+          },
+          {
+            "file": "mindiesd/layers/scale_shift.py",
+            "percent": 89.47368421052632,
+            "passed": true,
+            "covered": 170,
+            "total": 190
+          },
+          {
+            "file": "mindiesd/layers/split_qkv_norm_rope_concat.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 257,
+            "total": 257
+          },
+          {
+            "file": "mindiesd/layers/triton_utils.py",
+            "percent": 92.95774647887323,
+            "passed": true,
+            "covered": 66,
+            "total": 71
+          },
+          {
+            "file": "mindiesd/layers/usp.py",
+            "percent": 80.31496062992126,
+            "passed": true,
+            "covered": 510,
+            "total": 635
+          },
+          {
+            "file": "mindiesd/offload.py",
+            "percent": 96.82539682539682,
+            "passed": true,
+            "covered": 122,
+            "total": 126
+          },
+          {
+            "file": "mindiesd/plugin/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 0,
+            "total": 0
+          },
+          {
+            "file": "mindiesd/quantization/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 5,
+            "total": 5
+          },
+          {
+            "file": "mindiesd/quantization/config.py",
+            "percent": 98.13519813519814,
+            "passed": true,
+            "covered": 421,
+            "total": 429
+          },
+          {
+            "file": "mindiesd/quantization/description.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 99,
+            "total": 99
+          },
+          {
+            "file": "mindiesd/quantization/layer.py",
+            "percent": 92.64909847434119,
+            "passed": true,
+            "covered": 668,
+            "total": 721
+          },
+          {
+            "file": "mindiesd/quantization/mode.py",
+            "percent": 98.33333333333333,
+            "passed": true,
+            "covered": 177,
+            "total": 180
+          },
+          {
+            "file": "mindiesd/quantization/quantize.py",
+            "percent": 85.21739130434783,
+            "passed": true,
+            "covered": 392,
+            "total": 460
+          },
+          {
+            "file": "mindiesd/quantization/utils.py",
+            "percent": 94.19087136929461,
+            "passed": true,
+            "covered": 227,
+            "total": 241
+          },
+          {
+            "file": "mindiesd/share_memory.py",
+            "percent": 99.35064935064935,
+            "passed": true,
+            "covered": 153,
+            "total": 154
+          },
+          {
+            "file": "mindiesd/utils/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 3,
+            "total": 3
+          },
+          {
+            "file": "mindiesd/utils/env.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 166,
+            "total": 166
+          },
+          {
+            "file": "mindiesd/utils/exception.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 28,
+            "total": 28
+          },
+          {
+            "file": "mindiesd/utils/file_utils.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 148,
+            "total": 148
+          },
+          {
+            "file": "mindiesd/utils/get_platform.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 58,
+            "total": 58
+          },
+          {
+            "file": "mindiesd/utils/logs/__init__.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 1,
+            "total": 1
+          },
+          {
+            "file": "mindiesd/utils/logs/logging.py",
+            "percent": 95.96977329974811,
+            "passed": true,
+            "covered": 381,
+            "total": 397
+          },
+          {
+            "file": "mindiesd/utils/safe_pickle.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 29,
+            "total": 29
+          },
+          {
+            "file": "mindiesd/utils/utils.py",
+            "percent": 100.0,
+            "passed": true,
+            "covered": 13,
+            "total": 13
+          }
+        ]
+      }
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 140,
+      "results": [
+        {
+          "sample_name": "HF_ENDPOINT=https://hf-mirror.com python3 examples/dummy_run/wan_infer.py --device_id 6 --num_layers 2",
+          "execution_status": "success",
+          "execution_time": "140秒",
+          "output_summary": "Wan dummy weights实际运行；完整输出见本地证据"
+        }
+      ],
+      "failure_reason": "本阶段成功，无失败原因"
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-11-09T20:17:11+08:00",
+      "title": "omni与根requirements版本差异",
+      "body": "按用户指定omni执行，镜像torch2.10而根requirements固定2.9；不声称复现PR的完全相同软件栈。",
+      "source": "requirements.txt及omni镜像"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-11-09T20:17:11+08:00",
+      "problem": "H=1标量FP8转换使Triton编译器中止",
+      "solution": "改为32lane掩码向量，仅lane0读写；原严格字节断言保留。定向整文件25通过、136子测试通过。",
+      "source": "本地算子修复"
+    },
+    {
+      "timestamp": "2026-11-09T20:17:11+08:00",
+      "problem": "非特权容器内aclInit返回507899 Resource_Busy，device_count为0",
+      "solution": "该宿主机既有NPU业务容器均以特权模式运行；只映射单卡设备节点（含全部8个davinci节点）仍无法初始化驱动。改用特权容器、不使用任何可见设备掩码，并以MINDIE_TEST_DEVICE_ID=6固定物理设备后，真实张量预检通过。失败尝试独立保留，不计入成功运行耗时。",
+      "source": "新容器预检日志"
+    },
+    {
+      "timestamp": "2026-11-09T20:17:11+08:00",
+      "problem": "新版驱动非法索引trap错误信息不匹配，及两处UT版本假设",
+      "solution": "窄匹配trap286错误；精确区分torch2.1与2.10；深嵌套非法输入仍必须拒绝，并补递归异常分支测试。",
+      "source": "本地测试补丁"
+    },
+    {
+      "timestamp": "2026-11-09T20:17:11+08:00",
+      "problem": "依赖阶段的pip走到了镜像内置的不可达代理（连接超时，取不到triton-ascend）",
+      "solution": "镜像内小写http_proxy/https_proxy指向不可达地址且优先级高于容器参数；显式给pip传--proxy并覆盖小写环境变量后下载正常。依赖阶段129秒，其中229.7MB wheel下载约110秒。",
+      "source": "依赖安装日志"
+    },
+    {
+      "timestamp": "2026-11-09T20:17:11+08:00",
+      "problem": "样例首次运行在下载模型配置时返回504 Gateway Time-out",
+      "solution": "该宿主机代理无法访问huggingface.co（curl返回000），hf-mirror.com返回200；改用HF_ENDPOINT=https://hf-mirror.com重跑样例通过。首次失败日志单独保留，耗时不计入成功样例。",
+      "source": "样例日志"
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-11-09T20:17:11+08:00",
+      "phase": "dependencies",
+      "status": "success",
+      "minutes": 2.15,
+      "details": {
+        "returncode": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-09T20:19:20+08:00",
+      "phase": "build",
+      "status": "success",
+      "minutes": 10.616666666666667,
+      "details": {
+        "returncode": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-09T20:29:57+08:00",
+      "phase": "wheel_install",
+      "status": "success",
+      "minutes": 0.7333333333333333,
+      "details": {
+        "returncode": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-09T20:30:41+08:00",
+      "phase": "tests",
+      "status": "success",
+      "minutes": 28.416666666666668,
+      "details": {
+        "returncode": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-09T21:05:37+08:00",
+      "phase": "sample",
+      "status": "success",
+      "minutes": 2.3333333333333335,
+      "details": {
+        "returncode": 0
+      }
+    }
+  ],
+  "local_changes": {
+    "base_commit": "03f6163bae52902ba539bd84d22671109adca61b",
+    "patch_sha256": "51733d41b6cf660b23a64afec005f4ec48058ee34d4fd460d109dba39f0003a9",
+    "patch": "diff --git a/csrc/ops/eagle_quant_batch_matmul_swiglu/op_host/CMakeLists.txt b/csrc/ops/eagle_quant_batch_matmul_swiglu/op_host/CMakeLists.txt\nindex 964a151..1043124 100644\n--- a/csrc/ops/eagle_quant_batch_matmul_swiglu/op_host/CMakeLists.txt\n+++ b/csrc/ops/eagle_quant_batch_matmul_swiglu/op_host/CMakeLists.txt\n@@ -36,6 +36,7 @@ foreach(qbmm_target eagle_qbmm_tiling eagle_qbmm_proto)\n         ${CMAKE_CURRENT_SOURCE_DIR}\n         ${CMAKE_CURRENT_SOURCE_DIR}/../../utils/inc\n         ${ASCEND_CANN_PACKAGE_PATH}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/exe_graph\n+        ${ASCEND_CANN_PACKAGE_PATH}/${CMAKE_SYSTEM_PROCESSOR}-linux/include/op_common/op_host\n         ${ASCEND_CANN_PACKAGE_PATH}/${CMAKE_SYSTEM_PROCESSOR}-linux/pkg_inc/op_common/op_host\n         ${ASCEND_CANN_PACKAGE_PATH}/${CMAKE_SYSTEM_PROCESSOR}-linux/asc/include/tiling\n         ${ASCEND_CANN_PACKAGE_PATH}/${CMAKE_SYSTEM_PROCESSOR}-linux/pkg_inc/base\ndiff --git a/mindiesd/layers/rms_norm_indexed_scale_shift_dynamic_mx_quant.py b/mindiesd/layers/rms_norm_indexed_scale_shift_dynamic_mx_quant.py\nindex bce8035..01337b4 100644\n--- a/mindiesd/layers/rms_norm_indexed_scale_shift_dynamic_mx_quant.py\n+++ b/mindiesd/layers/rms_norm_indexed_scale_shift_dynamic_mx_quant.py\n@@ -629,14 +629,16 @@ if _HAS_TRITON:\n         scale_stride: tl.constexpr,\n         n_conds: tl.constexpr,\n     ):\n-        \"\"\"H == 1 edge path: scalar per row, no 2-D reshape/stride folding.\"\"\"\n+        \"\"\"H == 1 edge path with a masked vector for FP8 conversion.\"\"\"\n         row = (tl.program_id(0) + row_offset).to(tl.int64)\n+        lanes = tl.arange(0, 32)\n+        valid = lanes == 0\n         index = _safe_scalar_index(tl.load(indices_ptr + row), n_conds)\n-        xv = tl.load(x_ptr + row).to(tl.float32)\n-        wv = tl.load(weight_ptr).to(tl.float32)\n+        xv = tl.load(x_ptr + row + lanes, mask=valid, other=0.0).to(tl.float32)\n+        wv = tl.load(weight_ptr + lanes, mask=valid, other=0.0).to(tl.float32)\n         rstd = tl.rsqrt(xv * xv + eps)\n-        sv = tl.load(shift_ptr + index).to(tl.float32)\n-        cv = tl.load(scale_ptr + index).to(tl.float32)\n+        sv = tl.load(shift_ptr + index + lanes, mask=valid, other=0.0).to(tl.float32)\n+        cv = tl.load(scale_ptr + index + lanes, mask=valid, other=0.0).to(tl.float32)\n         mod = (xv * rstd * wv * (1.0 + cv) + sv).to(tl.bfloat16)\n \n         bits = mod.to(tl.uint16, bitcast=True)\n@@ -653,11 +655,11 @@ if _HAS_TRITON:\n         yv = yb.to(tl.bfloat16, bitcast=True)\n         yv = tl.where(special, 0.0, yv)\n         yf = yv.to(tl.float32)\n-        # Force an fp32 op so the compiler does not fold this into the unsupported\n-        # scalar bf16 -> fp8 vcast (hivm.hir.vcast rintmode).\n+        # Ascend cannot lower the scalar FP8 conversion. Keep a vector value\n+        # through the cast and mask every memory access to the single element.\n         yf = tl.maximum(tl.minimum(yf, 1.0e30), -1.0e30)\n-        tl.store(out_y_ptr + row, yf.to(tl.float8e4nv))\n-        tl.store(out_scale_ptr + row * scale_stride, byte.to(tl.uint8))\n+        tl.store(out_y_ptr + row + lanes, yf.to(tl.float8e4nv), mask=valid)\n+        tl.store(out_scale_ptr + row * scale_stride + lanes, byte.to(tl.uint8), mask=valid)\n \n     @triton.jit\n     def _modulation_kernel(\ndiff --git a/tests/UT/compilation/patterns/test_rmsnorm_pattern.py b/tests/UT/compilation/patterns/test_rmsnorm_pattern.py\nindex d6f4a86..f8dcf10 100644\n--- a/tests/UT/compilation/patterns/test_rmsnorm_pattern.py\n+++ b/tests/UT/compilation/patterns/test_rmsnorm_pattern.py\n@@ -18,7 +18,7 @@ class RMSNormPatternModel(torch.nn.Module):\n         return F.rms_norm(hidden_states, normalized_shape=(self.hidden_size,), weight=weight, eps=self.eps)\n \n \n-@unittest.skipIf(torch.__version__.startswith(\"2.1\"), \"\")\n+@unittest.skipIf(torch.__version__.split(\".\")[:2] == [\"2\", \"1\"], \"Requires PyTorch newer than 2.1\")\n class TestRMSNormCompilationCase(unittest.TestCase):\n     def _run_test_and_measure_time(self, model, x, weight):\n         compiled_model = torch.compile(model, backend=MindieSDBackend())\ndiff --git a/tests/UT/quantization/test_description.py b/tests/UT/quantization/test_description.py\nindex d46dbab..93fd46c 100644\n--- a/tests/UT/quantization/test_description.py\n+++ b/tests/UT/quantization/test_description.py\n@@ -212,7 +212,17 @@ class TestQuantDescription(unittest.TestCase):\n                 self.assert_invalid('{\"model_quant_type\":\"W8A8\",\"layer\":' + value + '}', \"JSON constant\")\n \n     def test_deeply_nested_input(self):\n-        self.assert_invalid('[' * 2000 + '0' + ']' * 2000, \"JSON.*nesting\")\n+        # Python parsers differ in their nesting limit; both paths must reject\n+        # this array before config construction or any weight access.\n+        self.assert_invalid(\n+            '[' * 2000 + '0' + ']' * 2000,\n+            r\"JSON.*nesting|Quantization description must be a JSON object\",\n+        )\n+\n+    def test_json_recursion_error_is_translated(self):\n+        description = importlib.import_module(\"mindiesd.quantization.description\")\n+        with mock.patch.object(description.json, \"loads\", side_effect=RecursionError):\n+            self.assert_invalid(\"{}\", \"JSON.*nesting\")\n \n     @unittest.skipUnless(hasattr(sys, \"get_int_max_str_digits\"), \"Python has no integer string length limit\")\n     def test_integer_parser_limit(self):\ndiff --git a/tests/ops/layers/test_rms_norm_indexed_scale_shift_dynamic_mx_quant.py b/tests/ops/layers/test_rms_norm_indexed_scale_shift_dynamic_mx_quant.py\nindex 38b14da..395dc21 100644\n--- a/tests/ops/layers/test_rms_norm_indexed_scale_shift_dynamic_mx_quant.py\n+++ b/tests/ops/layers/test_rms_norm_indexed_scale_shift_dynamic_mx_quant.py\n@@ -99,7 +99,14 @@ def _invalid_index_worker(rows, hidden, dst_type, bad_index, workdir):\n         message = str(error)\n         with open(\"invalid_index_result.txt\", \"w\", encoding=\"utf-8\") as stream:\n             stream.write(message)\n-        expected = \"507035\" in message or \"device error type 3\" in message or \"NPU function error\" in message\n+        # Newer runtimes report the device_assert trap without the old PTA code.\n+        # Require both the trap diagnostic and its specific error number.\n+        assert_trap = \"The trap instruction reports an error.\" in message and (\n+            \"errcode:(286)\" in message or \"error code = 286\" in message\n+        )\n+        expected = (\n+            \"507035\" in message or \"device error type 3\" in message or \"NPU function error\" in message or assert_trap\n+        )\n         os._exit(0 if expected else 2)\n     os._exit(1)\n \n",
+    "upstream_committed": false,
+    "precision_assertions": "沿用原始逐字节精度断言，没有降低精度要求；H=1保持Triton向量转换路径，无PyTorch计算回退。",
+    "targeted_regression": {
+      "passed": 25,
+      "subtests_passed": 136,
+      "returncode": 0,
+      "duration_seconds": 184
+    }
+  },
+  "timing_assessment": {
+    "observation_threshold_seconds": 3600,
+    "basis": "验证skill要求单个问题调试30–60分钟（依赖安装不计入）；没有独立编译耗时SLA。另以1小时观察单阶段耗时，不能将其等同于skill构建合格标准。",
+    "phase_seconds": {
+      "dependencies": 129,
+      "build": 637,
+      "wheel_install": 44,
+      "tests": 1705,
+      "sample": 140
+    },
+    "any_single_phase_over_one_hour": false,
+    "complete": true
+  },
+  "source_consistency": {
+    "returncode": 0,
+    "status": "consistent"
+  }
+}
