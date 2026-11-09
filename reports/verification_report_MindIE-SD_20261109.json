@@ -218,7 +218,7 @@
           "path": "dist/mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
           "type": "wheel",
           "size": "30793390 bytes",
-          "sha256": "f4c878e3b073ce4f5fda5e62ab2f3ce526eb91e0df9b0b1ac6be24375fff40ad"
+          "sha256": "sha256:f4c878e3b073ce4f5fda5e62ab2f3ce526eb91e0df9b0b1ac6be24375fff40ad"
         }
       ],
       "notes": "增量打包17秒，不能宣称全量冷构建仅17秒。相同csrc/build首次950构建626秒；git diff已证实8701dab到cf16245的原生源码与构建脚本完全一致。",
