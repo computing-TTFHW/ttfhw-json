@@ -7,7 +7,7 @@
     "total_steps": 5,
     "branch": "fix/h1-fp8-vector-cast（基于 dev）",
     "commit": "14ab49e1357b299825090782f82717f6f611220b",
-    "environment": "用户指定omni镜像新容器，在dev提交3c56a90a15ce6288464b6fbabe13d7298ee85efd之上叠加PR #835的5个提交（H=1掩码向量、新融合算子三处缺陷修复、运行时相关用例适配、文档补充）；不是上游未经修改代码的通过结论。原生冷构建前清空了build/dist及源码树内旧二进制，未复用旧产物；Triton缓存及模型下载缓存独立。共享宿主机上既有NPU业务容器均为特权模式，本轮同样以特权容器运行，未设置任何可见设备掩码，测试与样例固定物理设备2。公开路径统一归一为/workspace/MindIE-SD；远端时钟经本地校准；耗时使用同钟差值。",
+    "environment": "用户指定omni镜像新容器，在dev提交3c56a90a15ce6288464b6fbabe13d7298ee85efd之上叠加PR #835的修复提交（H=1掩码向量、新融合算子三处缺陷修复、运行时相关用例适配）；代码验证对象为提交14ab49e，其后仅追加依赖区间声明与安装文档调整，不涉及本轮测试执行；不是上游未经修改代码的通过结论。原生冷构建前清空了build/dist及源码树内旧二进制，未复用旧产物；Triton缓存及模型下载缓存独立。共享宿主机上既有NPU业务容器均为特权模式，本轮同样以特权容器运行，未设置任何可见设备掩码，测试与样例固定物理设备2。公开路径统一归一为/workspace/MindIE-SD；远端时钟经本地校准；耗时使用同钟差值。",
     "verifier": "Claude Code",
     "repo_path": "/workspace/MindIE-SD",
     "verification_complete": true
@@ -345,8 +345,8 @@
   "documentation_gaps": [
     {
       "time": "2026-11-10T16:57:15+08:00",
-      "title": "omni与根requirements版本差异",
-      "body": "按用户指定omni执行，镜像torch2.10而根requirements固定2.9；不声称复现PR的完全相同软件栈。",
+      "title": "omni镜像与仓库依赖声明的版本口径不同",
+      "body": "按用户指定omni执行，镜像为torch2.10，而仓库根requirements.txt原先把torch/torch_npu写死为2.9，照该文件安装会与镜像冲突；本轮沿用镜像已装版本执行，PR #835 已改为2.6–2.10区间。",
       "source": "requirements.txt及omni镜像"
     },
     {
@@ -357,8 +357,8 @@
     },
     {
       "time": "2026-11-10T16:57:15+08:00",
-      "title": "测试文档缺少设备选择与特权容器说明",
-      "body": "原文未说明 MINDIE_TEST_DEVICE_ID 按逻辑序号解释、QBMM 检查点批次要求物理编号，也未记录非特权容器无法 aclInit 的结论；本次已在 PR #835 补充中英文测试文档。",
+      "title": "测试文档缺少设备选择与容器初始化说明",
+      "body": "原文未说明 MINDIE_TEST_DEVICE_ID 按逻辑序号解释、QBMM 检查点批次要求物理编号，也未记录非特权容器无法 aclInit 的结论；仍属上游文档缺口，本轮未改动测试文档。",
       "source": "docs/zh/developer_guide/test.md；docs/en/developer_guide/test.md"
     }
   ],
