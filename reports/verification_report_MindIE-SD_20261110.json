@@ -1,0 +1,403 @@
+{
+  "metadata": {
+    "repo_url": "https://gitcode.com/Ascend/MindIE-SD.git",
+    "start_time": "2026-11-10T16:57:15+08:00",
+    "end_time": "2026-11-10T17:44:16+08:00",
+    "duration_seconds": 2821,
+    "total_steps": 5,
+    "branch": "fix/h1-fp8-vector-cast（基于 dev）",
+    "commit": "14ab49e1357b299825090782f82717f6f611220b",
+    "environment": "用户指定omni镜像新容器，在dev提交3c56a90a15ce6288464b6fbabe13d7298ee85efd之上叠加PR #835的5个提交（H=1掩码向量、新融合算子三处缺陷修复、运行时相关用例适配、文档补充）；不是上游未经修改代码的通过结论。原生冷构建前清空了build/dist及源码树内旧二进制，未复用旧产物；Triton缓存及模型下载缓存独立。共享宿主机上既有NPU业务容器均为特权模式，本轮同样以特权容器运行，未设置任何可见设备掩码，测试与样例固定物理设备2。公开路径统一归一为/workspace/MindIE-SD；远端时钟经本地校准；耗时使用同钟差值。",
+    "verifier": "Claude Code",
+    "repo_path": "/workspace/MindIE-SD",
+    "verification_complete": true
+  },
+  "token_usage": {
+    "tool": "Claude Code",
+    "model": "claude-sonnet-4-6",
+    "input_tokens": 0,
+    "cache_hit_tokens": 0,
+    "cache_miss_tokens": 0,
+    "output_tokens": 0
+  },
+  "machine_spec": {
+    "host_machine": {
+      "architecture": "x86_64",
+      "cpu_model": "宿主机型号已脱敏",
+      "cpu_cores": 0,
+      "memory": "宿主机规格已脱敏",
+      "disk": "具体宿主路径与容量已脱敏，验证时空间充足",
+      "docker_version": "宿主机版本已脱敏"
+    },
+    "container": {
+      "os": "Ubuntu22.04.5",
+      "architecture": "x86_64",
+      "cpu_cores": 32,
+      "memory": "96GiB"
+    },
+    "image_source": {
+      "type": "base_image",
+      "image_name": "quay.io/ascend/vllm-omni:v0.32.0-a5",
+      "selection_reason": "用户明确指定omni环境，复用业务预构建镜像；Python3.12.13、torch2.10.0、torch_npu2.10.0.post4、CANN9.1.0，triton-ascend已对齐3.2.2.post2。",
+      "dependency_mapping": {
+        "from_dockerfile": "docker/omni/Dockerfile.a5.ubuntu",
+        "mappings": []
+      }
+    }
+  },
+  "document_reading_summary": {
+    "architecture": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "x86_64 / Ascend950PR"
+    },
+    "recommended_image": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "quay.io/ascend/vllm-omni:v0.32.0-a5"
+    },
+    "dockerfile_dependencies": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": [
+        "业务预装环境；非基础OS从零安装"
+      ]
+    },
+    "dependencies": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": [
+        "Python3.12.13",
+        "torch2.10.0+cpu",
+        "torch_npu2.10.0.post4",
+        "triton-ascend3.2.2.post2",
+        "CANN9.1.0"
+      ]
+    },
+    "build_commands": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "cd build && bash build.sh；原生算子和插件全量冷构建；并发6（32核的20%取整），未设置任何跳过构建开关。"
+    },
+    "ut_commands": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "python3 tests/scripts/run_suites.py（默认依次运行完整CPU、完整NPU，再合并覆盖率并检查逐文件门禁）"
+    },
+    "sample_commands": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": "HF_ENDPOINT=https://hf-mirror.com python3 examples/dummy_run/wan_infer.py --device_id 2 --num_layers 2"
+    },
+    "special_dependencies": {
+      "source": "安装指导、omni镜像文档、构建脚本与测试入口；用户指定优先使用omni",
+      "value": [
+        "CANN/ATB环境脚本",
+        "examples/dummy_run/requirements.txt"
+      ]
+    }
+  },
+  "execution_log": [
+    {
+      "timestamp": "2026-11-10T16:57:15+08:00",
+      "step": "dependencies",
+      "action": "安装triton-ascend==3.2.2.post2 --no-deps；运行真实NPU张量预检",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-10T16:59:41+08:00"
+      },
+      "command": "安装triton-ascend==3.2.2.post2 --no-deps；运行真实NPU张量预检",
+      "duration_seconds": 146,
+      "success": true,
+      "output": "本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-11-10T16:59:41+08:00",
+      "step": "build",
+      "action": "cd build && bash build.sh",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-10T17:10:13+08:00"
+      },
+      "command": "cd build && bash build.sh",
+      "duration_seconds": 632,
+      "success": true,
+      "output": "本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-11-10T17:10:13+08:00",
+      "step": "wheel_install",
+      "action": "pip install --no-deps --force-reinstall dist/mindiesd-*.whl",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-10T17:10:49+08:00"
+      },
+      "command": "pip install --no-deps --force-reinstall /workspace/MindIE-SD/dist/mindiesd-*.whl",
+      "duration_seconds": 36,
+      "success": true,
+      "output": "从site-packages导入mindiesd成功；本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-11-10T17:10:49+08:00",
+      "step": "tests",
+      "action": "python3 tests/scripts/run_suites.py",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-10T17:42:43+08:00"
+      },
+      "command": "python3 tests/scripts/run_suites.py",
+      "duration_seconds": 1914,
+      "success": true,
+      "output": "CPU与NPU两套用例全部通过，逐文件覆盖率门禁通过；本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    },
+    {
+      "timestamp": "2026-11-10T17:42:43+08:00",
+      "step": "sample",
+      "action": "HF_ENDPOINT=https://hf-mirror.com python3 examples/dummy_run/wan_infer.py --device_id 2 --num_layers 2",
+      "result": "成功",
+      "details": {
+        "end_time": "2026-11-10T17:44:14+08:00"
+      },
+      "command": "HF_ENDPOINT=https://hf-mirror.com python3 examples/dummy_run/wan_infer.py --device_id 2 --num_layers 2",
+      "duration_seconds": 91,
+      "success": true,
+      "output": "Wan2.2 dummy weight verification PASSED；本阶段退出码0",
+      "error": "",
+      "returncode": 0
+    }
+  ],
+  "process_timeline": [
+    {
+      "timestamp": "2026-11-10T16:57:15+08:00",
+      "phase": "dependencies",
+      "status": "success",
+      "minutes": 2.433333333333333,
+      "details": {
+        "returncode": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-10T16:59:41+08:00",
+      "phase": "build",
+      "status": "success",
+      "minutes": 10.533333333333333,
+      "details": {
+        "returncode": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-10T17:10:13+08:00",
+      "phase": "wheel_install",
+      "status": "success",
+      "minutes": 0.6,
+      "details": {
+        "returncode": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-10T17:10:49+08:00",
+      "phase": "tests",
+      "status": "success",
+      "minutes": 31.9,
+      "details": {
+        "returncode": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-10T17:42:43+08:00",
+      "phase": "sample",
+      "status": "success",
+      "minutes": 1.5166666666666666,
+      "details": {
+        "returncode": 0
+      }
+    }
+  ],
+  "final_results": {
+    "static_analysis": {
+      "enabled": true,
+      "summary": "本次未执行全仓pre-commit；改动文件按仓库Ruff/格式配置自查。",
+      "pre_commit": {
+        "configured": true,
+        "config_file": ".pre-commit-config.yaml",
+        "status": "not_run",
+        "duration_seconds": 0,
+        "total_hooks": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "failures": []
+      },
+      "lint_runner": {
+        "configured": false,
+        "config_file": ""
+      }
+    },
+    "devcontainer": {
+      "enabled": false,
+      "config_dir": "",
+      "config_files": [],
+      "original_base_image": "",
+      "used_image": "quay.io/ascend/vllm-omni:v0.32.0-a5",
+      "summary": "使用远程独立Docker容器完成验证。"
+    },
+    "build": {
+      "status": "success",
+      "duration_seconds": 632,
+      "artifacts": [
+        {
+          "name": "mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
+          "path": "dist/mindiesd-3.1.0-cp312-cp312-linux_x86_64.whl",
+          "type": "wheel",
+          "sha256": "sha256:526b020725cdbfaeea903449cc2ca6680fe3634a55187d934c3485d64181a6ea"
+        }
+      ],
+      "failure_reason": "本阶段成功，无失败原因",
+      "notes": "完整原生冷构建；构建前清空build/dist及mindiesd内旧so，无产物复用。仅用本地cmake包装脚本把-j收敛为6，不改源码；未用CPLUS_INCLUDE_PATH等跳过开关。"
+    },
+    "ut": {
+      "status": "success",
+      "duration_seconds": 1914,
+      "total": 3556,
+      "passed": 3135,
+      "failed": 0,
+      "skipped": 421,
+      "failures": [],
+      "failure_reason": "全量入口成功，无失败原因",
+      "details": {
+        "cpu": {
+          "status": "success",
+          "passed": 2366,
+          "failed": 0,
+          "skipped": 8,
+          "error": 0,
+          "subtests_passed": 618,
+          "pytest_seconds": 63.96,
+          "raw_junit": {
+            "tests": 2992,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 8
+          },
+          "pytest_summary": "2366 passed, 8 skipped, 388 warnings, 618 subtests passed in 63.96s (0:01:03)",
+          "skip_reasons": {
+            "Skip NPU-dependent tests when MINDIE_TEST_MODE is CPU.": 8
+          }
+        },
+        "npu": {
+          "status": "success",
+          "passed": 769,
+          "failed": 0,
+          "skipped": 413,
+          "error": 0,
+          "subtests_passed": 690,
+          "pytest_seconds": 1769.4,
+          "raw_junit": {
+            "tests": 1872,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 413
+          },
+          "pytest_summary": "769 passed, 413 skipped, 391 warnings, 690 subtests passed in 1769.40s (0:29:29)",
+          "skip_reasons": {
+            "eagle_quant_batch_matmul_swiglu positive is not registered for A5; OpDef AddConfig=('ascend910b',)": 256,
+            "eagle_split_norm_rope_concat positive is not registered for A5; OpDef AddConfig=('ascend910b',)": 38,
+            "eagle_indexed_gate_norm_modulate positive is not registered for A5; OpDef AddConfig=('ascend910b',)": 36,
+            "Cross-device checks require a reliable NPU mapping: Cannot identify npu-smi device mapping columns": 20,
+            "la_preprocess has no native OpDef registration for A5": 20,
+            "eagle_block_sparse_attention positive is not registered for A5; OpDef AddConfig=('ascend910b', 'ascend910_93')": 8,
+            "laser_attention positive is not registered for A5; OpDef AddConfig=('ascend910', 'ascend910b', 'ascend910_93')": 8,
+            "laser_attention has no native OpDef registration for A5": 5,
+            "Direct rf_v2 backend is unavailable on A5; public API routes to rf_v3.": 4,
+            "rain_fusion_attention (sparse_flash_attn_rf_v2) is unsupported on A5; routed to rf_v3.": 4,
+            "MXFP4 BSA path requires aclnnBlockSparseAttentionV3 (newest CANN); skipped on CANN without V3.": 4,
+            "ada_block_sparse_attention has no native OpDef registration for A5": 3,
+            "A2/A3 INT8 test": 3,
+            "LA is unsupported on A5": 1,
+            "Block64 BSA requires A5 with CANN >= 9.2.0.": 1,
+            "inner_precise=0 with bf16 is unsupported on 950 series devices.": 1,
+            "MXFP8 dispatch equivalence requires CANN >= 9.2.0": 1
+          }
+        },
+        "coverage_gate": {
+          "status": "success",
+          "source_files_checked": 116,
+          "below_threshold": 0,
+          "summary": "116 source files checked; 0 below the per-file 80% requirement"
+        }
+      }
+    },
+    "sample": {
+      "status": "success",
+      "duration_seconds": 91,
+      "results": [
+        {
+          "sample_name": "HF_ENDPOINT=https://hf-mirror.com python3 examples/dummy_run/wan_infer.py --device_id 2 --num_layers 2",
+          "execution_status": "success",
+          "execution_time": "91秒",
+          "output_summary": "Wan2.2 dummy weights实际运行；完整输出见本地证据"
+        }
+      ],
+      "failure_reason": "本阶段成功，无失败原因"
+    }
+  },
+  "documentation_gaps": [
+    {
+      "time": "2026-11-10T16:57:15+08:00",
+      "title": "omni与根requirements版本差异",
+      "body": "按用户指定omni执行，镜像torch2.10而根requirements固定2.9；不声称复现PR的完全相同软件栈。",
+      "source": "requirements.txt及omni镜像"
+    },
+    {
+      "time": "2026-11-10T16:57:15+08:00",
+      "title": "英文安装文档的运行时版本清单与中文不一致",
+      "body": "docs/en/installation.md 写 TorchNPU 2.6–2.10、CANN 9.0.0，docs/zh/installation.md 写 TorchNPU 7.3.0/26.0.0/26.1.0、CANN 9.0.1/9.1.0；本次仅对齐了 triton-ascend，版本清单差异仍在上游。",
+      "source": "docs/en/installation.md；docs/zh/installation.md"
+    },
+    {
+      "time": "2026-11-10T16:57:15+08:00",
+      "title": "测试文档缺少设备选择与特权容器说明",
+      "body": "原文未说明 MINDIE_TEST_DEVICE_ID 按逻辑序号解释、QBMM 检查点批次要求物理编号，也未记录非特权容器无法 aclInit 的结论；本次已在 PR #835 补充中英文测试文档。",
+      "source": "docs/zh/developer_guide/test.md；docs/en/developer_guide/test.md"
+    }
+  ],
+  "problems_encountered": [
+    {
+      "timestamp": "2026-11-10T16:57:15+08:00",
+      "problem": "新融合算子 indexed_gate_rms_norm_scale_shift_dynamic_mx_quant 的NPU用例9个失败",
+      "solution": "定位为三处缺陷：tiled kernel循环前8192宽向量在循环内按2048宽重赋值，触发Triton循环携带变量类型断言；_use_hybrid在256x8192、512x4096、256/512x3072上返回False，与算子自带用例断言冲突；FP16路径65535x64 e4m3在rows_per_prog=128时UB超限（需1938432 bits，可用1769472）。分别改为独立预循环变量名、补hidden>=3072且rows>=256与rows>=65535规则、FP16降到64行。定向用例12用例/44子测试通过后全量NPU 769通过、0失败。",
+      "source": "NPU用例日志与本地算子修复"
+    },
+    {
+      "timestamp": "2026-11-10T16:57:15+08:00",
+      "problem": "H=1标量FP8转换使Triton编译器中止",
+      "solution": "两个算子的H=1分支都改为32lane掩码向量，仅lane0读写；原严格字节断言保留。",
+      "source": "本地算子修复"
+    },
+    {
+      "timestamp": "2026-11-10T16:57:15+08:00",
+      "problem": "非特权容器内aclInit返回507899 Resource_Busy，device_count为0",
+      "solution": "该宿主机既有NPU业务容器均以特权模式运行；改用特权容器、不使用任何可见设备掩码，并以MINDIE_TEST_DEVICE_ID=2固定物理设备后，真实张量预检通过。",
+      "source": "容器预检日志"
+    },
+    {
+      "timestamp": "2026-11-10T16:57:15+08:00",
+      "problem": "新版驱动非法索引trap错误信息不匹配，及两处UT版本假设",
+      "solution": "窄匹配trap286错误；精确区分torch2.1与2.10；深嵌套非法输入仍必须拒绝，并补递归异常分支测试。",
+      "source": "本地测试补丁"
+    },
+    {
+      "timestamp": "2026-11-10T16:57:15+08:00",
+      "problem": "源码树里残留上一轮构建的so，冷构建入口直接拒绝运行",
+      "solution": "构建脚本检测到mindiesd内已有so即退出；改为先清理build、dist与mindiesd内旧二进制再构建，确保本轮结论来自真正的冷构建。",
+      "source": "构建前置检查"
+    },
+    {
+      "timestamp": "2026-11-10T16:57:15+08:00",
+      "problem": "单文件复跑时用例被判定不属于CPU套件",
+      "solution": "conftest要求显式设置MINDIE_TEST_MODE=NPU；补上该环境变量后定向用例正常执行。",
+      "source": "定向复跑日志"
+    }
+  ]
+}
