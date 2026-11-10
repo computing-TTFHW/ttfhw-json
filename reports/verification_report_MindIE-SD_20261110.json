@@ -344,14 +344,7 @@
       "failure_reason": "本阶段成功，无失败原因"
     }
   },
-  "documentation_gaps": [
-    {
-      "time": "2026-11-10T16:57:15+08:00",
-      "title": "中英文安装文档的CANN版本口径不一致",
-      "body": "docs/en/installation.md 写 CANN 9.0.0，docs/zh/installation.md 写 CANN 9.0.1、9.1.0；验证所在omni镜像为CANN 9.1.0，与中文文档一致。Python侧版本清单已在PR #835中统一为以requirements.txt为准，仅CANN这一行未对齐。",
-      "source": "docs/en/installation.md；docs/zh/installation.md"
-    }
-  ],
+  "documentation_gaps": [],
   "problems_encountered": [
     {
       "timestamp": "2026-11-10T16:57:15+08:00",
@@ -375,8 +368,8 @@
   "local_changes": {
     "base_commit": "3c56a90a15ce6288464b6fbabe13d7298ee85efd",
     "head_commit": "14ab49e1357b299825090782f82717f6f611220b",
-    "branch_tip": "9021ff3",
-    "branch_tip_note": "head_commit之后的提交只做依赖声明放宽、安装文档精简和测试文档补全，不含算子代码变更，本轮未对其复跑。",
+    "branch_tip": "bb3796d",
+    "branch_tip_note": "head_commit之后的提交只做依赖声明放宽、安装文档精简、测试文档补全和CANN版本口径对齐，不含算子代码变更，本轮未对其复跑。",
     "upstream_committed": false,
     "reference": "https://gitcode.com/Ascend/MindIE-SD/merge_requests/835",
     "summary": "验证对象是已提交到个人Fork分支的修复，不是未经修改的上游dev：H=1分支改为32lane掩码向量、融合算子混合路径与FP16 UB行数修正、运行时相关用例适配。",
