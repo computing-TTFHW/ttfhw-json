@@ -38,6 +38,7 @@
     "image_source": {
       "type": "base_image",
       "image_name": "quay.io/ascend/vllm-omni:v0.32.0-a5",
+      "image_identity": "sha256:f58501016e884358089dd6eba8aff3156c2b6c6eebb38734ac441b6b2964e532 amd64 25319921885",
       "selection_reason": "用户明确指定omni环境，复用业务预构建镜像；Python3.12.13、torch2.10.0、torch_npu2.10.0.post4、CANN9.1.0，triton-ascend已对齐3.2.2.post2。",
       "dependency_mapping": {
         "from_dockerfile": "docker/omni/Dockerfile.a5.ubuntu",
@@ -266,6 +267,7 @@
       "failures": [],
       "failure_reason": "全量入口成功，无失败原因",
       "details": {
+        "count_scope": "主用例计数来自pytest汇总，子测试单列；raw_junit含子测试，不能直接与主用例相加。",
         "cpu": {
           "status": "success",
           "passed": 2366,
@@ -365,27 +367,9 @@
   "problems_encountered": [
     {
       "timestamp": "2026-11-10T16:57:15+08:00",
-      "problem": "新融合算子 indexed_gate_rms_norm_scale_shift_dynamic_mx_quant 的NPU用例9个失败",
-      "solution": "定位为三处缺陷：tiled kernel循环前8192宽向量在循环内按2048宽重赋值，触发Triton循环携带变量类型断言；_use_hybrid在256x8192、512x4096、256/512x3072上返回False，与算子自带用例断言冲突；FP16路径65535x64 e4m3在rows_per_prog=128时UB超限（需1938432 bits，可用1769472）。分别改为独立预循环变量名、补hidden>=3072且rows>=256与rows>=65535规则、FP16降到64行。定向用例12用例/44子测试通过后全量NPU 769通过、0失败。",
-      "source": "NPU用例日志与本地算子修复"
-    },
-    {
-      "timestamp": "2026-11-10T16:57:15+08:00",
-      "problem": "H=1标量FP8转换使Triton编译器中止",
-      "solution": "两个算子的H=1分支都改为32lane掩码向量，仅lane0读写；原严格字节断言保留。",
-      "source": "本地算子修复"
-    },
-    {
-      "timestamp": "2026-11-10T16:57:15+08:00",
       "problem": "非特权容器内aclInit返回507899 Resource_Busy，device_count为0",
       "solution": "该宿主机既有NPU业务容器均以特权模式运行；改用特权容器、不使用任何可见设备掩码，并以MINDIE_TEST_DEVICE_ID=2固定物理设备后，真实张量预检通过。",
       "source": "容器预检日志"
-    },
-    {
-      "timestamp": "2026-11-10T16:57:15+08:00",
-      "problem": "新版驱动非法索引trap错误信息不匹配，及两处UT版本假设",
-      "solution": "窄匹配trap286错误；精确区分torch2.1与2.10；深嵌套非法输入仍必须拒绝，并补递归异常分支测试。",
-      "source": "本地测试补丁"
     },
     {
       "timestamp": "2026-11-10T16:57:15+08:00",
@@ -399,5 +383,35 @@
       "solution": "conftest要求显式设置MINDIE_TEST_MODE=NPU；补上该环境变量后定向用例正常执行。",
       "source": "定向复跑日志"
     }
-  ]
+  ],
+  "local_changes": {
+    "base_commit": "3c56a90a15ce6288464b6fbabe13d7298ee85efd",
+    "head_commit": "14ab49e1357b299825090782f82717f6f611220b",
+    "upstream_committed": false,
+    "reference": "https://gitcode.com/Ascend/MindIE-SD/merge_requests/835",
+    "summary": "验证对象是已提交到个人Fork分支的修复，不是未经修改的上游dev：H=1分支改为32lane掩码向量、融合算子混合路径与FP16 UB行数修正、运行时相关用例适配。",
+    "targeted_regression": {
+      "passed": 12,
+      "subtests_passed": 44,
+      "returncode": 0
+    }
+  },
+  "timing_assessment": {
+    "observation_threshold_seconds": 3600,
+    "phase_seconds": {
+      "dependencies": 146,
+      "build": 632,
+      "wheel_install": 36,
+      "tests": 1914,
+      "sample": 91
+    },
+    "any_single_phase_over_one_hour": false,
+    "complete": true,
+    "basis": "按1小时观察单个阶段耗时，不以该阈值作为构建合格标准；最长阶段为CPU+NPU全套测试1914秒。"
+  },
+  "source_consistency": {
+    "status": "consistent",
+    "returncode": 0,
+    "basis": "构建与测试前后源码树diff一致，验证过程中未改动被测代码。"
+  }
 }
