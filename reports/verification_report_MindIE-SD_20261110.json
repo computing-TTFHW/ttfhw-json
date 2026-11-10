@@ -347,21 +347,9 @@
   "documentation_gaps": [
     {
       "time": "2026-11-10T16:57:15+08:00",
-      "title": "omni镜像与仓库依赖声明的版本口径不同",
-      "body": "按用户指定omni执行，镜像为torch2.10，而仓库根requirements.txt原先把torch/torch_npu写死为2.9，照该文件安装会与镜像冲突；本轮沿用镜像已装版本执行，PR #835 已改为只保留下限（torch>=2.9.0）。",
-      "source": "requirements.txt及omni镜像"
-    },
-    {
-      "time": "2026-11-10T16:57:15+08:00",
-      "title": "英文安装文档的运行时版本清单与中文不一致",
-      "body": "docs/en/installation.md 写 TorchNPU 2.6–2.10、CANN 9.0.0，docs/zh/installation.md 写 TorchNPU 7.3.0/26.0.0/26.1.0、CANN 9.0.1/9.1.0；本次仅对齐了 triton-ascend，版本清单差异仍在上游。",
+      "title": "中英文安装文档的CANN版本口径不一致",
+      "body": "docs/en/installation.md 写 CANN 9.0.0，docs/zh/installation.md 写 CANN 9.0.1、9.1.0；验证所在omni镜像为CANN 9.1.0，与中文文档一致。Python侧版本清单已在PR #835中统一为以requirements.txt为准，仅CANN这一行未对齐。",
       "source": "docs/en/installation.md；docs/zh/installation.md"
-    },
-    {
-      "time": "2026-11-10T16:57:15+08:00",
-      "title": "测试文档缺少设备选择与容器初始化说明",
-      "body": "原文未说明 MINDIE_TEST_DEVICE_ID 按逻辑序号解释、QBMM 检查点批次要求物理编号，也未记录非特权容器无法 aclInit 的结论；仍属上游文档缺口，本轮未改动测试文档。",
-      "source": "docs/zh/developer_guide/test.md；docs/en/developer_guide/test.md"
     }
   ],
   "problems_encountered": [
@@ -387,6 +375,8 @@
   "local_changes": {
     "base_commit": "3c56a90a15ce6288464b6fbabe13d7298ee85efd",
     "head_commit": "14ab49e1357b299825090782f82717f6f611220b",
+    "branch_tip": "9021ff3",
+    "branch_tip_note": "head_commit之后的提交只做依赖声明放宽、安装文档精简和测试文档补全，不含算子代码变更，本轮未对其复跑。",
     "upstream_committed": false,
     "reference": "https://gitcode.com/Ascend/MindIE-SD/merge_requests/835",
     "summary": "验证对象是已提交到个人Fork分支的修复，不是未经修改的上游dev：H=1分支改为32lane掩码向量、融合算子混合路径与FP16 UB行数修正、运行时相关用例适配。",
